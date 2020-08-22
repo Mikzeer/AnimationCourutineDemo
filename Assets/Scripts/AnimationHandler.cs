@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class AnimationHandler : MonoBehaviour
 {
+    enum ANIMATIONSTATE { IDDLE, ATTACK, DAMAGE};
     Animator animator;
     IEnumerator actualAnimCoroutine;
     bool performing;
-    // OBJETIVO = REPRODUCIR UNA ANIMACION QUE DURE DETERMINADO TIEMPO, Y DETENERLA ANTES DE QUE TERMINE 
-    // INICIAR UNA COROUTINE CON EL NOMBRE DE LA ANIMACION
-    // INICIAR UN TIMER PARA CORRER UN TIEMPO DE DURACION DE LOOPEO DE LA ANIMACION
 
     void Awake()
     {
@@ -18,97 +16,53 @@ public class AnimationHandler : MonoBehaviour
 
     void Update()
     {
-        //InputUpdateTest();
         InputWithStopKeyPress();
-    }
-
-    public void InputUpdateTest()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-
-            if (actualAnimCoroutine != null)
-            {
-                StopCoroutine(actualAnimCoroutine);
-                actualAnimCoroutine = CheckIfAnimationHasEnd("Active");
-                StartCoroutine(actualAnimCoroutine);
-            }
-            else
-            {
-                actualAnimCoroutine = CheckIfAnimationHasEnd("Active");
-                StartCoroutine(actualAnimCoroutine);
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            if (actualAnimCoroutine != null)
-            {
-                StopCoroutine(actualAnimCoroutine);
-                StartCoroutine(CheckIfAnimationHasEnd("Idlle"));
-                StartCoroutine(actualAnimCoroutine);
-            }
-            else
-            {
-                StartCoroutine(CheckIfAnimationHasEnd("Idlle"));
-                StartCoroutine(actualAnimCoroutine);
-            }
-
-        }
     }
 
     public void InputWithStopKeyPress()
     {
-        if (!performing)
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            if (Input.GetKeyDown(KeyCode.A))
+            if (!performing)
             {
                 if (actualAnimCoroutine != null)
                 {
                     StopCoroutine(actualAnimCoroutine);
-                    animator.SetTrigger("Active");
+                    PlayAnimation(ANIMATIONSTATE.ATTACK);
                     actualAnimCoroutine = EndAnimationOnButtonPress();
                     StartCoroutine(actualAnimCoroutine);
                 }
                 else
                 {
-                    animator.SetTrigger("Active");
+                    PlayAnimation(ANIMATIONSTATE.ATTACK);
                     actualAnimCoroutine = EndAnimationOnButtonPress();
                     StartCoroutine(actualAnimCoroutine);
                 }
             }
+            else
+            {
+                Debug.Log("Is Performing animation");
+            }
+
         }
     }
 
-    IEnumerator CheckIfAnimationHasEnd(string animTrigerName)
+    private void PlayAnimation(ANIMATIONSTATE animState)
     {
-        animator.SetTrigger(animTrigerName);
-
-        
-        yield return EndAnimationOnButtonPress();
-    }
-
-    IEnumerator WaitForAKeyToBePress(KeyCode key)
-    {
-        // time delay
-        yield return new WaitForSeconds(2.5f);
-
-        bool done = false;
-
-        while (!done)
+        switch (animState)
         {
-            if (Input.GetKeyDown(key))
-            {
-                done = true;
-            }
-
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idlle"))
-            {
-                done = true;
-            }
-
-            // wait until next frame, then continue the execution
-            yield return null;                 
-        }        
+            case ANIMATIONSTATE.IDDLE:
+                animator.SetTrigger("Idlle");
+                break;
+            case ANIMATIONSTATE.ATTACK:
+                animator.SetTrigger("Active");
+                break;
+            case ANIMATIONSTATE.DAMAGE:
+                animator.SetTrigger("Damage");
+                break;
+            default:
+                break;
+        }
     }
 
     IEnumerator EndAnimationOnButtonPress()
@@ -132,8 +86,9 @@ public class AnimationHandler : MonoBehaviour
             }
 
             Debug.Log("Wait for End Animation Time ");
+            yield return null;
         }
-
+        animator.SetTrigger("Idlle");
         Debug.Log("Animation has End ");
         performing = false;
         yield return null;
