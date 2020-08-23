@@ -93,4 +93,25 @@ public class AnimationHandler : MonoBehaviour
         performing = false;
         yield return null;
     }
+
+    private void DamageTarget(Enemy target)
+    {
+        StartCoroutine(TriggerTargetDamageAnimation(target));
+    }
+
+    private IEnumerator TriggerTargetDamageAnimation(Enemy target)
+    {
+        yield return StartCoroutine(PlayDamageAnimation(target));
+    }
+
+    private IEnumerator PlayDamageAnimation(Enemy target)
+    {
+        target.animator.SetTrigger("Damage");
+
+        while (!target.animator.GetCurrentAnimatorStateInfo(0).IsName("Iddle"))
+        {
+            yield return null;
+        }
+    }
+
 }
