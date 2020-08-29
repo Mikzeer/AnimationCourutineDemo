@@ -798,6 +798,8 @@ MonoBehaviour:
   - {fileID: 1394237958}
   animationSpeed: 2
   movingEnemy: {fileID: 1685900280}
+  ease: 1
+  moveDuration: 4
 --- !u!1 &1685900276
 GameObject:
   m_ObjectHideFlags: 0

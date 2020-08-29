@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DG.Tweening;
 public class AttackAnimationHandler : MonoBehaviour
 {
     private Animator animator; // Nuestro Animator
@@ -9,8 +9,9 @@ public class AttackAnimationHandler : MonoBehaviour
     IEnumerator actualAnimCoroutine;
     bool performing;
 
-    [Range(0,2)]
-    [SerializeField]private float animationSpeed = 2;
+    [Range(0,2), SerializeField]
+    private float animationSpeed = 2;
+
     private bool isPresing = false;
     private bool isFastForwarding = false;
     private float pressedTime = 0;
@@ -20,14 +21,24 @@ public class AttackAnimationHandler : MonoBehaviour
     public Enemy movingEnemy;
     private bool isMoving = false;
     private Vector2 startPosition;
-    private Vector2 endPostion;
+    private Vector3 endPostion;
 
+
+    [SerializeField] private Ease ease = Ease.Linear;
+
+    [Range(1.0f, 4.0f), SerializeField]
+    private float moveDuration = 4.0f;
+
+    [SerializeField]
+    private DOTween dorr;
+
+    private Tween movingTween;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
         startPosition = movingEnemy.GetComponent<Transform>().position;
-        endPostion = startPosition + new Vector2(10, 0);
+        endPostion = startPosition + new Vector2(0, 15);       
     }
 
     private void Update()
@@ -124,9 +135,16 @@ public class AttackAnimationHandler : MonoBehaviour
 
     private IEnumerator PlayMoveAnimations()
     {
+        Vector2 oldPosition = startPosition;
+
+
+
         isMoving = true;
 
         StartMoveAnimation();
+
+        startPosition = endPostion;
+        endPostion = oldPosition;
 
         AnimatorStateInfo animst = movingEnemy.animator.GetCurrentAnimatorStateInfo(0);
         //Debug.Log("First " + animst.shortNameHash);
@@ -136,13 +154,19 @@ public class AttackAnimationHandler : MonoBehaviour
 
         //yield return new WaitForSeconds(0.2f);
         // Esto es para chequear el final de la animacion presionando un boton
-        StartCoroutine(EndMoveAnimationOnButtonPress());
+        StartCoroutine(EndMoveAnimationOnButtonPress(startPosition));
 
         // ESTA ES UNA DE LAS CLAUSULAS PARA TERMINAR LA ANIMACION
         // Esperamos a terminar de hacer la animacion y volver a Iddle
-        while (animst.shortNameHash != movingEnemy.animator.GetCurrentAnimatorStateInfo(0).shortNameHash)
+        //while (animst.shortNameHash != movingEnemy.animator.GetCurrentAnimatorStateInfo(0).shortNameHash)
+        //{
+        //    //Debug.Log("Wait for End Animation Time Own Animator Check");
+        //    yield return null;
+        //}
+
+        while (movingEnemy.transform.position != endPostion)
         {
-            //Debug.Log("Wait for End Animation Time Own Animator Check");
+            Debug.Log("Wait for End Animation Time Own Animator Check");
             yield return null;
         }
 
@@ -159,6 +183,9 @@ public class AttackAnimationHandler : MonoBehaviour
         isMoving = false;
         //animator.speed = 1;
         movingEnemy.animator.SetFloat("AnimationSpeed", 1f);
+        movingEnemy.animator.SetTrigger("Idlle");
+
+        
 
         Debug.Log("Animation has End ");
     }
@@ -167,9 +194,10 @@ public class AttackAnimationHandler : MonoBehaviour
     {
         if (!isFastForwarding) movingEnemy.animator.SetFloat("AnimationSpeed", 0.2f);
         movingEnemy.animator.SetTrigger("Move");
+        movingTween = movingEnemy.transform.DOMove(endPostion, 20).SetEase(ease);
     }
 
-    IEnumerator EndMoveAnimationOnButtonPress()
+    IEnumerator EndMoveAnimationOnButtonPress(Vector2 finishPosition)
     {
         bool done = false;
 
@@ -182,6 +210,12 @@ public class AttackAnimationHandler : MonoBehaviour
                 done = true;
                 isMoving = false;
                 movingEnemy.animator.SetTrigger("Idlle");
+
+                movingTween.Kill();
+
+                movingEnemy.transform.position = finishPosition;
+
+
                 //animator.speed = 1;
                 if (!isFastForwarding) movingEnemy.animator.SetFloat("AnimationSpeed", 1f);
                 yield return null;
@@ -309,6 +343,10 @@ public class AttackAnimationHandler : MonoBehaviour
 
     private void SpeedUpAnimation()
     {
+        moveDuration = 5;
+
+        movingTween.timeScale = moveDuration;
+
         animator.SetFloat("AnimationSpeed", animationSpeed);
         movingEnemy.animator.SetFloat("AnimationSpeed", animationSpeed);
         for (int i = 0; i < enemies.Count; i++)
@@ -319,6 +357,10 @@ public class AttackAnimationHandler : MonoBehaviour
 
     private void SetAnimationSpeedToNormal()
     {
+        moveDuration = 1;
+
+        movingTween.timeScale = moveDuration;
+
         animator.SetFloat("AnimationSpeed", 1);
         movingEnemy.animator.SetFloat("AnimationSpeed", 1);
         for (int i = 0; i < enemies.Count; i++)
