@@ -143,4 +143,13 @@ public class AttackAnimationHandler : MonoBehaviour
         }
     }
 
+
+    //Resets the value of the given trigger parameter.Use this to reset a Trigger parameter in an Animator Controller that could still be active. 
+    //Make sure to create a parameter in the Animator Controller with the same name.See Animator.SetTrigger for more information about how to set a Trigger.
+    private void RestTrigger(string animation)
+    {
+        //Reset the animation trigger
+        animator.ResetTrigger(animation);
+    }
 }
+
