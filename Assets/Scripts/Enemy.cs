@@ -10,4 +10,9 @@ public class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
     }
+
+    public Animator GetAnimator()
+    {
+        return animator;
+    }
 }
