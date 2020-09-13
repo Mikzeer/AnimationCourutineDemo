@@ -1,22 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 namespace PositionerDemo
 {
-    public class AttackMotion : AnimatedMotion
+    public class DamageMotion : AnimatedMotion
     {
-        private const string attackTriggerString = "Active";
+        private const string damageTriggerString = "Damage";
         private const string SkipTriggerString = "Idlle";
 
-
-        //List<Enemy> enemies;
-        //private const string damageTriggerString = "Damage";
-        //private AnimatorStateInfo[] damageAnimst;
-
-
-        public AttackMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
+        public DamageMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
         {
-            animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(attackTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
+            animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(damageTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
         }
 
         public override bool CheckCorrectInput()
@@ -31,15 +23,15 @@ namespace PositionerDemo
 
         //protected override void StartMotion()
         //{
-        //    animator.SetTrigger(attackTriggerString);
+        //    //animator.SetTrigger(attackTriggerString);
 
-        //    damageAnimst = new AnimatorStateInfo[enemies.Count];
+        //    //damageAnimst = new AnimatorStateInfo[enemies.Count];
 
-        //    for (int i = 0; i < enemies.Count; i++)
-        //    {
-        //        damageAnimst[i] = enemies[i].animator.GetCurrentAnimatorStateInfo(0);
-        //        enemies[i].animator.SetTrigger(damageTriggerString);
-        //    }
+        //    //for (int i = 0; i < enemies.Count; i++)
+        //    //{
+        //    //    damageAnimst[i] = enemies[i].animator.GetCurrentAnimatorStateInfo(0);
+        //    //    enemies[i].animator.SetTrigger(damageTriggerString);
+        //    //}
         //}
 
         //protected override IEnumerator CheckPendingRunningMotions()
@@ -105,7 +97,6 @@ namespace PositionerDemo
         //        enemies[i].animator.SetFloat(animationSpeedParameter, animationNormalSpeed);
         //    }
         //}
-
     }
 }
 

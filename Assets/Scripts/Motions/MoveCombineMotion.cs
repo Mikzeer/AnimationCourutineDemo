@@ -7,9 +7,10 @@ namespace PositionerDemo
     public class MoveCombineMotion : Motion
     {
         private const string moveTriggerString = "Move";
+        private const string SkipTriggerString = "Idlle";
 
         private Tween[] movingTween;
-        private Ease ease = Ease.Linear;
+        //private Ease ease = Ease.Linear;
 
         public List<Enemy> enemies;
         private Vector3 endPostion;
@@ -21,14 +22,14 @@ namespace PositionerDemo
         private Vector3 finalPosition;
         private Vector3 startPosition;
 
-        public MoveCombineMotion(MonoBehaviour coroutineMono, Vector3 startPosition, Vector3 finalPosition, List<Enemy> enemies, float cellSize) : base(coroutineMono)
+        public MoveCombineMotion(MonoBehaviour coroutineMono, Vector3 startPosition, Vector3 finalPosition, List<Enemy> enemies, float cellSize) : base(coroutineMono, 1)
         {
             this.cellSize = cellSize;
             movePositioner = new UnitMovePositioner(this.cellSize);
             this.startPosition = startPosition;
             this.finalPosition = finalPosition;
             this.enemies = enemies;
-            tweenActualSpeed = tweenNormalSpeed;
+            //tweenActualSpeed = tweenNormalSpeed;
 
         }
 
@@ -42,87 +43,87 @@ namespace PositionerDemo
             return false;
         }
 
-        protected override void StartMotion()
-        {
-            endPostion = finalPosition;
+        //protected override void StartMotion()
+        //{
+        //    endPostion = finalPosition;
 
-            enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), finalPosition, startPosition);
-            movingTween = new Tween[enemies.Count];
+        //    enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), finalPosition, startPosition);
+        //    movingTween = new Tween[enemies.Count];
 
 
-            int index = 0;
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
+        //    int index = 0;
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
 
-                entry.Key.animator.SetTrigger(moveTriggerString);
+        //        entry.Key.animator.SetTrigger(moveTriggerString);
 
-                movingTween[index] = entry.Key.transform.DOPath(entry.Value, 10).SetEase(ease);
-                movingTween[index].timeScale = tweenActualSpeed;
+        //        movingTween[index] = entry.Key.transform.DOPath(entry.Value, 10).SetEase(ease);
+        //        movingTween[index].timeScale = tweenActualSpeed;
 
-                index++;
-            }
-        }
+        //        index++;
+        //    }
+        //}
 
-        protected override IEnumerator CheckPendingRunningMotions()
-        {
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
-                while (entry.Key.transform.position != entry.Value[2])
-                {
-                    //Debug.Log("Wait for End Animation Time Own Animator Check");
-                    yield return null;
-                }
-                //entry.Key.animator.SetTrigger("Idlle");
-            }
-        }
+        //protected override IEnumerator CheckPendingRunningMotions()
+        //{
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
+        //        while (entry.Key.transform.position != entry.Value[2])
+        //        {
+        //            //Debug.Log("Wait for End Animation Time Own Animator Check");
+        //            yield return null;
+        //        }
+        //        //entry.Key.animator.SetTrigger("Idlle");
+        //    }
+        //}
 
-        protected override void OnMotionSkip()
-        {
-            actualPosition = endPostion;
+        //public override void OnMotionSkip()
+        //{
+        //    actualPosition = endPostion;
 
-            int index = 0;
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
-                //entry.Key.animator.SetTrigger("Idlle");
-                movingTween[index].Kill();
-                index++;
-                entry.Key.transform.position = entry.Value[2];
-            }
+        //    int index = 0;
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
+        //        //entry.Key.animator.SetTrigger("Idlle");
+        //        movingTween[index].Kill();
+        //        index++;
+        //        entry.Key.transform.position = entry.Value[2];
+        //    }
 
-            base.OnMotionSkip();
-        }
+        //    base.OnMotionSkip();
+        //}
 
-        protected override void CheckMotionAfterEnd()
-        {
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
-                entry.Key.animator.SetTrigger("Idlle");
-            }
+        //protected override void CheckMotionAfterEnd()
+        //{
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
+        //        entry.Key.animator.SetTrigger("Idlle");
+        //    }
 
-            actualPosition = finalPosition;
-        }
+        //    actualPosition = finalPosition;
+        //}
 
-        protected override void SpeedUpMotionOnMotion()
-        {
-            int index = 0;
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
-                movingTween[index].timeScale = tweenSpeedUp;
-                entry.Key.animator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
-                index++;
-            }
-        }
+        //protected override void SpeedUpMotionOnMotion()
+        //{
+        //    int index = 0;
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
+        //        movingTween[index].timeScale = tweenSpeedUp;
+        //        entry.Key.animator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
+        //        index++;
+        //    }
+        //}
 
-        protected override void SetNormalSpeedInMotion()
-        {
-            int index = 0;
-            foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
-            {
-                movingTween[index].timeScale = tweenNormalSpeed;
-                entry.Key.animator.SetFloat(animationSpeedParameter, animationNormalSpeed);
-                index++;
-            }
-        }
+        //protected override void SetNormalSpeedInMotion()
+        //{
+        //    int index = 0;
+        //    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+        //    {
+        //        movingTween[index].timeScale = tweenNormalSpeed;
+        //        entry.Key.animator.SetFloat(animationSpeedParameter, animationNormalSpeed);
+        //        index++;
+        //    }
+        //}
 
     }
 

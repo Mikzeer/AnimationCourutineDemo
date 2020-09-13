@@ -3,7 +3,7 @@ namespace PositionerDemo
 {
     public class CombineSpawnMotion : Motion
     {
-        public CombineSpawnMotion(MonoBehaviour coroutineMono) : base(coroutineMono)
+        public CombineSpawnMotion(MonoBehaviour coroutineMono, int reproductionOrder) : base(coroutineMono, reproductionOrder)
         {
             // SPAWN ANIMATION COMBINE
 

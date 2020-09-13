@@ -14,22 +14,26 @@ namespace PositionerDemo
 
         protected float speed;
 
+        // Orden en el que se deberia reproducir
+        public int reproductionOrder { get; private set; }
+
 
         // Esto Corresponde solo a las Animaciones
-        protected float animationNormalSpeed = 1;
-        public float animationSpeedUpVelocity { get; protected set; }
-        public string animationSpeedParameter { get; protected set; }
+        //protected float animationNormalSpeed = 1;
+        //public float animationSpeedUpVelocity { get; protected set; }
+        //public string animationSpeedParameter { get; protected set; }
 
         // Esto corresponde solo a los Tween
-        protected float tweenNormalSpeed = 1;
-        public float tweenSpeedUp { get; protected set; }
-        public float tweenActualSpeed { get; protected set; }
+        //protected float tweenNormalSpeed = 1;
+        //public float tweenSpeedUp { get; protected set; }
+        //public float tweenActualSpeed { get; protected set; }
 
 
-        public Motion(MonoBehaviour coroutineMono)
+        public Motion(MonoBehaviour coroutineMono, int reproductionOrder)
         {
             this.coroutineMono = coroutineMono;
-            animationSpeedParameter = "AnimationSpeed";
+            this.reproductionOrder = reproductionOrder;
+            //animationSpeedParameter = "AnimationSpeed";
         }
 
         public void CheckMotionBeforeStart()
@@ -166,7 +170,7 @@ namespace PositionerDemo
             //Debug.Log("Check Motion After End");
         }
 
-        protected virtual void OnMotionSkip()
+        public virtual void OnMotionSkip()
         {
             SetNormalSpeedMotion();
             performing = false;

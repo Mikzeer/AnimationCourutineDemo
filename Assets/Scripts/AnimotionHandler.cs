@@ -33,6 +33,11 @@ public class AnimotionHandler : MonoBehaviour
     PositionerDemo.Motion combMotion;
     PositionerDemo.Motion spawnMotion;
 
+    private Vector2 startPosition;
+    private Vector3 endPostion;
+    private Vector3 finishPosition;
+    bool va = true;
+
     void Start()
     {
         cam = Camera.main;
@@ -44,10 +49,10 @@ public class AnimotionHandler : MonoBehaviour
                 StartMotionControllerOne();
                 break;
             case TUTORIALOPTION.TWO:
-                StartMotionControllerTwo();
+                //StartMotionControllerTwo();
                 break;
             case TUTORIALOPTION.THREE:
-                StartMotionControllerThree();
+                //StartMotionControllerThree();
                 break;
             default:
                 break;
@@ -56,10 +61,31 @@ public class AnimotionHandler : MonoBehaviour
 
     private void StartMotionControllerOne()
     {
-        PositionerDemo.Motion motionAttack = new AttackMotion(this, enemies, attackerEnemy.GetComponent<Animator>());
-        PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>());
-        motionControllerAttack.SetUpMotion(motionAttack);
-        motionControllerSimpleMove.SetUpMotion(motionMove);
+        List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
+        PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
+
+        motions.Add(motionAttack);
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
+            motions.Add(motionDamage);
+        }
+
+        CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
+        motionControllerAttack.SetUpMotion(combineAttackMotion);
+
+        List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
+
+        PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
+        PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
+
+        motionsMove.Add(motionMove);
+        motionsMove.Add(motionTweenMove);
+
+        CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
+
+        motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
     }
 
     private void StartMotionControllerTwo()
@@ -97,10 +123,10 @@ public class AnimotionHandler : MonoBehaviour
                 UpdateControllerOne();
                 break;
             case TUTORIALOPTION.TWO:
-                UpdateControllerTwo();
+                //UpdateControllerTwo();
                 break;
             case TUTORIALOPTION.THREE:
-                UpdateControllerThree();
+                //UpdateControllerThree();
                 break;
             default:
                 break;
@@ -110,7 +136,39 @@ public class AnimotionHandler : MonoBehaviour
     private void UpdateControllerOne()
     {
         motionControllerAttack.TryReproduceMotion();
+
+
+        startPosition = movingEnemy.transform.position;
+        Vector2 oldPosition = startPosition; // 5.96,-3.15
+        if (va)
+        {
+            endPostion = startPosition + new Vector2(0, 8); // 5.96,11.85
+            va = false;
+        }
+        else
+        {
+            endPostion = startPosition + new Vector2(0, -8); // 5.96,11.85
+            va = true;
+        }
+        finishPosition = endPostion;
+
+        List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
+
+        PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
+        PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
+
+        motionsMove.Add(motionMove);
+        motionsMove.Add(motionTweenMove);
+
+        CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
+
+        motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
+
         motionControllerSimpleMove.TryReproduceMotion();
+
+        startPosition = endPostion;
+        endPostion = oldPosition;
+
     }
 
     private void UpdateControllerTwo()
@@ -127,9 +185,31 @@ public class AnimotionHandler : MonoBehaviour
 
                     Vector3 actualPosition = grid.GetGridObject(enemeyTransforms[0].position).GetRealWorldLocation();
 
-                    combMotion = new MoveCombineMotion(this, actualPosition, heatMapGridObject.GetRealWorldLocation(), enemies, cellSize);
-                    motionControllerCombineMove.SetUpMotion(combMotion);
+                    Dictionary<Enemy, Vector3[]> enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), heatMapGridObject.GetRealWorldLocation(), actualPosition);
+
+                    List<PositionerDemo.Motion> motionsCombineMove = new List<PositionerDemo.Motion>();
+
+                    int index = 0;
+                    foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
+                    {
+
+                        PositionerDemo.Motion motionMove = new MoveMotion(this, entry.Key.GetComponent<Animator>(), 1);
+                        PositionerDemo.Motion motionTweenMove = new MovePathTweenMotion(this, entry.Key.transform, 1, entry.Value);
+
+                        motionsCombineMove.Add(motionMove);
+                        motionsCombineMove.Add(motionTweenMove);
+
+                        index++;
+                    }
+
+                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove);
+
+                    motionControllerCombineMove.SetUpMotion(combinMoveMotion);
                     motionControllerCombineMove.TryReproduceMotion();
+
+                    //combMotion = new MoveCombineMotion(this, actualPosition, heatMapGridObject.GetRealWorldLocation(), enemies, cellSize);
+                    //motionControllerCombineMove.SetUpMotion(combMotion);
+
                 }
                 else
                 {
@@ -149,11 +229,96 @@ public class AnimotionHandler : MonoBehaviour
             {
                 if (motionControllerSpawn != null && motionControllerSpawn.isPerforming == false)
                 {
+                    List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+
                     GameObject goKimbok = Instantiate(kimbokoPrefab);
 
-                    spawnMotion = new SpawnMotion(this, Crane, goKimbok, heatMapGridObject.GetRealWorldLocation(), CraneEnd);
 
-                    motionControllerSpawn.SetUpMotion(spawnMotion);
+                    Vector3 craneStartPosition;
+                    Vector3 craneEndPostion;
+
+                    //A CRANE//GRUA SET ACTIVE = TRUE
+                    Crane.SetActive(true);
+                    //B TWEEN DESDE UNA POSICION ELEVADA SOBRE LA TILE DONDE SE INDICO SPAWNEAR HASTA MAS ABAJO ASI SE VE DESDE ARRIBA EN EL TABLERO SOBRE LA TILE
+                    craneStartPosition = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Crane.transform.position.y, 0);
+                    Crane.transform.position = craneStartPosition;
+                    craneEndPostion = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Helper.GetCameraTopBorderYWorldPostion().y);
+
+
+                    // START //
+
+                    PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, Crane.transform, 1, craneEndPostion);
+                    motionsSpawn.Add(motionTweenMove);
+
+
+
+                    // WAIT // 
+
+
+                    ////C ANIMATION CRANESPAWNING
+                    PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
+                    motionsSpawn.Add(motionCraneSpawn);
+
+
+
+                    // WAIT //
+
+
+
+
+
+
+                    // START CONFIGURE //
+
+
+
+                    List<Configurable> configureAnimotion = new List<Configurable>();
+
+                    KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
+                    configureAnimotion.Add(KimbokoPositionConfigAnimotion);
+
+                    ////D INSTANTIATE KIMBOKO DESDE LA PUNTA DEL CRANE DONDE DEBERIA CHORREAR LA GOTA
+                    //goKimbok.transform.position = CraneEnd.position;
+                    //goKimbok.SetActive(true);
+
+                    // END CONFIGURE //
+
+                    ////E ANIMATION KIMBOKOSPAWNING
+                    ////E TWEEN DESDE LA PUNTA DEL CRANE HASTA EL PISO, DE LA MISMA DURACION QUE LA ANIMACION DE SPAWN
+                    ////F ANIMATION IDLLE... TAL VEZ SEA AUTOMATICO EL CAMBIO, PERO POR LAS DUDAS
+                    PositionerDemo.Motion motionKimbokoSpawn = new SpawnMotion(this, kimbokoPrefab.GetComponent<Animator>(), 3);
+                    PositionerDemo.Motion motionKimbokoTweenMove = new MoveTweenMotion(this, goKimbok.transform, 3, heatMapGridObject.GetRealWorldLocation());
+                    motionsSpawn.Add(motionKimbokoSpawn);
+                    motionsSpawn.Add(motionKimbokoTweenMove);
+
+
+
+                    // WAIT //
+
+
+
+                    //G TWEEN DE LA CRANE PARA QUE SALGA DEL MAPA
+                    PositionerDemo.Motion motionTweenBackCraneMove = new MoveTweenMotion(this, Crane.transform, 4, craneStartPosition);
+                    motionsSpawn.Add(motionTweenBackCraneMove);
+
+
+                    // FINISH //
+
+                    // START CONFIGURE //
+
+                    ////H DESACTIVAMOS LA CRANE
+
+                    CraneActiveConfigureAnimotion<Transform, Transform> craneActiveConfigAnimotion = new CraneActiveConfigureAnimotion<Transform, Transform>(Crane.transform, 5);
+                    configureAnimotion.Add(craneActiveConfigAnimotion);
+
+                    //Crane.SetActive(false);
+
+                    // END CONFIGURE //
+
+
+                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn);
+
+                    motionControllerSpawn.SetUpMotion(combinMoveMotion);
                     motionControllerSpawn.TryReproduceMotion();
                 }
                 else
@@ -163,6 +328,5 @@ public class AnimotionHandler : MonoBehaviour
             }
         }
     }
-
 
 }

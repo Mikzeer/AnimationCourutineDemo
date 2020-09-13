@@ -48,10 +48,10 @@ public class AttackAnimationHandler : MonoBehaviour
         endPostion = startPosition + new Vector2(0, 15);
 
 
-        PositionerDemo.Motion motionAttack = new PositionerDemo.AttackMotion(this, enemies, animator);
-        PositionerDemo.Motion motionMove = new PositionerDemo.MoveMotion(this, movingEnemy.GetComponent<Animator>());
-        motionControler.SetUpMotion(motionAttack);
-        motionControlerTwo.SetUpMotion(motionMove);
+        //PositionerDemo.Motion motionAttack = new PositionerDemo.AttackMotion(this, enemies, animator);
+        //PositionerDemo.Motion motionMove = new PositionerDemo.MoveMotion(this, movingEnemy.GetComponent<Animator>());
+        //motionControler.SetUpMotion(motionAttack);
+        //motionControlerTwo.SetUpMotion(motionMove);
     }
 
     private void Update()

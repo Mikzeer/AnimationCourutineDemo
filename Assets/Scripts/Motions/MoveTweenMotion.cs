@@ -1,23 +1,20 @@
-﻿using System.Collections;
-using UnityEngine;
-using DG.Tweening;
+﻿using UnityEngine;
 namespace PositionerDemo
 {
-    public class MoveMotion : AnimatedMotion
+    public class MoveTweenMotion : TweenMotion
     {
-        private const string moveTriggerString = "Move";
-        private const string SkipTriggerString = "Idlle";
+        int tweenDuration = 5;
 
-        //private Tween movingTween;
-        //private Ease ease = Ease.Linear;
+        //private const string moveTriggerString = "Move";
+        //private const string SkipTriggerString = "Idlle";
         //private Vector2 startPosition;
-        //private Vector3 endPostion;
         //private Vector3 finishPosition;
         //bool va = true;
+        //private Vector3 endPostion;
 
-        public MoveMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
+        public MoveTweenMotion(MonoBehaviour coroutineMono, Transform transform, int reproductionOrder, Vector3 endPostion) : base(coroutineMono, transform, reproductionOrder)
         {
-            animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(moveTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
+            animotionParameter = new TweenAnimotionParameter(new TweenDoMoveReproduce(transform, endPostion), ease, tweenDuration);
         }
 
         public override bool CheckCorrectInput()
@@ -46,9 +43,9 @@ namespace PositionerDemo
         //    }
         //    finishPosition = endPostion;
 
-
-
         //    animator.SetTrigger(moveTriggerString);
+
+
 
 
         //    movingTween = animator.transform.DOMove(endPostion, 20).SetEase(ease);
@@ -56,7 +53,7 @@ namespace PositionerDemo
         //    movingTween.timeScale = tweenActualSpeed;
 
 
-        //    startPosition = endPostion; 
+        //    startPosition = endPostion;
         //    endPostion = oldPosition;
         //}
 

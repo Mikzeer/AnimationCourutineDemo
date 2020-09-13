@@ -1055,7 +1055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 475112c329feacf46a2aad0f1ac81545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialOption: 2
+  tutorialOption: 0
   cellSize: 4
   enemeyTransforms:
   - {fileID: 1410430499}
