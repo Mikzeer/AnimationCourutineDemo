@@ -49,10 +49,10 @@ public class AnimotionHandler : MonoBehaviour
                 StartMotionControllerOne();
                 break;
             case TUTORIALOPTION.TWO:
-                //StartMotionControllerTwo();
+                StartMotionControllerTwo();
                 break;
             case TUTORIALOPTION.THREE:
-                //StartMotionControllerThree();
+                StartMotionControllerThree();
                 break;
             default:
                 break;
@@ -123,10 +123,10 @@ public class AnimotionHandler : MonoBehaviour
                 UpdateControllerOne();
                 break;
             case TUTORIALOPTION.TWO:
-                //UpdateControllerTwo();
+                UpdateControllerTwo();
                 break;
             case TUTORIALOPTION.THREE:
-                //UpdateControllerThree();
+                UpdateControllerThree();
                 break;
             default:
                 break;
@@ -135,40 +135,68 @@ public class AnimotionHandler : MonoBehaviour
 
     private void UpdateControllerOne()
     {
-        motionControllerAttack.TryReproduceMotion();
-
-
-        startPosition = movingEnemy.transform.position;
-        Vector2 oldPosition = startPosition; // 5.96,-3.15
-        if (va)
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            endPostion = startPosition + new Vector2(0, 8); // 5.96,11.85
-            va = false;
+
+            if (motionControllerAttack != null && motionControllerAttack.isPerforming == false)
+            {
+                List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
+                PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
+
+                motions.Add(motionAttack);
+
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
+                    motions.Add(motionDamage);
+                }
+
+                CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
+                motionControllerAttack.SetUpMotion(combineAttackMotion);
+
+                motionControllerAttack.TryReproduceMotion();
+            }
+            else
+            {
+                Debug.Log("Is PErforming");
+            }
+
+
+            if (motionControllerSimpleMove != null && motionControllerSimpleMove.isPerforming == false)
+            {
+                startPosition = movingEnemy.transform.position;
+
+                Vector2 oldPosition = startPosition; // 5.96,-3.15
+                if (va)
+                {
+                    endPostion = startPosition + new Vector2(0, 8); // 5.96,11.85
+                    va = false;
+                }
+                else
+                {
+                    endPostion = startPosition + new Vector2(0, -8); // 5.96,11.85
+                    va = true;
+                }
+                finishPosition = endPostion;
+
+                List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
+
+                PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
+                PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
+
+                motionsMove.Add(motionMove);
+                motionsMove.Add(motionTweenMove);
+
+                CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
+
+                motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
+
+                motionControllerSimpleMove.TryReproduceMotion();
+
+                startPosition = endPostion;
+                endPostion = oldPosition;
+            }
         }
-        else
-        {
-            endPostion = startPosition + new Vector2(0, -8); // 5.96,11.85
-            va = true;
-        }
-        finishPosition = endPostion;
-
-        List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
-
-        PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
-        PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
-
-        motionsMove.Add(motionMove);
-        motionsMove.Add(motionTweenMove);
-
-        CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
-
-        motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
-
-        motionControllerSimpleMove.TryReproduceMotion();
-
-        startPosition = endPostion;
-        endPostion = oldPosition;
-
     }
 
     private void UpdateControllerTwo()
@@ -190,26 +218,49 @@ public class AnimotionHandler : MonoBehaviour
                     List<PositionerDemo.Motion> motionsCombineMove = new List<PositionerDemo.Motion>();
 
                     int index = 0;
+
+                    List<Configurable> configureAnimotion = new List<Configurable>();
+
+
+                    // ANIM MOVE 1
+                    // END PERFORM ANIM 1
+                    // COMBINE ORDER 1
+                    //                  TWEEN 1
+                    //                  ANIM MOVE END 2
+
                     foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
                     {
 
-                        PositionerDemo.Motion motionMove = new MoveMotion(this, entry.Key.GetComponent<Animator>(), 1);
+                        PositionerDemo.AnimatedMotion motionMove = new MoveMotion(this, entry.Key.GetComponent<Animator>(), 1);
                         PositionerDemo.Motion motionTweenMove = new MovePathTweenMotion(this, entry.Key.transform, 1, entry.Value);
 
+                        KimbokoIdlleConfigureAnimotion<Animator, Transform> KimbokoPositionConfigAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(entry.Key.GetComponent<Animator>(), 2);
+
+                        MotionIdlleConfigureAnimotion<AnimatedMotion, Transform> KimbokoAnimatedConfigAnimotion = new MotionIdlleConfigureAnimotion<AnimatedMotion, Transform>(motionMove, 1);
+
+
+                        List<Configurable> extraConfigureAnimotion = new List<Configurable>();
+                        List<PositionerDemo.Motion> extraMotionsCombineMove = new List<PositionerDemo.Motion>();
+
+                        extraMotionsCombineMove.Add(motionTweenMove);
+                        extraConfigureAnimotion.Add(KimbokoPositionConfigAnimotion);
+
+
+                        CombineMotion extraCombinMoveMotion = new CombineMotion(this, 1, extraMotionsCombineMove, extraConfigureAnimotion);
+
                         motionsCombineMove.Add(motionMove);
-                        motionsCombineMove.Add(motionTweenMove);
+                        motionsCombineMove.Add(extraCombinMoveMotion);
+                        //motionsCombineMove.Add(motionTweenMove);
+                        //configureAnimotion.Add(KimbokoPositionConfigAnimotion);
+                        configureAnimotion.Add(KimbokoAnimatedConfigAnimotion);
 
                         index++;
                     }
-
-                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove);
+                  
+                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove, configureAnimotion);
 
                     motionControllerCombineMove.SetUpMotion(combinMoveMotion);
                     motionControllerCombineMove.TryReproduceMotion();
-
-                    //combMotion = new MoveCombineMotion(this, actualPosition, heatMapGridObject.GetRealWorldLocation(), enemies, cellSize);
-                    //motionControllerCombineMove.SetUpMotion(combMotion);
-
                 }
                 else
                 {

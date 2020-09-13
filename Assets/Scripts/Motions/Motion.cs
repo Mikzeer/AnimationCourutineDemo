@@ -7,10 +7,12 @@ namespace PositionerDemo
     {
         private IEnumerator actualMotionCoroutine;
         public MonoBehaviour coroutineMono { get; private set; }
-        private bool cancel = false;
+        protected bool cancel = false;
         private bool canSkip = true;
         private KeyCode skipKeyCode = KeyCode.Space;
         public bool performing { get; private set; }
+        public bool hasEnded { get; protected set; }
+
 
         protected float speed;
 
@@ -34,6 +36,12 @@ namespace PositionerDemo
             this.coroutineMono = coroutineMono;
             this.reproductionOrder = reproductionOrder;
             //animationSpeedParameter = "AnimationSpeed";
+        }
+
+        public void SetPerforming()
+        {
+            //Debug.Log("CANCEL PERFORMING");
+            performing = false;
         }
 
         public void CheckMotionBeforeStart()
@@ -162,6 +170,7 @@ namespace PositionerDemo
             {
                 cancel = false;
                 performing = false;
+                hasEnded = true;
             }
         }
 
@@ -174,6 +183,7 @@ namespace PositionerDemo
         {
             SetNormalSpeedMotion();
             performing = false;
+            hasEnded = true;
             //Debug.Log("Motion Skiped");
         }
 
@@ -181,6 +191,7 @@ namespace PositionerDemo
         {
             this.speed = speed;
 
+            SpeedUpMotionOnMotion();
             //tweenSpeedUp = Mathf.FloorToInt(speed * 2);
             //animationSpeedUpVelocity = Mathf.FloorToInt(speed);
 

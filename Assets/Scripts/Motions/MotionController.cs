@@ -4,7 +4,7 @@ namespace PositionerDemo
 {
     public class MotionController
     {
-        private float motionSpeedUpVelocity = 2.5f;
+        private float motionSpeedUpVelocity = 5f;
 
         Motion actualMotion;
 
@@ -127,8 +127,6 @@ namespace PositionerDemo
                 }
 
                 yield return null;
-
-
             }
             //Debug.Log("Finish");
         }

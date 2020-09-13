@@ -3,7 +3,7 @@ namespace PositionerDemo
 {
     public class MoveTweenMotion : TweenMotion
     {
-        int tweenDuration = 5;
+        int tweenDuration = 20;
 
         //private const string moveTriggerString = "Move";
         //private const string SkipTriggerString = "Idlle";

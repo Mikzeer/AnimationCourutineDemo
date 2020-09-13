@@ -15,7 +15,7 @@ namespace PositionerDemo
         //private Vector3 finishPosition;
         //bool va = true;
 
-        public MoveMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
+        public MoveMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool specialCheck = false) : base(coroutineMono, animator, reproductionOrder, specialCheck)
         {
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(moveTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
         }
@@ -62,11 +62,12 @@ namespace PositionerDemo
 
         //protected override IEnumerator CheckPendingRunningMotions()
         //{
-        //    while (animator.transform.position != finishPosition)
-        //    {
-        //        //Debug.Log("Wait for End Animation Time Own Animator Check");
-        //        yield return null;
-        //    }
+        //    //while (animator.transform.position != finishPosition)
+        //    //{
+        //    //    //Debug.Log("Wait for End Animation Time Own Animator Check");
+        //    //    yield return null;
+        //    //}
+        //    yield return null;
         //}
 
         //public override void OnMotionSkip()
