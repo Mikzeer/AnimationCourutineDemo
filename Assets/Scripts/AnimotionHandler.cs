@@ -156,10 +156,6 @@ public class AnimotionHandler : MonoBehaviour
 
                 motionControllerAttack.TryReproduceMotion();
             }
-            else
-            {
-                Debug.Log("Is PErforming");
-            }
 
 
             if (motionControllerSimpleMove != null && motionControllerSimpleMove.isPerforming == false)
@@ -179,18 +175,23 @@ public class AnimotionHandler : MonoBehaviour
                 }
                 finishPosition = endPostion;
 
+
                 List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
-
                 PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
-                PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
-
                 motionsMove.Add(motionMove);
-                motionsMove.Add(motionTweenMove);
+
+                List<PositionerDemo.Motion> motionsStopMove = new List<PositionerDemo.Motion>();
+                List<Configurable> extraConfigureAnimotion = new List<Configurable>();
+                PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
+                KimbokoIdlleConfigureAnimotion<Animator, Transform> KimbokoPositionConfigAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(movingEnemy.GetComponent<Animator>(), 2);
+                extraConfigureAnimotion.Add(KimbokoPositionConfigAnimotion);
+                motionsStopMove.Add(motionTweenMove);
+                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsStopMove, extraConfigureAnimotion);
+                motionsMove.Add(combineStopMotion);
 
                 CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
 
                 motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
-
                 motionControllerSimpleMove.TryReproduceMotion();
 
                 startPosition = endPostion;
@@ -201,7 +202,6 @@ public class AnimotionHandler : MonoBehaviour
 
     private void UpdateControllerTwo()
     {
-        // Necesitamos que los Transform reconozcan un input
         if (Input.GetMouseButtonDown(0))
         {
             HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
@@ -209,56 +209,29 @@ public class AnimotionHandler : MonoBehaviour
             {
                 if (motionControllerCombineMove != null && motionControllerCombineMove.isPerforming == false)
                 {
-                    //finalPositions = movePositioner.GetPositions(heatMapGridObject.GetRealWorldLocation(), movePositioner.GetPositionType(enemeyTransforms.Count));
-
                     Vector3 actualPosition = grid.GetGridObject(enemeyTransforms[0].position).GetRealWorldLocation();
-
                     Dictionary<Enemy, Vector3[]> enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), heatMapGridObject.GetRealWorldLocation(), actualPosition);
-
                     List<PositionerDemo.Motion> motionsCombineMove = new List<PositionerDemo.Motion>();
 
                     int index = 0;
-
                     List<Configurable> configureAnimotion = new List<Configurable>();
-
-
-                    // ANIM MOVE 1
-                    // END PERFORM ANIM 1
-                    // COMBINE ORDER 1
-                    //                  TWEEN 1
-                    //                  ANIM MOVE END 2
-
                     foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
                     {
-
-                        PositionerDemo.AnimatedMotion motionMove = new MoveMotion(this, entry.Key.GetComponent<Animator>(), 1);
-                        PositionerDemo.Motion motionTweenMove = new MovePathTweenMotion(this, entry.Key.transform, 1, entry.Value);
-
-                        KimbokoIdlleConfigureAnimotion<Animator, Transform> KimbokoPositionConfigAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(entry.Key.GetComponent<Animator>(), 2);
-
-                        MotionIdlleConfigureAnimotion<AnimatedMotion, Transform> KimbokoAnimatedConfigAnimotion = new MotionIdlleConfigureAnimotion<AnimatedMotion, Transform>(motionMove, 1);
-
+                        AnimatedMotion motionMove = new MoveMotion(this, entry.Key.GetComponent<Animator>(), 1);
+                        motionsCombineMove.Add(motionMove);
 
                         List<Configurable> extraConfigureAnimotion = new List<Configurable>();
-                        List<PositionerDemo.Motion> extraMotionsCombineMove = new List<PositionerDemo.Motion>();
-
-                        extraMotionsCombineMove.Add(motionTweenMove);
+                        List<PositionerDemo.Motion> extraMotionsCombineStopMove = new List<PositionerDemo.Motion>();
+                        PositionerDemo.Motion motionTweenMove = new MovePathTweenMotion(this, entry.Key.transform, 1, entry.Value);
+                        KimbokoIdlleConfigureAnimotion<Animator, Transform> KimbokoPositionConfigAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(entry.Key.GetComponent<Animator>(), 2);
+                        extraMotionsCombineStopMove.Add(motionTweenMove);
                         extraConfigureAnimotion.Add(KimbokoPositionConfigAnimotion);
 
-
-                        CombineMotion extraCombinMoveMotion = new CombineMotion(this, 1, extraMotionsCombineMove, extraConfigureAnimotion);
-
-                        motionsCombineMove.Add(motionMove);
-                        motionsCombineMove.Add(extraCombinMoveMotion);
-                        //motionsCombineMove.Add(motionTweenMove);
-                        //configureAnimotion.Add(KimbokoPositionConfigAnimotion);
-                        configureAnimotion.Add(KimbokoAnimatedConfigAnimotion);
-
+                        CombineMotion extraCombineMoveStopMotion = new CombineMotion(this, 1, extraMotionsCombineStopMove, extraConfigureAnimotion);
+                        motionsCombineMove.Add(extraCombineMoveStopMotion);
                         index++;
                     }
-                  
                     CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove, configureAnimotion);
-
                     motionControllerCombineMove.SetUpMotion(combinMoveMotion);
                     motionControllerCombineMove.TryReproduceMotion();
                 }
@@ -281,51 +254,38 @@ public class AnimotionHandler : MonoBehaviour
                 if (motionControllerSpawn != null && motionControllerSpawn.isPerforming == false)
                 {
                     List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+                    List<Configurable> configureAnimotion = new List<Configurable>();
 
-                    GameObject goKimbok = Instantiate(kimbokoPrefab);
+                    int craneTweenSpeedVelocity = 4;
+                    int kimbokoTweenSpeedVelocity = 4;
 
-
+                    // POSICION INICIAL Y FINAL DE LA GRUA PARA TWEENEAR
                     Vector3 craneStartPosition;
                     Vector3 craneEndPostion;
-
-                    //A CRANE//GRUA SET ACTIVE = TRUE
-                    Crane.SetActive(true);
                     //B TWEEN DESDE UNA POSICION ELEVADA SOBRE LA TILE DONDE SE INDICO SPAWNEAR HASTA MAS ABAJO ASI SE VE DESDE ARRIBA EN EL TABLERO SOBRE LA TILE
                     craneStartPosition = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Crane.transform.position.y, 0);
                     Crane.transform.position = craneStartPosition;
                     craneEndPostion = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Helper.GetCameraTopBorderYWorldPostion().y);
 
+                    //A CRANE//GRUA SET ACTIVE = TRUE // INSTANCIAMOS KIMBOKO SET ACTIVE FALSE
+                    Crane.SetActive(true);
+                    GameObject goKimbok = Instantiate(kimbokoPrefab);
+                    goKimbok.SetActive(true);
+                    goKimbok.transform.position = CraneEnd.position;
 
-                    // START //
 
-                    PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, Crane.transform, 1, craneEndPostion);
+
+                    // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
+                    PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, Crane.transform, 1, craneEndPostion, craneTweenSpeedVelocity);
                     motionsSpawn.Add(motionTweenMove);
-
-
-
-                    // WAIT // 
-
 
                     ////C ANIMATION CRANESPAWNING
                     PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
                     motionsSpawn.Add(motionCraneSpawn);
 
-
-
-                    // WAIT //
-
-
-
-
-
-
                     // START CONFIGURE //
 
-
-
-                    List<Configurable> configureAnimotion = new List<Configurable>();
-
-                    KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
+                    KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 4);
                     configureAnimotion.Add(KimbokoPositionConfigAnimotion);
 
                     ////D INSTANTIATE KIMBOKO DESDE LA PUNTA DEL CRANE DONDE DEBERIA CHORREAR LA GOTA
@@ -337,37 +297,26 @@ public class AnimotionHandler : MonoBehaviour
                     ////E ANIMATION KIMBOKOSPAWNING
                     ////E TWEEN DESDE LA PUNTA DEL CRANE HASTA EL PISO, DE LA MISMA DURACION QUE LA ANIMACION DE SPAWN
                     ////F ANIMATION IDLLE... TAL VEZ SEA AUTOMATICO EL CAMBIO, PERO POR LAS DUDAS
-                    PositionerDemo.Motion motionKimbokoSpawn = new SpawnMotion(this, kimbokoPrefab.GetComponent<Animator>(), 3);
-                    PositionerDemo.Motion motionKimbokoTweenMove = new MoveTweenMotion(this, goKimbok.transform, 3, heatMapGridObject.GetRealWorldLocation());
+                    PositionerDemo.Motion motionKimbokoSpawn = new SpawnMotion(this, goKimbok.GetComponent<Animator>(), 4);
+                    PositionerDemo.Motion motionKimbokoTweenMove = new MoveTweenMotion(this, goKimbok.transform, 4, heatMapGridObject.GetRealWorldLocation(), kimbokoTweenSpeedVelocity);
                     motionsSpawn.Add(motionKimbokoSpawn);
                     motionsSpawn.Add(motionKimbokoTweenMove);
 
-
-
-                    // WAIT //
-
-
-
                     //G TWEEN DE LA CRANE PARA QUE SALGA DEL MAPA
-                    PositionerDemo.Motion motionTweenBackCraneMove = new MoveTweenMotion(this, Crane.transform, 4, craneStartPosition);
+                    PositionerDemo.Motion motionTweenBackCraneMove = new MoveTweenMotion(this, Crane.transform, 5, craneStartPosition, craneTweenSpeedVelocity);
                     motionsSpawn.Add(motionTweenBackCraneMove);
-
 
                     // FINISH //
 
                     // START CONFIGURE //
-
                     ////H DESACTIVAMOS LA CRANE
-
-                    CraneActiveConfigureAnimotion<Transform, Transform> craneActiveConfigAnimotion = new CraneActiveConfigureAnimotion<Transform, Transform>(Crane.transform, 5);
-                    configureAnimotion.Add(craneActiveConfigAnimotion);
-
-                    //Crane.SetActive(false);
+                    //CraneActiveConfigureAnimotion<Transform, Transform> craneActiveConfigAnimotion = new CraneActiveConfigureAnimotion<Transform, Transform>(Crane.transform, 6);
+                    //configureAnimotion.Add(craneActiveConfigAnimotion);
 
                     // END CONFIGURE //
 
 
-                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn);
+                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn, configureAnimotion);
 
                     motionControllerSpawn.SetUpMotion(combinMoveMotion);
                     motionControllerSpawn.TryReproduceMotion();

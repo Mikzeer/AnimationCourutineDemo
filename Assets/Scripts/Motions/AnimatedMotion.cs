@@ -15,11 +15,11 @@ namespace PositionerDemo
 
         protected AnimationAnimotionParameter animotionParameter; 
 
-        public AnimatedMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool specialCheck = false) : base(coroutineMono, reproductionOrder)
+        public AnimatedMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool isSpecialCheck = false) : base(coroutineMono, reproductionOrder)
         {
             animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
             this.animator = animator;
-            this.isSpecialCheck = specialCheck;
+            this.isSpecialCheck = isSpecialCheck;
         }
 
         protected override void StartMotion()
@@ -34,17 +34,13 @@ namespace PositionerDemo
             {
                 while (animatorStateInfo.shortNameHash != animator.GetCurrentAnimatorStateInfo(0).shortNameHash)
                 {
-                    Debug.Log("INTERNAL CheckPendingRunningMotions");
                     yield return null;
                 }
-
-                hasEnded = true;
             }
             else
             {
                 while (performing)
                 {
-                    //Debug.Log("INTERNAL CheckPendingRunningMotions");
                     yield return null;
 
                 }
@@ -69,27 +65,18 @@ namespace PositionerDemo
         protected override void CheckMotionAfterEnd()
         {
             OnMotionSkip();
+            Debug.Log("END ANIMATION");
         }
 
         protected override void SpeedUpMotionOnMotion()
         {
-
             animationSpeedUpVelocity = Mathf.FloorToInt(speed);
             animator.SetFloat(animationSpeedParameterString, animationSpeedUpVelocity);
-            //enemies[i].animator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
-            //entry.Key.animator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
-            //craneAnimator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
-            //kimbokoAnimator.SetFloat(animationSpeedParameter, animationSpeedUpVelocity);
         }
 
         protected override void SetNormalSpeedInMotion()
         {
-
             animator.SetFloat(animationSpeedParameterString, animationNormalSpeed);
-            //enemies[i].animator.SetFloat(animationSpeedParameter, animationNormalSpeed);
-            //entry.Key.animator.SetFloat(animationSpeedParameter, animationNormalSpeed);
-            //craneAnimator.SetFloat(animationSpeedParameter, animationNormalSpeed);
-            //kimbokoAnimator.SetFloat(animationSpeedParameter, animationNormalSpeed);
         }
 
     }

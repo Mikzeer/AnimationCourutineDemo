@@ -40,7 +40,6 @@ namespace PositionerDemo
                 //Debug.Log("CheckPendingRunningMotions Tweener");
                 yield return null;
             }
-
             //while (transform.position != finishPosition)
             //{
             //    //Debug.Log("Wait for End Animation Time Own Animator Check");

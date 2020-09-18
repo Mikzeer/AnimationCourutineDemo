@@ -11,7 +11,6 @@ namespace PositionerDemo
         private bool canSkip = true;
         private KeyCode skipKeyCode = KeyCode.Space;
         public bool performing { get; private set; }
-        public bool hasEnded { get; protected set; }
 
 
         protected float speed;
@@ -170,7 +169,6 @@ namespace PositionerDemo
             {
                 cancel = false;
                 performing = false;
-                hasEnded = true;
             }
         }
 
@@ -183,43 +181,25 @@ namespace PositionerDemo
         {
             SetNormalSpeedMotion();
             performing = false;
-            hasEnded = true;
-            //Debug.Log("Motion Skiped");
         }
 
         public void SpeedUpMotion(float speed)
         {
             this.speed = speed;
-
             SpeedUpMotionOnMotion();
-            //tweenSpeedUp = Mathf.FloorToInt(speed * 2);
-            //animationSpeedUpVelocity = Mathf.FloorToInt(speed);
-
-            //SpeedUpMotionOnMotion();
-
-            //tweenActualSpeed = tweenSpeedUp;
         }
 
         protected virtual void SpeedUpMotionOnMotion()
         {
-
         }
        
         public void SetNormalSpeedMotion()
         {
             SetNormalSpeedInMotion();
-
-            //if (animationSpeedParameter != null)
-            //{
-            //    SetNormalSpeedInMotion();
-            //}
-
-            //tweenActualSpeed = tweenNormalSpeed;
         }
 
         protected virtual void SetNormalSpeedInMotion()
         {
-            Debug.Log("Set Normal Speed Motion");
         }
 
     }

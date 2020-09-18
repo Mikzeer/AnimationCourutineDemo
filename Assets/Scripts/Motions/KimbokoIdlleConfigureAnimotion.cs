@@ -21,7 +21,6 @@ namespace PositionerDemo
 
         public override void Configure()
         {
-            //Debug.Log("Enter to interrupo CONFIGURE");
             firstConfigure.SetPerforming();
         }
     }

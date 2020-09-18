@@ -10,7 +10,7 @@ namespace PositionerDemo
         public override void Configure()
         {
             firstConfigure.position = secondConfigure.position;
-            firstConfigure.gameObject.SetActive(true);
+            //firstConfigure.gameObject.SetActive(true);
         }
     }
 

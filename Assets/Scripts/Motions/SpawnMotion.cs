@@ -24,18 +24,13 @@ namespace PositionerDemo
 
         public SpawnMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
         {
-
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(spawnTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
-
             //// crane transform / animator
             //this.crane = crane;
             //// kimboko transform / animator
             //this.spawnKimboko = spawnKimboko;
-
             //this.spawnPosition = spawnPosition;
-
             //this.craneEnd = craneEnd;
-
             //craneAnimator = crane.GetComponent<Animator>();
             //kimbokoAnimator = spawnKimboko.GetComponent<Animator>();
         }

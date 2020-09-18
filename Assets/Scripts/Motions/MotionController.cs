@@ -94,7 +94,6 @@ namespace PositionerDemo
 
                 if (Input.GetKey(fastForwardKeyCode))
                 {
-                    //Debug.Log("Pressing");
                     isPresing = true;
                 }
                 else if (Input.GetKeyUp(fastForwardKeyCode))
@@ -110,16 +109,11 @@ namespace PositionerDemo
 
                 if (actualMotion.performing)
                 {
-                    //Debug.Log("actualMotion.performing");
                     if (isPresing && isFastForwarding == false)
                     {
-                        // Esto lo tengo que hacer si todavia no comenzo a fastforwardear
                         pressedTime += Time.deltaTime;
-
-                        //Debug.Log("Pressed Time " + Mathf.FloorToInt(pressedTime));
                         if (pressedTime >= timeToStarFastForward)
                         {
-                            //Debug.Log("Time achive");
                             isFastForwarding = true;
                             SpeedUpMotion();
                         }
@@ -128,7 +122,6 @@ namespace PositionerDemo
 
                 yield return null;
             }
-            //Debug.Log("Finish");
         }
 
         private void SpeedUpMotion()
