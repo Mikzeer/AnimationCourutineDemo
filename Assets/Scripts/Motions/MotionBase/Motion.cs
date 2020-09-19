@@ -10,37 +10,16 @@ namespace PositionerDemo
         protected bool cancel = false;
         private bool canSkip = true;
         private KeyCode skipKeyCode = KeyCode.Space;
-        public bool performing { get; private set; }
-
-
+        public bool performing { get; private set; }      
         protected float speed;
 
         // Orden en el que se deberia reproducir
         public int reproductionOrder { get; private set; }
 
-
-        // Esto Corresponde solo a las Animaciones
-        //protected float animationNormalSpeed = 1;
-        //public float animationSpeedUpVelocity { get; protected set; }
-        //public string animationSpeedParameter { get; protected set; }
-
-        // Esto corresponde solo a los Tween
-        //protected float tweenNormalSpeed = 1;
-        //public float tweenSpeedUp { get; protected set; }
-        //public float tweenActualSpeed { get; protected set; }
-
-
         public Motion(MonoBehaviour coroutineMono, int reproductionOrder)
         {
             this.coroutineMono = coroutineMono;
             this.reproductionOrder = reproductionOrder;
-            //animationSpeedParameter = "AnimationSpeed";
-        }
-
-        public void SetPerforming()
-        {
-            //Debug.Log("CANCEL PERFORMING");
-            performing = false;
         }
 
         public void CheckMotionBeforeStart()
@@ -71,15 +50,13 @@ namespace PositionerDemo
         {
             performing = true;
             cancel = false;
-
             StartMotion();
-
             // Este lo ponemos ya que sino en el primer frame estan todos en Idlle entonces no reconoce el cambio y termina toda la funcion
             yield return null;
 
+            // Esto es para chequear el final de la animacion presionando un boton
             if (canSkip)
-            {
-                // Esto es para chequear el final de la animacion presionando un boton
+            {                
                 coroutineMono.StartCoroutine(EndMotionOnButtonPress());
             }
 
@@ -96,7 +73,6 @@ namespace PositionerDemo
         /// </summary>
         protected virtual void StartMotion()
         {
-
         }
 
         /// <summary>
@@ -163,18 +139,19 @@ namespace PositionerDemo
                 CheckMotionAfterEnd();
                 SetNormalSpeedMotion();
                 performing = false;
-                //Debug.Log("Motion Performed and Ended");
             }
             else
             {
                 cancel = false;
                 performing = false;
             }
+
+
+
         }
 
         protected virtual void CheckMotionAfterEnd()
         {
-            //Debug.Log("Check Motion After End");
         }
 
         public virtual void OnMotionSkip()

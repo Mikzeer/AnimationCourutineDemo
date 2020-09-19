@@ -17,7 +17,18 @@ namespace PositionerDemo
 
         public AnimatedMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool isSpecialCheck = false) : base(coroutineMono, reproductionOrder)
         {
+            //AnimatorControllerParameter[] animatorControllParameters = animator.parameters;
+            //AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            //int d = animator.GetInstanceID();
+            //int j = animator.GetLayerIndex("Base Layer");
+            string layerName = animator.GetLayerName(0);
+
+            //int pipo = Animator.StringToHash(layerName + ".Idlle");
+
+            int shortNameHash = Animator.StringToHash(layerName + ".Spawn_Animation");
+
             animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
             this.animator = animator;
             this.isSpecialCheck = isSpecialCheck;
         }
@@ -37,16 +48,14 @@ namespace PositionerDemo
                     yield return null;
                 }
             }
-            else
-            {
-                while (performing)
-                {
-                    yield return null;
 
-                }
-            }
-            // PUEDO CHEQUEAR POR NOMBRE
-            // PUEDO CHEQUAR TAMBIEN POR SI FINALIZO... DEBERIA BUSCARLO
+            //if (isSpecialCheck == false)
+            //{
+            //    while (animatorStateInfo.fullPathHash != animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+            //    {
+            //        yield return null;
+            //    }
+            //}
 
             //while (!animator.GetCurrentAnimatorStateInfo(0).IsName(animParameter.skipParameterString))
             //{
@@ -57,7 +66,6 @@ namespace PositionerDemo
 
         public override void OnMotionSkip()
         {
-            Debug.Log("Skip ANIMATION");
             animotionParameter.End(animator);
             base.OnMotionSkip();
         }
@@ -65,7 +73,6 @@ namespace PositionerDemo
         protected override void CheckMotionAfterEnd()
         {
             OnMotionSkip();
-            Debug.Log("END ANIMATION");
         }
 
         protected override void SpeedUpMotionOnMotion()
@@ -82,4 +89,6 @@ namespace PositionerDemo
     }
 
 }
+
+
 

@@ -8,19 +8,17 @@ namespace PositionerDemo
         private const string SkipTriggerString = "Idlle";
         private const string spawnTriggerString = "Spawn";
 
-        private Animator craneAnimator;
-        private Animator kimbokoAnimator;
-
-        //private Ease ease = Ease.Linear;
-
-        private GameObject crane;
-        private GameObject spawnKimboko;
-        Vector3 spawnPosition;
-        private Vector3 craneStartPosition;
-        private Vector3 craneEndPostion;
-        private Tween craneTween;
-        private Tween spawnKimbokoTween;
-        private Transform craneEnd;
+        //private Animator craneAnimator;
+        //private Animator kimbokoAnimator;
+        ////private Ease ease = Ease.Linear;
+        //private GameObject crane;
+        //private GameObject spawnKimboko;
+        //Vector3 spawnPosition;
+        //private Vector3 craneStartPosition;
+        //private Vector3 craneEndPostion;
+        //private Tween craneTween;
+        //private Tween spawnKimbokoTween;
+        //private Transform craneEnd;
 
         public SpawnMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder) : base(coroutineMono, animator, reproductionOrder)
         {

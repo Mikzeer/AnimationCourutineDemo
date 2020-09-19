@@ -65,6 +65,8 @@ namespace PositionerDemo
             bool hasAllEnded = false;
             while (!hasAllEnded)
             {
+                Debug.Log("PERFORMING");
+
                 if (cancel)
                 {
                     hasAllEnded = true;
@@ -101,6 +103,12 @@ namespace PositionerDemo
                         yield break;
                     }
                     yield return null;
+                }
+
+                if (cancel)
+                {
+                    hasAllEnded = true;
+                    yield break;
                 }
 
                 bool started = false;
@@ -148,6 +156,16 @@ namespace PositionerDemo
             {
                 motions[i].OnMotionSkip();
             }
+            if (configureAnimotion != null)
+            {
+                for (int i = 0; i < configureAnimotion.Count; i++)
+                {
+                    if (configureAnimotion[i].isForced)
+                    {
+                        configureAnimotion[i].Configure();
+                    }
+                }
+            }
         }
 
         protected override void CheckMotionAfterEnd()
@@ -159,10 +177,11 @@ namespace PositionerDemo
         {
             for (int i = 0; i < motions.Count; i++)
             {
-                if (motions[i].reproductionOrder == currentPerformingIndex)
-                {
-                    motions[i].SpeedUpMotion(speed);
-                }
+                motions[i].SpeedUpMotion(speed);
+                //if (motions[i].reproductionOrder == currentPerformingIndex)
+                //{
+                //    motions[i].SpeedUpMotion(speed);
+                //}
             }
         }
 
@@ -170,10 +189,11 @@ namespace PositionerDemo
         {
             for (int i = 0; i < motions.Count; i++)
             {
-                if (motions[i].reproductionOrder == currentPerformingIndex)
-                {
-                    motions[i].SetNormalSpeedMotion();
-                }
+                motions[i].SetNormalSpeedMotion();
+                //if (motions[i].reproductionOrder == currentPerformingIndex)
+                //{
+                //    motions[i].SetNormalSpeedMotion();
+                //}
             }
         }
 

@@ -5,6 +5,7 @@ namespace PositionerDemo
     {
         public CraneActiveConfigureAnimotion(T firstConfigure, int configureOrder) : base(firstConfigure, configureOrder)
         {
+
         }
 
         public override void Configure()

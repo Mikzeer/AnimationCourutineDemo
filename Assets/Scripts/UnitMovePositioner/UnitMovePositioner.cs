@@ -63,6 +63,13 @@ namespace PositionerDemo
                     shapePosition[2] = tilePosition + new Vector3(offsetPosition * CardinalPosition.SOUTH.x, offsetPosition * CardinalPosition.SOUTH.y, 0);
                     shapePosition[3] = tilePosition + new Vector3(offsetPosition * CardinalPosition.WEST.x, offsetPosition * CardinalPosition.WEST.y, 0);
                     break;
+                case POSITIONTYPE.SQUARE:
+                    shapePosition = new Vector3[4];
+                    shapePosition[0] = tilePosition + new Vector3(offsetPosition * CardinalPosition.NORTHEAST.x, offsetPosition * CardinalPosition.NORTHEAST.y, 0);
+                    shapePosition[1] = tilePosition + new Vector3(offsetPosition * CardinalPosition.NORTHWEST.x, offsetPosition * CardinalPosition.NORTHWEST.y, 0);
+                    shapePosition[2] = tilePosition + new Vector3(offsetPosition * CardinalPosition.SOUTHEAST.x, offsetPosition * CardinalPosition.SOUTHEAST.y, 0);
+                    shapePosition[3] = tilePosition + new Vector3(offsetPosition * CardinalPosition.SOUTHWEST.x, offsetPosition * CardinalPosition.SOUTHWEST.y, 0);
+                    break;
                 default:
                     shapePosition = new Vector3[0];
                     break;

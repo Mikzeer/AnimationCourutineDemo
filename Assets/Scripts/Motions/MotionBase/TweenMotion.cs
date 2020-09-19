@@ -18,18 +18,15 @@ namespace PositionerDemo
         public TweenMotion(MonoBehaviour coroutineMono, Transform transform, int reproductionOrder) : base(coroutineMono, reproductionOrder)
         {
             tweenActualSpeed = tweenNormalSpeed;
-            tweenActualSpeed = 5;
+            //tweenActualSpeed = 5;
             this.transform = transform;
         }
 
         protected override void StartMotion()
         {
             //movingTween = transform.DOMove(endPostion, 20).SetEase(ease);
-
             //movingTween[index] = entry.Key.transform.DOPath(entry.Value, 10).SetEase(ease);
-
             actualTween = animotionParameter.Reproduce(transform);
-
             actualTween.timeScale = tweenActualSpeed;
         }
 
@@ -50,6 +47,7 @@ namespace PositionerDemo
         public override void OnMotionSkip()
         {
             animotionParameter.End(actualTween, transform);
+            base.OnMotionSkip();
         }
 
         protected override void CheckMotionAfterEnd()
@@ -60,36 +58,18 @@ namespace PositionerDemo
         protected override void SpeedUpMotionOnMotion()
         {
             tweenSpeedUp = Mathf.FloorToInt(speed * 2);
-
+            tweenActualSpeed = tweenSpeedUp;
             if (actualTween == null) return;
 
             actualTween.timeScale = tweenSpeedUp;
-
-            //movingTween[index].timeScale = tweenSpeedUp;
-
-            //if (craneTween == null) return;
-            //craneTween.timeScale = tweenSpeedUp;
-            //if (spawnKimbokoTween == null) return;
-            //spawnKimbokoTween.timeScale = tweenSpeedUp;
-
-
-            tweenActualSpeed = tweenSpeedUp;
         }
 
         protected override void SetNormalSpeedInMotion()
         {
+            tweenActualSpeed = tweenNormalSpeed;
             if (actualTween == null) return;
 
             actualTween.timeScale = tweenNormalSpeed;
-
-            //movingTween[index].timeScale = tweenNormalSpeed;
-
-            //if (craneTween == null) return;
-            //craneTween.timeScale = tweenNormalSpeed;
-            //if (spawnKimbokoTween == null) return;
-            //spawnKimbokoTween.timeScale = tweenNormalSpeed;
-
-            tweenActualSpeed = tweenNormalSpeed;
         }
 
     }

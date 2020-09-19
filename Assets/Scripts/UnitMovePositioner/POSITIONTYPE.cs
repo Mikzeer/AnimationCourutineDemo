@@ -5,7 +5,8 @@
         CENTER,
         ARROW,
         BOW,
-        DIAMOND
+        DIAMOND,
+        SQUARE
     }
 
 }

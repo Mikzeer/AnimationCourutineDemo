@@ -3,8 +3,6 @@ namespace PositionerDemo
 {
     public class MoveTweenMotion : TweenMotion
     {
-        int tweenDuration = 20;
-
         //private const string moveTriggerString = "Move";
         //private const string SkipTriggerString = "Idlle";
         //private Vector2 startPosition;
