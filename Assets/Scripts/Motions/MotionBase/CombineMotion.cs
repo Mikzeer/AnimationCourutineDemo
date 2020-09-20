@@ -156,6 +156,7 @@ namespace PositionerDemo
             {
                 motions[i].OnMotionSkip();
             }
+
             if (configureAnimotion != null)
             {
                 for (int i = 0; i < configureAnimotion.Count; i++)

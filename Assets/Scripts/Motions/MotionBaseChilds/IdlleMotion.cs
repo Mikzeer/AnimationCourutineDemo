@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 namespace PositionerDemo
 {
     public class IdlleMotion : AnimatedMotion
@@ -18,6 +19,12 @@ namespace PositionerDemo
                 return true;
             }
             return false;
+        }
+
+        protected override IEnumerator CheckPendingRunningMotions()
+        {
+            Debug.Log("ENTER IDLLE CHECK PENDINFG");
+            return base.CheckPendingRunningMotions();
         }
     }
 

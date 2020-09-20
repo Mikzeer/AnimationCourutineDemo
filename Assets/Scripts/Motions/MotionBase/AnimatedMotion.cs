@@ -11,7 +11,7 @@ namespace PositionerDemo
         public float animationSpeedUpVelocity { get; protected set; }
         private const string animationSpeedParameterString = "AnimationSpeed";
 
-        public bool isSpecialCheck = false;
+        public bool isSpecialCheck;
 
         protected AnimationAnimotionParameter animotionParameter; 
 
@@ -45,6 +45,7 @@ namespace PositionerDemo
             {
                 while (animatorStateInfo.shortNameHash != animator.GetCurrentAnimatorStateInfo(0).shortNameHash)
                 {
+                    //Debug.Log("animateeeed");
                     yield return null;
                 }
             }

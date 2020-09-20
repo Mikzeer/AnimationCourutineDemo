@@ -12,7 +12,14 @@ namespace PositionerDemo
 
         public override Tweener Apply(Transform transform,Ease ease, int duration)
         {
-            return transform.DOMove(finalPosition, duration).SetEase(ease);
+            return transform.DOMove(finalPosition, duration).SetEase(ease);//.OnComplete(() => Debug.Log("TERMINE CON CALLBAKC"));
+
+
+            //// Callback without parameters
+            //transform.DOMoveX(4, 1).OnComplete(MyCallback);
+            //// Callback with parameters
+            //transform.DOMoveX(4, 1).OnComplete(() => MyCallback(someParam, someOtherParam));
+
         }
 
         public override bool isOver(Transform transform)

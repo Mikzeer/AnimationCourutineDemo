@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 namespace PositionerDemo
 {
     public class HeatMapGridObject
@@ -10,6 +11,8 @@ namespace PositionerDemo
         private int x;
         private int y;
         public int value;
+
+        List<Enemy> enemies = new List<Enemy>();
 
         public HeatMapGridObject(Grid<HeatMapGridObject> grid, int x, int y)
         {
@@ -23,6 +26,23 @@ namespace PositionerDemo
             value += addValue;
             value = Mathf.Clamp(value, MIN, MAX);
             grid.TriggerGridObjectChanged(x, y);
+        }
+
+        public bool CanIAddEnemies()
+        {
+            if (enemies.Count >= 4) return false;
+
+            return true;
+        }
+
+        public void AddEnemy(Enemy enemy)
+        {
+            enemies.Add(enemy);
+        }
+
+        public List<Enemy> GetEnemies()
+        {
+            return enemies;
         }
 
         public Vector3 GetRealWorldLocation()

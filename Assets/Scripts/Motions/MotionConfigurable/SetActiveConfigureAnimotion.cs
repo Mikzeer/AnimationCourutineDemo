@@ -3,13 +3,16 @@ namespace PositionerDemo
 {
     public class SetActiveConfigureAnimotion<T, O> : ConfigureAnimotion<T, O> where T : Transform where O : Transform
     {
-        public SetActiveConfigureAnimotion(T firstConfigure, int configureOrder, bool isForced = true) : base(firstConfigure, configureOrder, isForced)
+        private bool active;
+
+        public SetActiveConfigureAnimotion(T firstConfigure, int configureOrder, bool isForced = true, bool active = true) : base(firstConfigure, configureOrder, isForced)
         {
+            this.active = active;
         }
 
         public override void Configure()
         {
-            firstConfigure.gameObject.SetActive(true);
+            firstConfigure.gameObject.SetActive(active);
         }
     }
 
