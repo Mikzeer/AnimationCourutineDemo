@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using PositionerDemo;
 
 public class AnimotionHandler : MonoBehaviour
 {
-    public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN};
+    public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT};
     public TUTORIALOPTION tutorialOption;
+    public Vector3 gridStartPosition = new Vector3(-10, -10, 0);
     public float cellSize = 4f;
     public int withd = 5;
     public int height = 7;
@@ -20,6 +22,16 @@ public class AnimotionHandler : MonoBehaviour
     public GameObject tilePrefab;
     public RectTransform bannerRect;
     public RectTransform bannerRectTimer;
+    public AudioSource audioSource;
+    public List<AudioClip> audioClips;
+    public GameObject cardUIPrefab;
+    public RectTransform canvasRootTransform;
+    public RectTransform playersOneHand;
+    public Transform cardWaitPosition;
+    public RectTransform playerOneGraveyardLogo;
+    public RectTransform playerOneGraveyard;
+    private int cardIndex = 0;
+    public InfoPanel infoPanel;
 
     Camera cam;
     Grid<HeatMapGridObject> grid;
@@ -34,6 +46,7 @@ public class AnimotionHandler : MonoBehaviour
     MotionController motionControllerBanner = new MotionController();
     MotionController motionControllerBannerTimmer = new MotionController();
     MotionController motionControllerCombineSpawnWithCheck = new MotionController();
+    MotionController motionControllerCardSpawn = new MotionController();
 
     private Vector2 startPosition;
     private Vector3 endPostion;
@@ -42,10 +55,12 @@ public class AnimotionHandler : MonoBehaviour
 
     private GameObject[,] tiles;
 
+    private HeatMapGridObject actualHeatMapGridObject;
+
     void Start()
     {
         cam = Camera.main;
-        grid = new Grid<HeatMapGridObject>(withd, height, cellSize, new Vector3(-10, -10), (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
+        grid = new Grid<HeatMapGridObject>(withd, height, cellSize, gridStartPosition, (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
         movePositioner = new UnitMovePositioner(cellSize);
         SetBoard();
 
@@ -69,6 +84,7 @@ public class AnimotionHandler : MonoBehaviour
         List<PositionerDemo.Motion> motionsCreateBoard = new List<PositionerDemo.Motion>();
 
         int index = 1;
+        GameObject tileParent = new GameObject("TileParent");
 
         for (int x = 0; x < withd; x++)
         {
@@ -78,7 +94,9 @@ public class AnimotionHandler : MonoBehaviour
 
                 tiles[x, y] = Instantiate(tilePrefab);
                 tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
-                tiles[x, y].transform.localScale *= cellSize; 
+                tiles[x, y].transform.localScale *= cellSize;
+                tiles[x, y].transform.SetParent(tileParent.transform);
+
                 // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
                 PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, tiles[x, y].transform, index, thisTileFinalPosition, 1);
                 motionsCreateBoard.Add(motionTweenMove);
@@ -180,6 +198,9 @@ public class AnimotionHandler : MonoBehaviour
             case TUTORIALOPTION.SEVEN:
                 UpdateControllerSeven();
                 break;
+            case TUTORIALOPTION.EIGHT:
+                UpdateControllerEight();
+                break;
             default:
                 break;
         }
@@ -193,14 +214,18 @@ public class AnimotionHandler : MonoBehaviour
             {
                 List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
                 PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
-
                 motions.Add(motionAttack);
+                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
+                motions.Add(motionAttackSound);
 
                 for (int i = 0; i < enemies.Count; i++)
                 {
                     PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
                     motions.Add(motionDamage);
                 }
+
+                PositionerDemo.Motion motionDamageSound = new SoundMotion(this, 1, audioSource, audioClips[2], true);
+                motions.Add(motionDamageSound);
 
                 CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
                 motionControllerAttack.SetUpMotion(combineAttackMotion);
@@ -229,13 +254,23 @@ public class AnimotionHandler : MonoBehaviour
                 PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
                 motionsMove.Add(motionMove);
 
+                PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
+                motionsMove.Add(motionMoveSound);
+
+
+
                 List<PositionerDemo.Motion> motionsStopMove = new List<PositionerDemo.Motion>();
+                List<PositionerDemo.Configurable> configurables = new List<Configurable>();
                 PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
                 PositionerDemo.Motion motionIdlle = new IdlleMotion(this, movingEnemy.GetComponent<Animator>(), 2, true);
                 motionsStopMove.Add(motionTweenMove);
                 motionsStopMove.Add(motionIdlle);
 
-                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsStopMove);
+                AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+                StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+                configurables.Add(stopSoundConfigureAnimotion);
+
+                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsStopMove, configurables);
                 motionsMove.Add(combineStopMotion);
 
                 CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
@@ -261,6 +296,10 @@ public class AnimotionHandler : MonoBehaviour
                     Vector3 actualPosition = grid.GetGridObject(enemeyTransforms[0].position).GetRealWorldLocation();
                     Dictionary<Enemy, Vector3[]> enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), heatMapGridObject.GetRealWorldLocation(), actualPosition);
                     List<PositionerDemo.Motion> motionsCombineMove = new List<PositionerDemo.Motion>();
+
+                    PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
+                    motionsCombineMove.Add(motionMoveSound);
+
                     int index = 0;
                     foreach (KeyValuePair<Enemy, Vector3[]> entry in enmiesAndPathToMove)
                     {
@@ -273,10 +312,25 @@ public class AnimotionHandler : MonoBehaviour
                         extraMotionsCombineStopMove.Add(motionTweenMove);
                         extraMotionsCombineStopMove.Add(motionIdlle);
 
-                        CombineMotion extraCombineMoveStopMotion = new CombineMotion(this, 1, extraMotionsCombineStopMove);
-                        motionsCombineMove.Add(extraCombineMoveStopMotion);
+                        // esto solo lo hago para detener el sonido de los pasos
+                        if (enmiesAndPathToMove.Count - 1 == index)
+                        {
+                            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+                            AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+                            StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+                            configurables.Add(stopSoundConfigureAnimotion);
+                            CombineMotion extraCombineMoveStopMotion = new CombineMotion(this, 1, extraMotionsCombineStopMove, configurables);
+                            motionsCombineMove.Add(extraCombineMoveStopMotion);
+                        }
+                        else
+                        {
+                            CombineMotion extraCombineMoveStopMotion = new CombineMotion(this, 1, extraMotionsCombineStopMove);
+                            motionsCombineMove.Add(extraCombineMoveStopMotion);
+                        }
+
                         index++;
                     }
+
                     CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove);
                     motionControllerCombineMove.SetUpMotion(combinMoveMotion);
                     motionControllerCombineMove.TryReproduceMotion();
@@ -330,6 +384,10 @@ public class AnimotionHandler : MonoBehaviour
                     ////C ANIMATION CRANESPAWNING
                     PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
                     motionsSpawn.Add(motionCraneSpawn);
+
+                    PositionerDemo.Motion motionSpawnSound = new SoundMotion(this, 2, audioSource, audioClips[3], false);
+                    motionsSpawn.Add(motionSpawnSound);
+
 
                     KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
                     configureAnimotion.Add(KimbokoPositionConfigAnimotion);
@@ -391,6 +449,9 @@ public class AnimotionHandler : MonoBehaviour
                     // AHORA TENGO QUE GENERAR EL CUADRADO DE POSICIONES PARA CADA UNA
                     Vector3[] squarePositions = movePositioner.GetPositions(actualPosition, POSITIONTYPE.SQUARE);
 
+                    PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
+                    motionsSpawnCombine.Add(motionMoveSound);
+
                     // deberia recorrer la lista de unidades, y generar una move comand para posicionarse en el lugar que tiene cada una del cuadrado
                     for (int i = 0; i < enemies.Count; i++)
                     {
@@ -404,12 +465,32 @@ public class AnimotionHandler : MonoBehaviour
                         motionsCombineSpawnStopMoveSquare.Add(motionTwMove);
                         motionsCombineSpawnStopMoveSquare.Add(motionIdlle);
 
-                        CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
-                        motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                        //CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                        //motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                        //CombineMotion combinSquarePositionMotion = new CombineMotion(this, 1, motionsCombineSpawnMoveSquare);
+                        //motionsSpawnCombine.Add(combinSquarePositionMotion);
+
+
+                        // esto solo lo hago para detener el sonido de los pasos
+                        if (enemies.Count - 1 == i)
+                        {
+                            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+                            AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+                            StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+                            configurables.Add(stopSoundConfigureAnimotion);
+
+                            CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare, configurables);
+                            motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                        }
+                        else
+                        {
+                            CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                            motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                        }
 
                         CombineMotion combinSquarePositionMotion = new CombineMotion(this, 1, motionsCombineSpawnMoveSquare);
-
                         motionsSpawnCombine.Add(combinSquarePositionMotion);
+
                     }
 
 
@@ -446,6 +527,9 @@ public class AnimotionHandler : MonoBehaviour
                     ////C ANIMATION CRANESPAWNING
                     PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
                     motionsSpawnCombine.Add(motionCraneSpawn);
+
+                    PositionerDemo.Motion motionSpawnSound = new SoundMotion(this, 2, audioSource, audioClips[3], false);
+                    motionsSpawnCombine.Add(motionSpawnSound);
 
                     KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
                     configureAnimotion.Add(KimbokoPositionConfigAnimotion);
@@ -492,6 +576,8 @@ public class AnimotionHandler : MonoBehaviour
 
                 PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
                 motions.Add(motionAttack);
+                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
+                motions.Add(motionAttackSound);
 
                 for (int i = 0; i < enemies.Count; i++)
                 {
@@ -623,6 +709,9 @@ public class AnimotionHandler : MonoBehaviour
                         // AHORA TENGO QUE GENERAR EL CUADRADO DE POSICIONES PARA CADA UNA
                         Vector3[] squarePositions = movePositioner.GetPositions(actualPosition, POSITIONTYPE.SQUARE);
 
+                        PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
+                        motionsSpawnCombine.Add(motionMoveSound);
+
                         // deberia recorrer la lista de unidades, y generar una move comand para posicionarse en el lugar que tiene cada una del cuadrado
                         for (int i = 0; i < kimbokoToRepositionSquare.Count; i++)
                         {
@@ -636,8 +725,26 @@ public class AnimotionHandler : MonoBehaviour
                             motionsCombineSpawnStopMoveSquare.Add(motionTwMove);
                             motionsCombineSpawnStopMoveSquare.Add(motionIdlle);
 
-                            CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
-                            motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                            // esto solo lo hago para detener el sonido de los pasos
+                            if (kimbokoToRepositionSquare.Count - 1 == i)
+                            {
+                                List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+                                AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+                                StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+                                configurables.Add(stopSoundConfigureAnimotion);
+
+                                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare, configurables);
+                                motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                            }
+                            else
+                            {
+                                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                                motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                            }
+
+
+                            //CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                            //motionsCombineSpawnMoveSquare.Add(combineStopMotion);
 
                             CombineMotion combinSquarePositionMotion = new CombineMotion(this, 1, motionsCombineSpawnMoveSquare);
 
@@ -676,6 +783,9 @@ public class AnimotionHandler : MonoBehaviour
                     PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
                     motionsSpawnCombine.Add(motionCraneSpawn);
 
+                    PositionerDemo.Motion motionSpawnSound = new SoundMotion(this, 2, audioSource, audioClips[3], false);
+                    motionsSpawnCombine.Add(motionSpawnSound);
+
                     KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
                     configureAnimotion.Add(KimbokoPositionConfigAnimotion);
                     SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(goKimbok.transform, 3);
@@ -700,6 +810,9 @@ public class AnimotionHandler : MonoBehaviour
                         POSITIONTYPE positionTypeToRearrange = movePositioner.GetPositionType(kimbokoToRepositionSquare.Count);
                         Vector3[] finalRearrangePositions = movePositioner.GetPositions(actualPosition, positionTypeToRearrange);
 
+                        PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 6, audioSource, audioClips[4], false, true);
+                        motionsSpawnCombine.Add(motionMoveSound);
+
                         // deberia recorrer la lista de unidades, y generar una move comand para posicionarse en el lugar que tiene cada una del cuadrado
                         for (int i = 0; i < kimbokoToRepositionSquare.Count; i++)
                         {
@@ -718,8 +831,26 @@ public class AnimotionHandler : MonoBehaviour
                             PositionerDemo.Motion motionIdlle = new IdlleMotion(this, kimbokoToRepositionSquare[i].animator, 2, true);
                             motionsCombineSpawnStopMoveSquare.Add(motionIdlle);
 
-                            CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
-                            motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+
+                            // esto solo lo hago para detener el sonido de los pasos
+                            if (kimbokoToRepositionSquare.Count - 1 == i)
+                            {
+                                List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+                                AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+                                StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+                                configurables.Add(stopSoundConfigureAnimotion);
+
+                                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare, configurables);
+                                motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                            }
+                            else
+                            {
+                                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                                motionsCombineSpawnMoveSquare.Add(combineStopMotion);
+                            }
+
+                            //CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsCombineSpawnStopMoveSquare);
+                            //motionsCombineSpawnMoveSquare.Add(combineStopMotion);
 
                             CombineMotion combinSquarePositionMotion = new CombineMotion(this, 6, motionsCombineSpawnMoveSquare);
 
@@ -746,6 +877,215 @@ public class AnimotionHandler : MonoBehaviour
                     Debug.Log("Is Performing animation");
                 }
             }
+        }
+    }
+
+    private void UpdateControllerEight()
+    {
+        HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
+
+        if (heatMapGridObject != null)
+        {
+            if (actualHeatMapGridObject != null)
+            {
+                if (actualHeatMapGridObject == heatMapGridObject)
+                {
+                    return;
+                }
+                else if (actualHeatMapGridObject != heatMapGridObject)
+                {
+                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.white;
+                    actualHeatMapGridObject = heatMapGridObject;
+                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
+                }
+            }
+            else
+            {
+                actualHeatMapGridObject = heatMapGridObject;
+                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
+            }
+        }
+        else
+        {
+            if (actualHeatMapGridObject != null)
+            {
+                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.white;
+                actualHeatMapGridObject = null;
+            }
+        }
+    }
+
+    public void AddCard()
+    {
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        {
+            // instanciar el prefab de la card y ponerle como parent el canvas
+            // ponerlo en el centro de la pantalla
+            Vector3 screenCenter = Helper.GetCameraCenterWorldPositionWithZoffset();
+            GameObject createdCardGameObject = Instantiate(cardUIPrefab, screenCenter, Quaternion.identity, canvasRootTransform);
+
+            createdCardGameObject.name = "CARD N " + cardIndex;
+            cardIndex++;
+            createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
+            MikzeerGame.CardUI cardUI = createdCardGameObject.GetComponent<MikzeerGame.CardUI>();
+
+            if (cardUI != null)
+            {
+                cardUI.SetPlayerHandTransform(playersOneHand, FireCardUITest, infoPanel.SetText, SetActiveInfoCard);
+
+                // generar una action que se active cuando dropeas la carta en la zona DropeableArea
+                // la Action<CardUI> es la que vamos a disparar desde el AnimotionHandler
+                // CardUI dropea, si hitea con dropeable es ahi donde disparamos el EVENT
+            }
+
+            Vector3 normalScale = createdCardGameObject.transform.localScale;
+            Vector3 startScale = new Vector3(0.2f, 0.2f, 1);
+            createdCardGameObject.transform.localScale = startScale;
+
+            // hacerla animacion de instanciamiento a la mano y saliendo un poco de la pantalla
+
+            List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+            RectTransform cardRect = createdCardGameObject.GetComponent<RectTransform>();
+            PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, cardRect, 1, normalScale, 1);
+            motionsSpawn.Add(motionTweenScaleUp);
+
+            Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+
+            PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, createdCardGameObject.transform, 1, finalCardPosition, 2);
+            motionsSpawn.Add(motionTweenSpawn);
+
+            // tengo que setear el parent
+            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+            SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, playersOneHand, 3);
+            configurables.Add(cardHandSetParentConfigAnimotion);
+
+            CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsSpawn, configurables);
+
+            motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
+            motionControllerCardSpawn.TryReproduceMotion();
+        }
+        else
+        {
+            Debug.Log("Is Performing animation");
+        }
+    }
+
+    private void FireCardUITest(MikzeerGame.CardUI cardUI)
+    {
+        Debug.Log("Se disparo el ON CARD USE");
+
+        //OnCardWaitingTarget(cardUI);
+        //OnCardSendToGraveyard(cardUI);
+
+        bool isSapwn = false;
+
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        {
+            List<PositionerDemo.Motion> motionsWaitToGraveyard = new List<PositionerDemo.Motion>();
+
+            PositionerDemo.Motion motionTweenToCardWaitPosition = new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
+            motionsWaitToGraveyard.Add(motionTweenToCardWaitPosition);
+
+            PositionerDemo.Motion motionTimer = new TimeMotion(this, 2, 2f);
+            motionsWaitToGraveyard.Add(motionTimer);
+
+            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+
+            if (isSapwn)
+            {
+                Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+                PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPosition, 2);
+                motionsWaitToGraveyard.Add(motionTweenSpawn);
+
+                // tengo que setear el parent
+                SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentHandConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playersOneHand, 4);
+                configurables.Add(cardHandSetParentHandConfigAnimotion);
+
+                SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
+                configurables.Add(blockRayCastConfigAnimotion);
+            }
+            else
+            {
+                Vector3 finalScale = new Vector3(0.2f, 0.2f, 1);
+                RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+                PositionerDemo.Motion motionTweenScaleDownToGraveyard = new ScaleRectTweenMotion(this, cardRect, 3, finalScale, 1);
+                motionsWaitToGraveyard.Add(motionTweenScaleDownToGraveyard);
+
+                Vector3 finalCardPositionGraveyard = playerOneGraveyardLogo.position;
+                PositionerDemo.Motion motionTweenCardToGraveyard = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPositionGraveyard, 2);
+                motionsWaitToGraveyard.Add(motionTweenCardToGraveyard);
+
+                // tengo que setear el parent
+                SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentGraveyardConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playerOneGraveyard, 4);
+                configurables.Add(cardHandSetParentGraveyardConfigAnimotion);
+
+                SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
+                configurables.Add(blockRayCastConfigAnimotion);
+
+            }
+
+            CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsWaitToGraveyard, configurables);
+
+            motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
+            motionControllerCardSpawn.TryReproduceMotion();
+        }
+    }
+
+    private void SetActiveInfoCard(bool isActive)
+    {
+        if (isActive)
+        {
+            //Debug.Log("Animacion Card Apareciendo");
+        }
+        else
+        {
+            //Debug.Log("Animacion Card SE Va");
+        }
+
+
+        infoPanel.SetActive(isActive);
+    }
+
+    private void OnCardSendToGraveyard(MikzeerGame.CardUI cardUI)
+    {
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        {
+            Vector3 finalScale = new Vector3(0.2f, 0.2f, 1);
+
+            List<PositionerDemo.Motion> motionsWaitToGraveyard = new List<PositionerDemo.Motion>();
+            RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+            PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, cardRect, 1, finalScale, 1);
+            motionsWaitToGraveyard.Add(motionTweenScaleUp);
+
+            Vector3 finalCardPosition = playerOneGraveyardLogo.position;
+
+            PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, cardUI.transform, 1, finalCardPosition, 2);
+            motionsWaitToGraveyard.Add(motionTweenSpawn);
+
+            // tengo que setear el parent
+            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+            SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playerOneGraveyard, 3);
+            configurables.Add(cardHandSetParentConfigAnimotion);
+
+            CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsWaitToGraveyard, configurables);
+
+            motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
+            motionControllerCardSpawn.TryReproduceMotion();
+        }
+    }
+
+    private void OnCardWaitingTarget(MikzeerGame.CardUI cardUI)
+    {
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        {
+            List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+
+            Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+
+            PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
+
+            motionControllerCardSpawn.SetUpMotion(motionTweenSpawn);
+            motionControllerCardSpawn.TryReproduceMotion();
         }
     }
 

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2462207036736474254}
   - component: {fileID: 8408780124747708066}
   m_Layer: 0
-  m_Name: Enemy0
+  m_Name: Kimboko
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

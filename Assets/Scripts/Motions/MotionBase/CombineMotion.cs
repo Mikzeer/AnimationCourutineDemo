@@ -65,7 +65,7 @@ namespace PositionerDemo
             bool hasAllEnded = false;
             while (!hasAllEnded)
             {
-                Debug.Log("PERFORMING");
+                //Debug.Log("PERFORMING");
 
                 if (cancel)
                 {

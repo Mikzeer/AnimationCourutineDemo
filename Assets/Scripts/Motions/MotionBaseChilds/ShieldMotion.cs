@@ -29,10 +29,10 @@ namespace PositionerDemo
 
         protected override IEnumerator CheckPendingRunningMotions()
         {
-            //while (fullPathHash != animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
-            //{
-            //    yield return null;
-            //}
+            while (fullPathHash != animator.GetCurrentAnimatorStateInfo(0).fullPathHash)
+            {
+                yield return null;
+            }
 
             float counter = 0;
             
@@ -43,6 +43,19 @@ namespace PositionerDemo
                 yield return null;
             }
 
+        }
+
+        protected override void CheckMotionAfterEnd()
+        {
+        }
+
+        protected override void StartMotion()
+        {
+        }
+
+        public override void OnMotionSkip()
+        {
+            SetNormalSpeedMotion();           
         }
 
         public override bool CheckCorrectInput()

@@ -8,8 +8,8 @@ namespace PositionerDemo
         private const int MAX = 100;
 
         private Grid<HeatMapGridObject> grid;
-        private int x;
-        private int y;
+        public int x;
+        public int y;
         public int value;
 
         List<Enemy> enemies = new List<Enemy>();

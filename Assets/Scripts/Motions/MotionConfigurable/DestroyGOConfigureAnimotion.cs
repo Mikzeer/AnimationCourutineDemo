@@ -12,6 +12,5 @@ namespace PositionerDemo
             GameObject.Destroy(firstConfigure.gameObject);
         }
     }
-
 }
 

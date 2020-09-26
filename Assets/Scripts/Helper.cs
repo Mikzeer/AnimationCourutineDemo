@@ -28,6 +28,12 @@ public static class Helper
        return screenBounds;
     }
 
+    public static Vector3 GetCameraCenterWorldPositionWithZoffset()
+    {
+        Vector3 cameraCenter = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, -Camera.main.transform.position.z));
+        return cameraCenter;
+    }
+
     public static TextMesh CreateWorldText(string text, Color col, Transform parent = null, Vector3 localPosition = default(Vector3), int fontSize = 40, TextAnchor textAnchor = TextAnchor.UpperLeft, TextAlignment textAlignment = TextAlignment.Left, int sortingOrder = 5000)
     {
         GameObject go = new GameObject("World_Text", typeof(TextMesh));

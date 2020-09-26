@@ -2,6 +2,7 @@
 using UnityEngine;
 namespace PositionerDemo
 {
+
     public abstract class AnimatedMotion : Motion
     {
         protected AnimatorStateInfo animatorStateInfo;

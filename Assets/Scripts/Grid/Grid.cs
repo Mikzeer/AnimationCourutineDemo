@@ -26,6 +26,7 @@ namespace PositionerDemo
             this.originPosition = originPosition;
 
             gridArray = new TgridObject[width, height];
+            GameObject debugParent = new GameObject("TextParent");
             debugTextArray = new TextMesh[width, height];
             //Debug.Log("width " + width + " height " + height);
             for (int x = 0; x < gridArray.GetLength(0); x++)
@@ -42,6 +43,8 @@ namespace PositionerDemo
                 {
                     //Debug.Log("x " + x + " y " + y);
                     debugTextArray[x, y] = Helper.CreateWorldText(gridArray[x, y]?.ToString(), Color.white, null, GetWorldPosition(x, y) + new Vector3(cellSize, cellSize) * 0.5f, 5, TextAnchor.MiddleCenter);
+                    debugTextArray[x, y].transform.SetParent(debugParent.transform);
+
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
                     Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
                 }

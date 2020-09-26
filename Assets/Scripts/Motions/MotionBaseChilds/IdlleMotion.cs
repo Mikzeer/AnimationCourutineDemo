@@ -23,7 +23,6 @@ namespace PositionerDemo
 
         protected override IEnumerator CheckPendingRunningMotions()
         {
-            Debug.Log("ENTER IDLLE CHECK PENDINFG");
             return base.CheckPendingRunningMotions();
         }
     }

@@ -15,6 +15,5 @@ namespace PositionerDemo
             firstConfigure.gameObject.SetActive(active);
         }
     }
-
 }
 
