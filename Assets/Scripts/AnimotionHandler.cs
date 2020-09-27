@@ -2,10 +2,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using PositionerDemo;
+using UnityEngine.EventSystems;
 
 public class AnimotionHandler : MonoBehaviour
 {
-    public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT};
+
+    #region VARIABLES
+
+    public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT };
     public TUTORIALOPTION tutorialOption;
     public Vector3 gridStartPosition = new Vector3(-10, -10, 0);
     public float cellSize = 4f;
@@ -32,6 +36,7 @@ public class AnimotionHandler : MonoBehaviour
     public RectTransform playerOneGraveyard;
     private int cardIndex = 0;
     public InfoPanel infoPanel;
+    public KimbokoInfoPanel kimbokoInfoPanel;
 
     Camera cam;
     Grid<HeatMapGridObject> grid;
@@ -57,12 +62,19 @@ public class AnimotionHandler : MonoBehaviour
 
     private HeatMapGridObject actualHeatMapGridObject;
 
+    Board2D board;
+    Tile actualTileObject;
+
+    #endregion
+
     void Start()
     {
         cam = Camera.main;
-        grid = new Grid<HeatMapGridObject>(withd, height, cellSize, gridStartPosition, (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
-        movePositioner = new UnitMovePositioner(cellSize);
-        SetBoard();
+        //grid = new Grid<HeatMapGridObject>(withd, height, cellSize, gridStartPosition, (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
+        //movePositioner = new UnitMovePositioner(cellSize);
+        //SetBoard();
+
+        CreateNewBoard();
 
         switch (tutorialOption)
         {
@@ -138,9 +150,104 @@ public class AnimotionHandler : MonoBehaviour
         motionControllerCreateBoard.TryReproduceMotion();
     }
 
+    private void CreateNewBoard()
+    {
+        Player[] players = new Player[2];
+        players[0] = new Player(0, PLAYERTYPE.PLAYER);
+        players[1] = new Player(1, PLAYERTYPE.PLAYER);
+        board = new Board2D(height, withd, players, gridStartPosition);
+
+        movePositioner = new UnitMovePositioner(board.GetTileSize());
+        tiles = new GameObject[withd + 4, height];
+
+        withd += 4;
+
+        int index = 1;
+        GameObject tileParent = new GameObject("TileParent");
+
+        List<PositionerDemo.Motion> motionsCreateBoard = new List<PositionerDemo.Motion>();
+
+        for (int x = 0; x < withd; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (x == 0 || x == 1)
+                {
+                    tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y].transform.SetParent(tileParent.transform);
+                    continue;
+                }
+                if (x == 9 || x == 10)
+                {
+                    tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y].transform.SetParent(tileParent.transform);
+                    continue;
+                }
+
+
+                Vector3 thisTileFinalPosition = board.GetGridObject(x, y).GetRealWorldLocation();
+
+                tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
+                tiles[x, y].transform.SetParent(tileParent.transform);
+
+                // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
+                PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, tiles[x, y].transform, index, thisTileFinalPosition, 1);
+                motionsCreateBoard.Add(motionTweenMove);
+            }
+            index++;
+        }
+
+        // para las spawn tiles
+        Vector2 yOffset = new Vector2(0, 10);
+
+        Vector3 pOneNexusFinalPosition = board.GetPlayerNexusWorldPosition(players[0]);
+        tiles[0, 0].transform.position = new Vector3(pOneNexusFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y + yOffset.y, 0);
+        PositionerDemo.Motion motionTweenNexusP1Move = new MoveTweenMotion(this, tiles[0, 0].transform, index, pOneNexusFinalPosition, 1);
+        motionsCreateBoard.Add(motionTweenNexusP1Move);
+
+        Vector3 pTwoNexusFinalPosition = board.GetPlayerNexusWorldPosition(players[1]);
+        tiles[9, 0].transform.position = new Vector3(pTwoNexusFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y + yOffset.y, 0);
+        PositionerDemo.Motion motionTweenNexusP2Move = new MoveTweenMotion(this, tiles[9, 0].transform, index, pTwoNexusFinalPosition, 1);
+        motionsCreateBoard.Add(motionTweenNexusP2Move);
+
+        CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCreateBoard);
+
+        ////List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+        ////List<Configurable> configureAnimotion = new List<Configurable>();
+
+        ////Vector3 normalScale = bannerRect.localScale;
+        ////Vector3 finalScale = new Vector3(1.2f, 1.2f, 1);
+
+        ////// SE ACTIVA
+        ////SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 1);
+        ////configureAnimotion.Add(KimbokoActiveConfigAnimotion);
+
+        ////// REPRODUCE LA TWEEN
+        ////PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, bannerRect, 2, finalScale, 2);
+        ////motionsSpawn.Add(motionTweenScaleUp);
+        ////PositionerDemo.Motion motionTweenScaleDown = new ScaleRectTweenMotion(this, bannerRect, 3, normalScale, 2);
+        ////motionsSpawn.Add(motionTweenScaleDown);
+
+        ////// SE DESACTIVA
+        ////SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveFalseConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 4, true, false);
+        ////configureAnimotion.Add(KimbokoActiveFalseConfigAnimotion);
+
+        ////CombineMotion combinSecondMoveMotion = new CombineMotion(this, 2, motionsSpawn, configureAnimotion);
+
+        //List<PositionerDemo.Motion> motionsFinalCreateBoard = new List<PositionerDemo.Motion>();
+        //motionsFinalCreateBoard.Add(combinMoveMotion);
+        ////motionsFinalCreateBoard.Add(combinSecondMoveMotion);
+
+        //CombineMotion combinFinalMotion = new CombineMotion(this, 1, motionsFinalCreateBoard);
+
+        motionControllerCreateBoard.SetUpMotion(combinMoveMotion);
+        motionControllerCreateBoard.TryReproduceMotion();
+    }
+
     private void StartMotionControllerTwo()
     {
-        Vector3[]  finalPositions = movePositioner.GetPositions(grid.GetGridObject(0, 0).GetRealWorldLocation(), movePositioner.GetPositionType(enemeyTransforms.Count));
+        Vector3[] finalPositions = movePositioner.GetPositions(grid.GetGridObject(0, 0).GetRealWorldLocation(), movePositioner.GetPositionType(enemeyTransforms.Count));
 
         // Necesitamos los transform a posicionarse
         if (enemeyTransforms != null && enemeyTransforms.Count > 0)
@@ -175,6 +282,8 @@ public class AnimotionHandler : MonoBehaviour
 
     void Update()
     {
+        NineTest();
+        /*
         switch (tutorialOption)
         {
             case TUTORIALOPTION.ONE:
@@ -198,12 +307,15 @@ public class AnimotionHandler : MonoBehaviour
             case TUTORIALOPTION.SEVEN:
                 UpdateControllerSeven();
                 break;
-            case TUTORIALOPTION.EIGHT:
-                UpdateControllerEight();
-                break;
+            //case TUTORIALOPTION.EIGHT:
+            //    UpdateControllerEight();
+            //    break;
             default:
                 break;
         }
+
+        UpdateControllerEight();
+        */
     }
 
     private void UpdateControllerOne()
@@ -689,7 +801,7 @@ public class AnimotionHandler : MonoBehaviour
                 {
                     Debug.Log("FULL OF ENEMIES");
                     return;
-                }                
+                }
 
                 if (motionControllerCombineSpawnWithCheck != null && motionControllerCombineSpawnWithCheck.isPerforming == false)
                 {
@@ -819,9 +931,9 @@ public class AnimotionHandler : MonoBehaviour
                             List<PositionerDemo.Motion> motionsCombineSpawnMoveSquare = new List<PositionerDemo.Motion>();
 
                             int shortNameHash = Animator.StringToHash("Base Layer" + ".Idlle");
-                            Debug.Log("shortNameHash " + shortNameHash);
+                            //Debug.Log("shortNameHash " + shortNameHash);
 
-                            PositionerDemo.Motion motionMove = new MoveMotion(this, kimbokoToRepositionSquare[i].animator, 1, false , shortNameHash);
+                            PositionerDemo.Motion motionMove = new MoveMotion(this, kimbokoToRepositionSquare[i].animator, 1, false, shortNameHash);
                             motionsCombineSpawnMoveSquare.Add(motionMove);
 
                             List<PositionerDemo.Motion> motionsCombineSpawnStopMoveSquare = new List<PositionerDemo.Motion>();
@@ -871,6 +983,10 @@ public class AnimotionHandler : MonoBehaviour
 
                     motionControllerCombineSpawnWithCheck.SetUpMotion(combinMoveMotion);
                     motionControllerCombineSpawnWithCheck.TryReproduceMotion();
+
+                    // update del info de la tile
+                    UpdateKimbokoInfoPanel(heatMapGridObject);
+
                 }
                 else
                 {
@@ -882,6 +998,11 @@ public class AnimotionHandler : MonoBehaviour
 
     private void UpdateControllerEight()
     {
+        if (IsMouseOverUIWithIgnores())
+        {
+            return;
+        }
+
         HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
 
         if (heatMapGridObject != null)
@@ -890,30 +1011,136 @@ public class AnimotionHandler : MonoBehaviour
             {
                 if (actualHeatMapGridObject == heatMapGridObject)
                 {
+                    //UpdateUnitInfoPanel(actualHeatMapGridObject);
                     return;
                 }
                 else if (actualHeatMapGridObject != heatMapGridObject)
                 {
-                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.white;
+                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.green;
                     actualHeatMapGridObject = heatMapGridObject;
                     tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
+                    UpdateKimbokoInfoPanel(actualHeatMapGridObject);
                 }
             }
             else
             {
                 actualHeatMapGridObject = heatMapGridObject;
                 tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
+                UpdateKimbokoInfoPanel(actualHeatMapGridObject);
             }
         }
         else
         {
             if (actualHeatMapGridObject != null)
             {
-                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.white;
+                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.green;
                 actualHeatMapGridObject = null;
+                kimbokoInfoPanel.SetText(false);
             }
         }
     }
+
+    private void NineTest()
+    {
+        if (IsMouseOverUIWithIgnores())
+        {
+            return;
+        }
+
+        Tile TileObject = board.GetGridObject(Helper.GetMouseWorldPosition(cam));
+
+        if (TileObject != null)
+        {
+            if (actualTileObject != null)
+            {
+                if (actualTileObject == TileObject)
+                {
+                    //UpdateKimbokoTileInfoPanel(actualTileObject);
+                    return;
+                }
+                else if (actualTileObject != TileObject)
+                {
+                    tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.green;
+                    actualTileObject = TileObject;
+                    tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.blue;
+                    UpdateKimbokoTileInfoPanel(actualTileObject);
+                }
+            }
+            else
+            {
+                actualTileObject = TileObject;
+                tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.blue;
+                UpdateKimbokoTileInfoPanel(actualTileObject);
+            }
+        }
+        else
+        {
+            if (actualTileObject != null)
+            {
+                tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.green;
+                actualTileObject = null;
+                kimbokoInfoPanel.SetText(false);
+            }
+        }
+    }
+
+    private void UpdateKimbokoInfoPanel(HeatMapGridObject heatMapGridObject)
+    {
+        if (heatMapGridObject.GetEnemies().Count > 0)
+        {
+            string infoText = "HAS ENEMIES " + heatMapGridObject.GetEnemies().Count;
+            //Debug.Log(infoText);
+            kimbokoInfoPanel.SetText(true, infoText);
+        }
+        else
+        {
+            Debug.Log("NO ENEMIES ");
+            kimbokoInfoPanel.SetText(false);
+        }
+    }
+
+    private void UpdateKimbokoTileInfoPanel(Tile tileObject)
+    {
+        if (tileObject.IsOccupied())
+        {
+            string infoText = "IS OCCUPPY ";
+            //Debug.Log(infoText);
+            kimbokoInfoPanel.SetText(true, infoText);
+            tileObject.GetOccupier().OnSelect(true, 0);
+        }
+        else
+        {
+            Debug.Log("NO ENEMIES ");
+            kimbokoInfoPanel.SetText(false);
+        }
+    }
+
+    private bool IsMouseOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private bool IsMouseOverUIWithIgnores()
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = Input.mousePosition;
+
+        List<RaycastResult> raycastResultsList = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResultsList);
+
+        for (int i = 0; i < raycastResultsList.Count; i++)
+        {
+            if (raycastResultsList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
+            {
+                raycastResultsList.RemoveAt(i);
+                i--;
+            }
+        }
+
+        return raycastResultsList.Count > 0;
+    }
+
+    #region CARDS
 
     public void AddCard()
     {
@@ -1089,4 +1316,7 @@ public class AnimotionHandler : MonoBehaviour
         }
     }
 
+    #endregion
+
 }
+

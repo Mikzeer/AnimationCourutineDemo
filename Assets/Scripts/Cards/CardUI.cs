@@ -16,6 +16,9 @@ namespace MikzeerGame
         private CanvasGroup canvasGroup;
         int siblingIndex;
         bool isDragin = false;
+
+        public static bool isACardDraging = false;
+
         public void Awake()
         {
             cardRectTansform = GetComponent<RectTransform>();
@@ -51,7 +54,8 @@ namespace MikzeerGame
         float actualTimeOver = 0f;
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (DragUIController.isDragin)
+
+            if (isACardDraging)
             {
                 return;
             }
@@ -77,7 +81,7 @@ namespace MikzeerGame
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (DragUIController.isDragin)
+            if (isACardDraging)
             {
                 return;
             }
@@ -87,7 +91,8 @@ namespace MikzeerGame
             //canvasGroup.blocksRaycasts = false;
             onCardEnter?.Invoke(false);
 
-            DragUIController.isDragin = true;
+            isACardDraging = true;
+
             isDragin = true;
         }
 
@@ -106,7 +111,9 @@ namespace MikzeerGame
         public void OnEndDrag(PointerEventData eventData)
         {
             canvasGroup.blocksRaycasts = false;
-            DragUIController.isDragin = false;
+
+            isACardDraging = false;
+
             List<RaycastResult> results = new List<RaycastResult>(); //Create a list of Raycast Results           
             m_Raycaster.Raycast(eventData, results); //Raycast using the Graphics Raycaster and mouse click position
 
@@ -175,10 +182,11 @@ namespace MikzeerGame
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (DragUIController.isDragin)
+            if (isACardDraging)
             {
                 return;
             }
+
 
             Debug.Log("OnPointerExit, VOLVER A LA CARTA SU TAMANO Y POSICION ORIGINAL");
             onCardEnter?.Invoke(false);
@@ -223,11 +231,8 @@ namespace MikzeerGame
             actualTimeOver = 0;
             // aca tenemos que hacer el InfoPanel haga el SetText(hola soy la cartita)
             onCardEnter?.Invoke(true);
-            Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(cardPosition);
-            //Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(cardPosition);
-            //cardRectInScreenPosition += new Vector2(65, 0);
-            Debug.Log("cardRectTansform.sizeDelta" + cardRectTansform.sizeDelta);
-            cardRectInScreenPosition *= new Vector2(1.5f, 1);
+            Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(cardRectTansform.position);
+            cardRectInScreenPosition += new Vector2(cardRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, 0);
             onCardInfo?.Invoke("SOY LA CARD, mi nombre es " + name, cardRectInScreenPosition / canvas.scaleFactor);
         }
 
@@ -248,10 +253,5 @@ namespace MikzeerGame
             canvasGroup.blocksRaycasts = block;
         }
 
-    }
-
-    public static class DragUIController
-    {
-        public static bool isDragin = false;
     }
 }

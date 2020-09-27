@@ -11,7 +11,7 @@ namespace PositionerDemo
         public override void Configure()
         {
             firstConfigure.audioSource.Stop();
-            Debug.Log("Stop Sound");
+            //Debug.Log("Stop Sound");
         }
     }
 
