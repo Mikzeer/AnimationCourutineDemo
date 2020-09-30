@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 191863192fa2bdc4ab26a044e566f8d9, type: 3}
-  m_Name: Test
+  m_Name: ShieldCard
   m_EditorClassIdentifier: 
-  cardName: Test
-  description: Its a testCard
-  image: {fileID: 21300000, guid: 43185e4fb3435f34da8e0da44b83535b, type: 3}
-  miniatureImage: {fileID: 21300000, guid: 43185e4fb3435f34da8e0da44b83535b, type: 3}
-  id: -1
-  amountPerDeck: 999
-  level: 999
-  darkPoints: 999
-  isChainable: 1
-  cardType: 1
+  cardName: Shield
+  description: Protect from One Direct Attack
+  image: {fileID: 21300000, guid: 2ad14d28b37a59544a91ed082678ae71, type: 3}
+  miniatureImage: {fileID: 21300000, guid: 2ad14d28b37a59544a91ed082678ae71, type: 3}
+  id: 0
+  amountPerDeck: 2
+  level: 1
+  darkPoints: 0
+  isChainable: 0
+  cardType: 0
   activationType: 0
-  posibleTargets: 0000000001000000020000000300000004000000
+  posibleTargets: 03000000

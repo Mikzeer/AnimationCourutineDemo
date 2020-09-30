@@ -1,41 +1,77 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using PositionerDemo;
 
 namespace MikzeerGame
 {
     public class CardDisplay : MonoBehaviour
     {
-        public Text txtTitle;
-        public Text txtDescription;
-        public GameObject chainGo;
-        public GameObject AutoGo;
-        Animator cardAnimator;
+        private int id;
+        [SerializeField] private Image cardImage;
+        //[SerializeField] private Sprite cardTypeSprite;
+        [SerializeField] private Text txtCardName;
+        [SerializeField] private Text txtCardDescription;
+        [SerializeField] private Text txtCardLevel;
+        [SerializeField] private Image cardMiniatureSprite;
+        [SerializeField] private Image cardSprite;
+        [SerializeField] private GameObject chainGameObject;
+        [SerializeField] private GameObject automaticGameObject;
+        [SerializeField] private Text txtDarkPoints;
 
-        public Sprite miniatureSprite;
-
-        private void Awake()
+        public void Initialized(Card card)
         {
-            cardAnimator = GetComponent<Animator>();
+            id = card.ID;
+            card.SetGameObject(gameObject);
+            SetDisplay(card.CardSO);
         }
 
-        //public void Initialized(Card card)
-        //{
-        //    card.SetAnimator(cardAnimator);
-        //    card.cardPrefab = this;
-        //    this.name = "Card: " + card.Name;
+        private void SetDisplay(CardScriptableObject cardSO)
+        {           
+            txtCardName.text = cardSO.CardName;
+            txtCardDescription.text = cardSO.Description;
 
-        //    SetDisplay(card.Name, card.Description, card.MiniatureImage, false, false);
-        //}
+            if (txtCardLevel != null)
+            {
+                txtCardLevel.text = cardSO.Level.ToString();
+            }
 
-        private void SetDisplay(string title, string description, Sprite miniatureSprite, bool chain, bool auto)
-        {
-            this.miniatureSprite = miniatureSprite;
+            if (txtDarkPoints != null)
+            {
+                txtDarkPoints.text = cardSO.DarkPoints.ToString();
+            }
 
-            txtTitle.text = title;
-            txtDescription.text = description;
-            chainGo.SetActive(chain);
-            AutoGo.SetActive(auto);
+            if (cardMiniatureSprite != null)
+            {
+                cardMiniatureSprite.sprite = cardSO.MiniatureImage;
+            }
+
+            cardSprite.sprite = cardSO.MiniatureImage;
+            switch (cardSO.CardType)
+            {
+                case CARDTYPE.BUFF:
+                    cardImage.color = Color.green;
+                    break;
+                case CARDTYPE.NERF:
+                    cardImage.color = Color.red;
+                    break;
+                case CARDTYPE.NEUTRAL:
+                    break;
+                default:
+                    break;
+            }
+
+            chainGameObject.SetActive(cardSO.IsChainable);
+            switch (cardSO.ActivationType)
+            {
+                case ACTIVATIONTYPE.HAND:
+                    automaticGameObject.SetActive(false);
+                    break;
+                case ACTIVATIONTYPE.AUTOMATIC:
+                    automaticGameObject.SetActive(true);
+                    break;
+                default:
+                    break;
+            }
         }
 
     }

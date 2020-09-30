@@ -19,7 +19,7 @@ namespace PositionerDemo
         [SerializeField] private ACTIVATIONTYPE activationType;
         [SerializeField] private List<CARDTARGETTYPE> posibleTargets;
 
-        public string Name { get { return cardName; } protected set { cardName = value; } }
+        public string CardName { get { return cardName; } protected set { cardName = value; } }
         public string Description { get { return description; } protected set { description = value; } }
         public Sprite Image { get { return image; } protected set { image = value; } }
         public Sprite MiniatureImage { get { return miniatureImage; } protected set { miniatureImage = value; } }

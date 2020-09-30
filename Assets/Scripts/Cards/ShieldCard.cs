@@ -1,14 +1,18 @@
-﻿namespace PositionerDemo
+﻿using UnityEngine;
+
+namespace PositionerDemo
 {
     public class ShieldCard : Card
     {
-        public ShieldCard(int ID, Player ownerPlayer) : base(ID, ownerPlayer)
+        public ShieldCard(int ID, Player ownerPlayer, CardScriptableObject cardSO) : base(ID, ownerPlayer, cardSO)
         {
         }
 
         public override void OnDropCard()
         {
             base.OnDropCard();
+            Debug.Log("ShieldCard");
+                
             //if (gameCreator.actualPlayerTurn == ownerPlayer)
             //{
             //    ownerPlayer.useCardAbility.Set(this);

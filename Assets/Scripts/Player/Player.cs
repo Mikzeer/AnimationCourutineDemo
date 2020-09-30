@@ -27,12 +27,22 @@ namespace PositionerDemo
         private int _actionPoints;
         public int ActionPoints { get { return _actionPoints; } private set { _actionPoints = value; } }
 
-        public Player(int PlayerID, PLAYERTYPE playerType)
+        private Stack<Card> _deck;
+        public Stack<Card> Deck { get { return _deck; } set { _deck = value; } }
+        private List<Card> _playersHands;
+        public List<Card> PlayersHands { get { return _playersHands; } private set { _playersHands = value; } }
+        private List<Card> _graveyard;
+        public List<Card> Graveyard { get { return _graveyard; } private set { _graveyard = value; } }
+
+        public Player(int PlayerID, PLAYERTYPE playerType, Stack<Card> Deck)
         {
+            this.Deck = Deck;
             this.PlayerID = PlayerID;
             this.playerType = playerType;
             OccupierType = OCUPPIERTYPE.PLAYER;
             CardTargetType = CARDTARGETTYPE.BASENEXO;
+            PlayersHands = new List<Card>();
+            Graveyard = new List<Card>();
         }
 
         public void OnSelect(bool isSelected, int playerID)

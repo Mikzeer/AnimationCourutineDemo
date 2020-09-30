@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -12,17 +13,35 @@ namespace PositionerDemo
         private int _id;
         public int ID { get { return _id; } protected set { _id = value; } }
         public Action OnDrop;
+        private bool isChainable;
+        public bool IsChainable { get { return isChainable; } protected set { isChainable = value; } }
+        private CARDTYPE cardType;
+        public CARDTYPE CardType { get { return cardType; } protected set { cardType = value; } }
+        private ACTIVATIONTYPE activationType;
+        public ACTIVATIONTYPE ActivationType { get { return activationType; } protected set { activationType = value; } }
+        private List<CARDTARGETTYPE> posibleTargets;
+        public List<CARDTARGETTYPE> PosibleTargets { get { return posibleTargets; } protected set { posibleTargets = value; } }
 
         // ACTION MODIFIERS
         // STATS MODIFIERS
         // ACTIVATION CONDITION
         // PERMANENCIA DE EFECTO
 
-        public Card(int ID, Player ownerPlayer)
+        private CardScriptableObject _cardSO;
+        public CardScriptableObject CardSO { get { return _cardSO; } protected set { _cardSO = value; } }
+
+        public Card(int ID, Player ownerPlayer, CardScriptableObject CardSO)
         {
             this.ID = ID;
             this.ownerPlayer = ownerPlayer;
+            this.CardSO = CardSO;
+
             OnDrop += OnDropCard;
+
+            isChainable = CardSO.IsChainable;
+            cardType = CardSO.CardType;
+            activationType = CardSO.ActivationType;
+            posibleTargets = CardSO.PosibleTargets;           
         }
 
         public virtual bool DoIHaveTarget()
@@ -63,6 +82,7 @@ namespace PositionerDemo
         {
             return cardAnimator;
         }
+
 
     }
 }

@@ -65,6 +65,11 @@ public class AnimotionHandler : MonoBehaviour
     Board2D board;
     Tile actualTileObject;
 
+    CardManager cardManager = new CardManager();
+    Player[] players;
+    public List<CardScriptableObject> playerOneCards;
+    public List<CardScriptableObject> playerTwoCards;
+
     #endregion
 
     void Start()
@@ -152,9 +157,17 @@ public class AnimotionHandler : MonoBehaviour
 
     private void CreateNewBoard()
     {
-        Player[] players = new Player[2];
-        players[0] = new Player(0, PLAYERTYPE.PLAYER);
-        players[1] = new Player(1, PLAYERTYPE.PLAYER);
+        players = new Player[2];
+
+        Stack<Card> deckPlayerOne = new Stack<Card>();
+        Stack<Card> deckPlayerTwo = new Stack<Card>();
+
+        players[0] = new Player(0, PLAYERTYPE.PLAYER, deckPlayerOne);
+        players[1] = new Player(1, PLAYERTYPE.PLAYER, deckPlayerTwo);
+
+        cardManager.CreateDeck(players[0], playerOneCards);
+        cardManager.CreateDeck(players[1], playerTwoCards);
+
         board = new Board2D(height, withd, players, gridStartPosition);
 
         movePositioner = new UnitMovePositioner(board.GetTileSize());
@@ -1144,133 +1157,149 @@ public class AnimotionHandler : MonoBehaviour
 
     public void AddCard()
     {
-        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
-        {
-            // instanciar el prefab de la card y ponerle como parent el canvas
-            // ponerlo en el centro de la pantalla
-            Vector3 screenCenter = Helper.GetCameraCenterWorldPositionWithZoffset();
-            GameObject createdCardGameObject = Instantiate(cardUIPrefab, screenCenter, Quaternion.identity, canvasRootTransform);
+        cardManager.AddCard(players[0], this);
 
-            createdCardGameObject.name = "CARD N " + cardIndex;
-            cardIndex++;
-            createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
-            MikzeerGame.CardUI cardUI = createdCardGameObject.GetComponent<MikzeerGame.CardUI>();
+        //if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        //{
+        //    // instanciar el prefab de la card y ponerle como parent el canvas
+        //    // ponerlo en el centro de la pantalla
+        //    Vector3 screenCenter = Helper.GetCameraCenterWorldPositionWithZoffset();
+        //    GameObject createdCardGameObject = Instantiate(cardUIPrefab, screenCenter, Quaternion.identity, canvasRootTransform);
 
-            if (cardUI != null)
-            {
-                cardUI.SetPlayerHandTransform(playersOneHand, FireCardUITest, infoPanel.SetText, SetActiveInfoCard);
+        //    createdCardGameObject.name = "CARD N " + cardIndex;
+        //    cardIndex++;
+        //    createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
+        //    MikzeerGame.CardUI cardUI = createdCardGameObject.GetComponent<MikzeerGame.CardUI>();
 
-                // generar una action que se active cuando dropeas la carta en la zona DropeableArea
-                // la Action<CardUI> es la que vamos a disparar desde el AnimotionHandler
-                // CardUI dropea, si hitea con dropeable es ahi donde disparamos el EVENT
-            }
 
-            Vector3 normalScale = createdCardGameObject.transform.localScale;
-            Vector3 startScale = new Vector3(0.2f, 0.2f, 1);
-            createdCardGameObject.transform.localScale = startScale;
+        //    Card newCard = cardManager.TakeCardFromDeck(players[0]);
+        //    players[0].PlayersHands.Add(newCard);
+        //    MikzeerGame.CardDisplay cardDisplay = createdCardGameObject.GetComponent<MikzeerGame.CardDisplay>();
 
-            // hacerla animacion de instanciamiento a la mano y saliendo un poco de la pantalla
+        //    if (cardDisplay != null)
+        //    {
+        //        cardDisplay.Initialized(newCard);
+        //    }
 
-            List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
-            RectTransform cardRect = createdCardGameObject.GetComponent<RectTransform>();
-            PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, cardRect, 1, normalScale, 1);
-            motionsSpawn.Add(motionTweenScaleUp);
+        //    if (cardUI != null)
+        //    {
+        //        cardUI.SetPlayerHandTransform(playersOneHand, FireCardUITest, infoPanel.SetText, SetActiveInfoCard);
 
-            Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+        //        // generar una action que se active cuando dropeas la carta en la zona DropeableArea
+        //        // la Action<CardUI> es la que vamos a disparar desde el AnimotionHandler
+        //        // CardUI dropea, si hitea con dropeable es ahi donde disparamos el EVENT
+        //    }
 
-            PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, createdCardGameObject.transform, 1, finalCardPosition, 2);
-            motionsSpawn.Add(motionTweenSpawn);
+        //    Vector3 normalScale = createdCardGameObject.transform.localScale;
+        //    Vector3 startScale = new Vector3(0.2f, 0.2f, 1);
+        //    createdCardGameObject.transform.localScale = startScale;
 
-            // tengo que setear el parent
-            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
-            SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, playersOneHand, 3);
-            configurables.Add(cardHandSetParentConfigAnimotion);
+        //    // hacerla animacion de instanciamiento a la mano y saliendo un poco de la pantalla
 
-            CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsSpawn, configurables);
+        //    List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
+        //    RectTransform cardRect = createdCardGameObject.GetComponent<RectTransform>();
+        //    PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, cardRect, 1, normalScale, 1);
+        //    motionsSpawn.Add(motionTweenScaleUp);
 
-            motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
-            motionControllerCardSpawn.TryReproduceMotion();
-        }
-        else
-        {
-            Debug.Log("Is Performing animation");
-        }
+        //    Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+
+        //    PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, createdCardGameObject.transform, 1, finalCardPosition, 2);
+        //    motionsSpawn.Add(motionTweenSpawn);
+
+        //    // tengo que setear el parent
+        //    List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+        //    SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, playersOneHand, 3);
+        //    configurables.Add(cardHandSetParentConfigAnimotion);
+
+        //    CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsSpawn, configurables);
+
+        //    motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
+        //    motionControllerCardSpawn.TryReproduceMotion();
+        //}
+        //else
+        //{
+        //    Debug.Log("Is Performing animation");
+        //}
     }
 
-    private void FireCardUITest(MikzeerGame.CardUI cardUI)
+    public void FireCardUITest(MikzeerGame.CardUI cardUI)
     {
         Debug.Log("Se disparo el ON CARD USE");
 
-        //OnCardWaitingTarget(cardUI);
-        //OnCardSendToGraveyard(cardUI);
+        cardManager.FireCardUITest(cardUI, this);
 
-        bool isSapwn = false;
+        ////OnCardWaitingTarget(cardUI);
+        ////OnCardSendToGraveyard(cardUI);
 
-        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
-        {
-            List<PositionerDemo.Motion> motionsWaitToGraveyard = new List<PositionerDemo.Motion>();
+        //bool isSapwn = false;
 
-            PositionerDemo.Motion motionTweenToCardWaitPosition = new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
-            motionsWaitToGraveyard.Add(motionTweenToCardWaitPosition);
+        //if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        //{
+        //    List<PositionerDemo.Motion> motionsWaitToGraveyard = new List<PositionerDemo.Motion>();
 
-            PositionerDemo.Motion motionTimer = new TimeMotion(this, 2, 2f);
-            motionsWaitToGraveyard.Add(motionTimer);
+        //    PositionerDemo.Motion motionTweenToCardWaitPosition = new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
+        //    motionsWaitToGraveyard.Add(motionTweenToCardWaitPosition);
 
-            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+        //    PositionerDemo.Motion motionTimer = new TimeMotion(this, 2, 2f);
+        //    motionsWaitToGraveyard.Add(motionTimer);
 
-            if (isSapwn)
-            {
-                Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
-                PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPosition, 2);
-                motionsWaitToGraveyard.Add(motionTweenSpawn);
+        //    List<PositionerDemo.Configurable> configurables = new List<Configurable>();
 
-                // tengo que setear el parent
-                SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentHandConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playersOneHand, 4);
-                configurables.Add(cardHandSetParentHandConfigAnimotion);
+        //    if (isSapwn)
+        //    {
+        //        Vector3 finalCardPosition = playersOneHand.GetChild(playersOneHand.childCount - 1).position;
+        //        PositionerDemo.Motion motionTweenSpawn = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPosition, 2);
+        //        motionsWaitToGraveyard.Add(motionTweenSpawn);
 
-                SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
-                configurables.Add(blockRayCastConfigAnimotion);
-            }
-            else
-            {
-                Vector3 finalScale = new Vector3(0.2f, 0.2f, 1);
-                RectTransform cardRect = cardUI.GetComponent<RectTransform>();
-                PositionerDemo.Motion motionTweenScaleDownToGraveyard = new ScaleRectTweenMotion(this, cardRect, 3, finalScale, 1);
-                motionsWaitToGraveyard.Add(motionTweenScaleDownToGraveyard);
+        //        // tengo que setear el parent
+        //        SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentHandConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playersOneHand, 4);
+        //        configurables.Add(cardHandSetParentHandConfigAnimotion);
 
-                Vector3 finalCardPositionGraveyard = playerOneGraveyardLogo.position;
-                PositionerDemo.Motion motionTweenCardToGraveyard = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPositionGraveyard, 2);
-                motionsWaitToGraveyard.Add(motionTweenCardToGraveyard);
+        //        SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
+        //        configurables.Add(blockRayCastConfigAnimotion);
+        //    }
+        //    else
+        //    {
+        //        Vector3 finalScale = new Vector3(0.2f, 0.2f, 1);
+        //        RectTransform cardRect = cardUI.GetComponent<RectTransform>();
+        //        PositionerDemo.Motion motionTweenScaleDownToGraveyard = new ScaleRectTweenMotion(this, cardRect, 3, finalScale, 1);
+        //        motionsWaitToGraveyard.Add(motionTweenScaleDownToGraveyard);
 
-                // tengo que setear el parent
-                SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentGraveyardConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playerOneGraveyard, 4);
-                configurables.Add(cardHandSetParentGraveyardConfigAnimotion);
+        //        Vector3 finalCardPositionGraveyard = playerOneGraveyardLogo.position;
+        //        PositionerDemo.Motion motionTweenCardToGraveyard = new SpawnCardTweenMotion(this, cardUI.transform, 3, finalCardPositionGraveyard, 2);
+        //        motionsWaitToGraveyard.Add(motionTweenCardToGraveyard);
 
-                SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
-                configurables.Add(blockRayCastConfigAnimotion);
+        //        // tengo que setear el parent
+        //        SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentGraveyardConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(cardUI.transform, playerOneGraveyard, 4);
+        //        configurables.Add(cardHandSetParentGraveyardConfigAnimotion);
 
-            }
+        //        SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, playerOneGraveyard, 4);
+        //        configurables.Add(blockRayCastConfigAnimotion);
 
-            CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsWaitToGraveyard, configurables);
+        //    }
 
-            motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
-            motionControllerCardSpawn.TryReproduceMotion();
-        }
+        //    CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsWaitToGraveyard, configurables);
+
+        //    motionControllerCardSpawn.SetUpMotion(combineMoveMotion);
+        //    motionControllerCardSpawn.TryReproduceMotion();
+        //}
     }
 
-    private void SetActiveInfoCard(bool isActive)
+    public void SetActiveInfoCard(bool isActive)
     {
-        if (isActive)
-        {
-            //Debug.Log("Animacion Card Apareciendo");
-        }
-        else
-        {
-            //Debug.Log("Animacion Card SE Va");
-        }
+        cardManager.SetActiveInfoCard(isActive, this);
+
+        //if (isActive)
+        //{
+        //    //Debug.Log("Animacion Card Apareciendo");
+        //}
+        //else
+        //{
+        //    //Debug.Log("Animacion Card SE Va");
+        //}
 
 
-        infoPanel.SetActive(isActive);
+        //infoPanel.SetActive(isActive);
     }
 
     private void OnCardSendToGraveyard(MikzeerGame.CardUI cardUI)

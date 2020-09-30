@@ -16,8 +16,12 @@ namespace MikzeerGame
         private CanvasGroup canvasGroup;
         int siblingIndex;
         bool isDragin = false;
-
         public static bool isACardDraging = false;
+        int indexBeforeEnter = 0;
+        bool isPointerOverCard = false;
+        float timeToReach = 1.2f;
+        float actualTimeOver = 0f;
+        bool isComingFromDrag = false;
 
         public void Awake()
         {
@@ -27,9 +31,7 @@ namespace MikzeerGame
             {
                 playerHandTransform = transform.parent.GetComponent<Transform>();
             }
-
             m_Raycaster = FindObjectOfType<GraphicRaycaster>();
-
             // Dos maneras de buscar el Canvas, la segunda es mejor cuando se tiene diferentes Canvas
             //canvas = transform.root.GetComponent<Canvas>();
             if (canvas == null)
@@ -48,17 +50,9 @@ namespace MikzeerGame
             }
         }
 
-        int indexBeforeEnter = 0;
-        bool isPointerOverCard = false;
-        float timeToReach = 1.2f;
-        float actualTimeOver = 0f;
         public void OnPointerEnter(PointerEventData eventData)
         {
-
-            if (isACardDraging)
-            {
-                return;
-            }
+            if (isACardDraging) return;
 
             if (isDragin == false)
             {
@@ -90,9 +84,7 @@ namespace MikzeerGame
             cardRectTansform.SetAsLastSibling();
             //canvasGroup.blocksRaycasts = false;
             onCardEnter?.Invoke(false);
-
             isACardDraging = true;
-
             isDragin = true;
         }
 
@@ -114,19 +106,14 @@ namespace MikzeerGame
 
             isACardDraging = false;
 
-            List<RaycastResult> results = new List<RaycastResult>(); //Create a list of Raycast Results           
-            m_Raycaster.Raycast(eventData, results); //Raycast using the Graphics Raycaster and mouse click position
+            List<RaycastResult> results = new List<RaycastResult>();       
+            m_Raycaster.Raycast(eventData, results);
 
             if (results.Count == 0)
             {
-                // ESTO SIGNIFICA QUE NO CHOCO CONTRA NINGUN UI
-                Debug.Log("NO CHOCO CONTRA NINGUNA UI");
-
+                //Debug.Log("NO CHOCO CONTRA NINGUNA UI");
                 cardRectTansform.SetParent(playerHandTransform);
-                //esto agregue
                 playerHandTransform.GetChild(indexBeforeEnter).SetAsLastSibling();
-
-                //cardRectTansform.SetSiblingIndex(playerHandTransform.childCount - 2);
                 cardRectTansform.SetSiblingIndex(indexBeforeEnter);
                 canvasGroup.blocksRaycasts = true;
                 isDragin = false;
@@ -134,7 +121,6 @@ namespace MikzeerGame
             }
             else
             {
-                //For every result returned, output the name of the GameObject on the Canvas hit by the Ray
                 foreach (RaycastResult result in results)
                 {
                     if (result.gameObject.CompareTag("DropeableArea"))
@@ -170,15 +156,11 @@ namespace MikzeerGame
             }
 
             cardRectTansform.SetParent(playerHandTransform);
-            //esto agregue
             playerHandTransform.GetChild(indexBeforeEnter).SetAsLastSibling();
             cardRectTansform.SetSiblingIndex(indexBeforeEnter);
             canvasGroup.blocksRaycasts = true;
             isDragin = false;
         }
-
-
-        bool isComingFromDrag = false;
 
         public void OnPointerExit(PointerEventData eventData)
         {
@@ -186,9 +168,7 @@ namespace MikzeerGame
             {
                 return;
             }
-
-
-            Debug.Log("OnPointerExit, VOLVER A LA CARTA SU TAMANO Y POSICION ORIGINAL");
+            //Debug.Log("OnPointerExit, VOLVER A LA CARTA SU TAMANO Y POSICION ORIGINAL");
             onCardEnter?.Invoke(false);
 
             if (isComingFromDrag)
@@ -200,14 +180,13 @@ namespace MikzeerGame
 
             if (isDragin == false)
             {
-                Debug.Log("ISDRAGIN IS FALSE");
+                //Debug.Log("ISDRAGIN IS FALSE");
                 isPointerOverCard = false;
                 playerHandTransform.GetChild(indexBeforeEnter).SetAsLastSibling();
                 cardRectTansform.SetParent(playerHandTransform);
                 cardRectTansform.SetSiblingIndex(indexBeforeEnter);
             }
         }
-
 
         IEnumerator mouseOverToShowInfoPanel(Vector3 cardPosition)
         {
