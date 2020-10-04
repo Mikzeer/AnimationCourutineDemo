@@ -3,84 +3,136 @@ using UnityEngine;
 using UnityEngine.UI;
 using PositionerDemo;
 using UnityEngine.EventSystems;
+using System;
 
 public class AnimotionHandler : MonoBehaviour
 {
+    #region EVENTS
 
-    #region VARIABLES
+    public static event Action OnChangeTurn;
+    public static event Action<int> OnResetActionPoints;
+
+    #endregion
+
+    #region STATIC LAZY SINGLETON
+
+    [SerializeField]
+    protected bool dontDestroy;
+
+    private static AnimotionHandler instance;
+    public static AnimotionHandler Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = FindObjectOfType<AnimotionHandler>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    instance = obj.AddComponent<AnimotionHandler>();
+                }
+            }
+            return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this as AnimotionHandler;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    #endregion
+
+    #region VARIABLES MOMENTANEAS
 
     public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT };
     public TUTORIALOPTION tutorialOption;
-    public Vector3 gridStartPosition = new Vector3(-10, -10, 0);
-    public float cellSize = 4f;
-    public int withd = 5;
-    public int height = 7;
     public List<Transform> enemeyTransforms;
     public List<Enemy> enemies;
     public Enemy movingEnemy;
     public Enemy attackerEnemy;
+
+    public List<AudioClip> audioClips;
+
+    MotionController motionControllerAttack = new MotionController();
+    MotionController motionControllerSimpleMove = new MotionController();
+    MotionController motionControllerCombineMove = new MotionController();
+    MotionController motionControllerSpawn = new MotionController();
+    MotionController motionControllerCombineSpawn = new MotionController();
+    MotionController motionControllerCombineSpawnWithCheck = new MotionController();
+    private int cardIndex = 0;
+    private Vector2 startPosition;
+    private Vector3 endPostion;
+    private Vector3 finishPosition;
+    bool va = true;
+    private HeatMapGridObject actualHeatMapGridObject;
+    Grid<HeatMapGridObject> grid;
+
+    #endregion
+
+    #region VARIABLES
+
+    MotionController motionControllerCreateBoard = new MotionController();
+    public Vector3 gridStartPosition = new Vector3(-10, -10, 0);
+    public float cellSize = 4f;
+    public int withd = 5;
+    public int height = 7;
+    Board2D board;
+    public GameObject tilePrefab;
+
+    private SpawnController spawnCotroller = new SpawnController();
     public GameObject Crane;
     public Transform CraneEnd;
     public GameObject kimbokoPrefab;
+
     public GameObject shieldPrefab;
-    public GameObject tilePrefab;
+
+    MotionController motionControllerBanner = new MotionController();
+    MotionController motionControllerBannerTimmer = new MotionController();
     public RectTransform bannerRect;
     public RectTransform bannerRectTimer;
-    public AudioSource audioSource;
-    public List<AudioClip> audioClips;
+
+    public InfoPanel infoPanel;
+    public KimbokoInfoPanel kimbokoInfoPanel;
+
+    CardManager cardManager = new CardManager();
+    public List<CardScriptableObject> playerOneCards;
+    public List<CardScriptableObject> playerTwoCards;
+    MotionController motionControllerCardSpawn = new MotionController();
     public GameObject cardUIPrefab;
     public RectTransform canvasRootTransform;
     public RectTransform playersOneHand;
     public Transform cardWaitPosition;
     public RectTransform playerOneGraveyardLogo;
     public RectTransform playerOneGraveyard;
-    private int cardIndex = 0;
-    public InfoPanel infoPanel;
-    public KimbokoInfoPanel kimbokoInfoPanel;
 
     Camera cam;
-    Grid<HeatMapGridObject> grid;
+    public AudioSource audioSource;
     UnitMovePositioner movePositioner;
-
-    MotionController motionControllerCreateBoard = new MotionController();
-    MotionController motionControllerAttack = new MotionController();
-    MotionController motionControllerSimpleMove = new MotionController();
-    MotionController motionControllerCombineMove = new MotionController();
-    MotionController motionControllerSpawn = new MotionController();
-    MotionController motionControllerCombineSpawn = new MotionController();
-    MotionController motionControllerBanner = new MotionController();
-    MotionController motionControllerBannerTimmer = new MotionController();
-    MotionController motionControllerCombineSpawnWithCheck = new MotionController();
-    MotionController motionControllerCardSpawn = new MotionController();
-
-    private Vector2 startPosition;
-    private Vector3 endPostion;
-    private Vector3 finishPosition;
-    bool va = true;
-
     private GameObject[,] tiles;
-
-    private HeatMapGridObject actualHeatMapGridObject;
-
-    Board2D board;
     Tile actualTileObject;
-
-    CardManager cardManager = new CardManager();
     Player[] players;
-    public List<CardScriptableObject> playerOneCards;
-    public List<CardScriptableObject> playerTwoCards;
 
     #endregion
 
     void Start()
     {
         cam = Camera.main;
-        //grid = new Grid<HeatMapGridObject>(withd, height, cellSize, gridStartPosition, (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
-        //movePositioner = new UnitMovePositioner(cellSize);
+
         //SetBoard();
 
+        CreatePlayers();
+        CreateDeck();
         CreateNewBoard();
-
         switch (tutorialOption)
         {
             case TUTORIALOPTION.TWO:
@@ -92,10 +144,59 @@ public class AnimotionHandler : MonoBehaviour
             default:
                 break;
         }
+
+        SpawnAbility.OnActionEndExecute += SpawnInfoTest;
     }
+
+    #region PLAYER
+
+    Player actualPlayerTurn;
+
+    public void SetPlayerTurn(Player player)
+    {
+        actualPlayerTurn = player;
+    }
+
+    public Player GetPlayer()
+    {
+        return actualPlayerTurn;
+    }
+
+    public void ChangeTurn()
+    {
+        for (int i = 0; i < actualPlayerTurn.Abilities.Count; i++)
+        {
+            if (actualPlayerTurn.Abilities[i].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
+            {
+                Debug.Log("Waiting for action to end");
+                return;
+            }
+        }
+
+        // TAMBIEN DEBERIAMOS RECORRER LA LISTA DE UNIDADES Y VERIFICAR SI NO TENEMOS NINGUNA ACCION EFECTUANDOSE
+
+        if (actualPlayerTurn == players[0])
+        {
+            actualPlayerTurn = players[1];
+        }
+        else
+        {
+            actualPlayerTurn = players[0];
+        }
+
+        OnChangeTurn?.Invoke();
+        OnResetActionPoints?.Invoke(actualPlayerTurn.PlayerID);
+    }
+
+    #endregion
+
+    #region SETGAME
 
     private void SetBoard()
     {
+        grid = new Grid<HeatMapGridObject>(withd, height, cellSize, gridStartPosition, (Grid<HeatMapGridObject> g, int x, int y) => new HeatMapGridObject(g, x, y));
+        movePositioner = new UnitMovePositioner(cellSize);
+
         tiles = new GameObject[withd, height];
 
         List<PositionerDemo.Motion> motionsCreateBoard = new List<PositionerDemo.Motion>();
@@ -155,7 +256,12 @@ public class AnimotionHandler : MonoBehaviour
         motionControllerCreateBoard.TryReproduceMotion();
     }
 
-    private void CreateNewBoard()
+    public Board2D GetBoard()
+    {
+        return board;
+    }
+
+    private void CreatePlayers()
     {
         players = new Player[2];
 
@@ -165,8 +271,29 @@ public class AnimotionHandler : MonoBehaviour
         players[0] = new Player(0, PLAYERTYPE.PLAYER, deckPlayerOne);
         players[1] = new Player(1, PLAYERTYPE.PLAYER, deckPlayerTwo);
 
+        SetPlayerTurn(players[0]);
+    }
+
+    private void CreateDeck()
+    {
         cardManager.CreateDeck(players[0], playerOneCards);
         cardManager.CreateDeck(players[1], playerTwoCards);
+    }
+
+    private void CreateNewBoard()
+    {
+        //players = new Player[2];
+
+        //Stack<Card> deckPlayerOne = new Stack<Card>();
+        //Stack<Card> deckPlayerTwo = new Stack<Card>();
+
+        //players[0] = new Player(0, PLAYERTYPE.PLAYER, deckPlayerOne);
+        //players[1] = new Player(1, PLAYERTYPE.PLAYER, deckPlayerTwo);
+
+        //SetPlayerTurn(players[0]);
+
+        //cardManager.CreateDeck(players[0], playerOneCards);
+        //cardManager.CreateDeck(players[1], playerTwoCards);
 
         board = new Board2D(height, withd, players, gridStartPosition);
 
@@ -196,7 +323,6 @@ public class AnimotionHandler : MonoBehaviour
                     tiles[x, y].transform.SetParent(tileParent.transform);
                     continue;
                 }
-
 
                 Vector3 thisTileFinalPosition = board.GetGridObject(x, y).GetRealWorldLocation();
 
@@ -292,6 +418,10 @@ public class AnimotionHandler : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+    #region UPDATE
 
     void Update()
     {
@@ -1062,6 +1192,21 @@ public class AnimotionHandler : MonoBehaviour
 
         Tile TileObject = board.GetGridObject(Helper.GetMouseWorldPosition(cam));
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (TileObject != null)
+            {
+                if (actualPlayerTurn.Abilities[0].OnTryEnter() == true)
+                {
+                    spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
+                }
+                else
+                {
+                    Debug.Log("CANT ENTER");
+                }
+            }
+        }
+
         if (TileObject != null)
         {
             if (actualTileObject != null)
@@ -1095,6 +1240,14 @@ public class AnimotionHandler : MonoBehaviour
                 kimbokoInfoPanel.SetText(false);
             }
         }
+
+    }
+
+    private void SpawnInfoTest(SpawnAbilityEventInfo spawnInfo)
+    {
+        Debug.Log("Me Spawneo el Player: " + spawnInfo.spawnerPlayer.PlayerID);
+        Debug.Log("Soy del tipo: " + spawnInfo.spawnUnitType);
+        Debug.Log("Estoy en la Posicion: " + spawnInfo.spawnTile.PosX + "/" + spawnInfo.spawnTile.PosY);
     }
 
     private void UpdateKimbokoInfoPanel(HeatMapGridObject heatMapGridObject)
@@ -1123,7 +1276,7 @@ public class AnimotionHandler : MonoBehaviour
         }
         else
         {
-            Debug.Log("NO ENEMIES ");
+            //Debug.Log("NO ENEMIES ");
             kimbokoInfoPanel.SetText(false);
         }
     }
@@ -1153,11 +1306,13 @@ public class AnimotionHandler : MonoBehaviour
         return raycastResultsList.Count > 0;
     }
 
+    #endregion
+
     #region CARDS
 
     public void AddCard()
     {
-        cardManager.AddCard(players[0], this);
+        cardManager.AddCard(GetPlayer());
 
         //if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
         //{
@@ -1226,7 +1381,7 @@ public class AnimotionHandler : MonoBehaviour
     {
         Debug.Log("Se disparo el ON CARD USE");
 
-        cardManager.FireCardUITest(cardUI, this);
+        cardManager.FireCardUITest(cardUI);
 
         ////OnCardWaitingTarget(cardUI);
         ////OnCardSendToGraveyard(cardUI);
@@ -1287,7 +1442,7 @@ public class AnimotionHandler : MonoBehaviour
 
     public void SetActiveInfoCard(bool isActive)
     {
-        cardManager.SetActiveInfoCard(isActive, this);
+        cardManager.SetActiveInfoCard(isActive);
 
         //if (isActive)
         //{
@@ -1348,4 +1503,3 @@ public class AnimotionHandler : MonoBehaviour
     #endregion
 
 }
-

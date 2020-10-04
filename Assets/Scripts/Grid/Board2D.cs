@@ -43,7 +43,7 @@ namespace PositionerDemo
             tileSize = 4;
 
             //this.originPosition = new Vector3(-22,-10,0);
-            this.originPosition = originPosition;
+            //this.originPosition = originPosition;
             boardHolderPosX = 0 - totalWidth / 2 - tileWidth / 2 + tileWidth;
             boardHolderPosY = 0 - totalHeight / 2 - tileHeight / 2 + tileHeight;
 
@@ -118,7 +118,7 @@ namespace PositionerDemo
 
         }
 
-        public void LoadTilePrefab()
+        private void LoadTilePrefab()
         {
             tilePrefab = Resources.Load("TilePrefab/Tile", typeof(GameObject)) as GameObject;
             baseTilePrefab = Resources.Load("TilePrefab/BaseTile", typeof(GameObject)) as GameObject;

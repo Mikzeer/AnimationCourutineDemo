@@ -14,6 +14,12 @@ namespace PositionerDemo
         private int _playerID;
         public int PlayerID { get => _playerID; private set => _playerID = value; }
 
+        Dictionary<int, Stat> stats;
+        public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
+
+        Dictionary<int, AbilityAction> abilities;
+        public Dictionary<int, AbilityAction> Abilities { get => abilities; protected set => abilities = value; }
+
         private OCUPPIERTYPE _occupierType;
         public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
 
@@ -22,7 +28,7 @@ namespace PositionerDemo
 
         public PLAYERTYPE playerType { get; set; }
 
-        private List<Kimboko.Kimboko> kimbokoUnits = new List<Kimboko.Kimboko>();
+        private List<Kimboko> kimbokoUnits = new List<Kimboko>();
 
         private int _actionPoints;
         public int ActionPoints { get { return _actionPoints; } private set { _actionPoints = value; } }
@@ -43,6 +49,23 @@ namespace PositionerDemo
             CardTargetType = CARDTARGETTYPE.BASENEXO;
             PlayersHands = new List<Card>();
             Graveyard = new List<Card>();
+
+            Abilities = new Dictionary<int, AbilityAction>();
+            SpawnAbility spawnAbility = new SpawnAbility(this);
+            Abilities.Add(spawnAbility.ID, spawnAbility);
+
+            AttackPowerStat attackPow = new AttackPowerStat(2, 2);
+            AttackRangeStat attackRan = new AttackRangeStat(1, 3);
+            HealthStat healthStat = new HealthStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+
+            Stats = new Dictionary<int, Stat>();
+            Stats.Add(attackPow.id, attackPow);
+            Stats.Add(attackRan.id, attackRan);
+            Stats.Add(healthStat.id, healthStat);
+            Stats.Add(actionPStat.id, actionPStat);
+
+            AnimotionHandler.OnResetActionPoints += ResetActionPoints;
         }
 
         public void OnSelect(bool isSelected, int playerID)
@@ -66,25 +89,40 @@ namespace PositionerDemo
             return playerAnimator;
         }
 
-        public void AddUnit(Kimboko.Kimboko kimbokoUnit)
+        public void AddUnit(Kimboko kimbokoUnit)
         {
             kimbokoUnits.Add(kimbokoUnit);
         }
 
-        public void RemoveUnit(Kimboko.Kimboko kimbokoUnit)
+        public void RemoveUnit(Kimboko kimbokoUnit)
         {
             kimbokoUnits.Remove(kimbokoUnit);
         }
 
-        public void SetActionPoints(int apPoints)
+        public int GetCurrentActionPoints()
         {
-            ActionPoints = apPoints;
+            int actionPoints = 0;
+
+            if (stats.ContainsKey(4))
+            {
+                actionPoints = stats[4].ActualStatValue;
+            }
+
+            return actionPoints;
         }
 
-        public void RestActionPoints(int apPoints)
+        public void ResetActionPoints(int playerID)
         {
-            ActionPoints -= apPoints;
+            if (PlayerID != playerID) return;
+
+            if (Stats.ContainsKey(4))
+            {
+                int actionPointsReset = 1;
+                StatModification statModification = new StatModification(this, Stats[4], 4, actionPointsReset, STATMODIFIERTYPE.CHANGE);
+                Stats[4].AddStatModifier(statModification);
+                Stats[4].ApplyModifications();
+            }
         }
 
-    }
+    }        
 }

@@ -34,7 +34,7 @@ namespace PositionerDemo
                 float minutes = Mathf.FloorToInt(timeToShow / 60);
                 float seconds = Mathf.FloorToInt(timeToShow % 60);
                 string text = string.Format("{0:00}:{1:00}", minutes, seconds);
-                Debug.Log(text);
+                //Debug.Log(text);
 
                 yield return null;
             }

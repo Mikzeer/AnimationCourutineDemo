@@ -1,80 +1,94 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 
 namespace PositionerDemo
 {
-    namespace Kimboko
+
+    public abstract class Kimboko : IOcuppy
     {
-        public abstract class Kimboko : IOcuppy
+        private int _id;
+        public int ID { get => _id; protected set => _id = value; }
+        public Player ownerPlayer { get; set; }
+
+        protected Animator kimbokoAnimator;
+        protected Transform kimbokoTransform;
+
+        Dictionary<int, Stat> stats;
+        public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
+        Dictionary<int, AbilityAction> abilities;
+        public Dictionary<int, AbilityAction> Abilities { get => abilities; protected set => abilities = value; }
+        private OCUPPIERTYPE _occupierType;
+        public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
+        private CARDTARGETTYPE _cardTargetType;
+        public CARDTARGETTYPE CardTargetType { get => _cardTargetType; protected set => _cardTargetType = value; }
+
+        private UNITTYPE _unitType;
+        public UNITTYPE UnitType { get => _unitType; protected set => _unitType = value; }
+        private MOVEDIRECTIONTYPE _moveDirectionerType;
+        public MOVEDIRECTIONTYPE MoveDirectionerType { get => _moveDirectionerType; protected set => _moveDirectionerType = value; }
+
+        public Kimboko(int ID, Player ownerPlayer, UNITTYPE UnitType, MOVEDIRECTIONTYPE MoveDirectionerType)
         {
-            protected Animator kimbokoAnimator;
-            protected Transform kimbokoTransform;
+            this.ID = ID;
+            this.ownerPlayer = ownerPlayer;
+            CardTargetType = CARDTARGETTYPE.UNIT;
+            OccupierType = OCUPPIERTYPE.UNIT;
 
-            private int _id;
-            public int ID { get => _id; protected set => _id = value; }
+            this.UnitType = UnitType;
+            this.MoveDirectionerType = MoveDirectionerType;
+            AnimotionHandler.OnResetActionPoints += ResetActionPoints;
+        }
 
-            private UNITTYPE _unitType;
-            public UNITTYPE UnitType { get => _unitType; protected set => _unitType = value; }
-            private OCUPPIERTYPE _occupierType;
-            public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
+        public void OnSelect(bool isSelected, int playerID)
+        {
+            Debug.Log("KIMBOKO SELECTED");
+        }
 
-            private MOVEDIRECTIONTYPE _moveDirectionerType;
-            public MOVEDIRECTIONTYPE MoveDirectionerType { get => _moveDirectionerType; protected set => _moveDirectionerType = value; }
-            private CARDTARGETTYPE _cardTargetType;
-            public CARDTARGETTYPE CardTargetType { get => _cardTargetType; protected set => _cardTargetType = value; }
+        public void SetGameObject(GameObject kimbokoPrefab)
+        {
+            kimbokoAnimator = kimbokoPrefab.GetComponent<Animator>();
+            kimbokoTransform = kimbokoPrefab.transform;
+        }
 
-            public int PosX;
-            public int PosY;
+        public Transform GetTransform()
+        {
+            return kimbokoTransform;
+        }
 
-            public Player ownerPlayer { get; set; }
-            public int ActionPoints { get; set; }
+        public Animator GetAnimator()
+        {
+            return kimbokoAnimator;
+        }
 
-            public Kimboko(int ID, Player ownerPlayer)
+        public void DestroyPrefab()
+        {
+            ownerPlayer.RemoveUnit(this);
+            MonoBehaviour.Destroy(kimbokoTransform.gameObject);
+        }
+
+        public int GetCurrentActionPoints()
+        {
+            int actionPoints = 0;
+
+            if (stats.ContainsKey(4))
             {
-                this.ID = ID;
-                this.ownerPlayer = ownerPlayer;
-                CardTargetType = CARDTARGETTYPE.UNIT;
-                OccupierType = OCUPPIERTYPE.UNIT;
-
-                this.UnitType = UnitType;
-                this.MoveDirectionerType = MoveDirectionerType;
+                actionPoints = stats[4].ActualStatValue;
             }
 
-            public void OnSelect(bool isSelected, int playerID)
-            {
-                Debug.Log("KIMBOKO SELECTED");
-            }
+            return actionPoints;
+        }
 
-            public void SetGameObject(GameObject kimbokoPrefab)
-            {
-                kimbokoAnimator = kimbokoPrefab.GetComponent<Animator>();
-                kimbokoTransform = kimbokoPrefab.transform;
-            }
+        public void ResetActionPoints(int playerID)
+        {
+            if (ownerPlayer.PlayerID != playerID) return;
 
-            public Transform GetTransform()
+            if (Stats.ContainsKey(4))
             {
-                return kimbokoTransform;
-            }
-
-            public Animator GetAnimator()
-            {
-                return kimbokoAnimator;
-            }
-
-            public void SetActionPoints(int apPoints)
-            {
-                ActionPoints = apPoints;
-            }
-
-            public void RestActionPoints(int apPoints)
-            {
-                ActionPoints -= apPoints;
-            }
-
-            public void DestroyPrefab()
-            {
-                ownerPlayer.RemoveUnit(this);
-                MonoBehaviour.Destroy(kimbokoTransform.gameObject);
+                int actionPointsReset = 1;
+                StatModification statModification = new StatModification(this, Stats[4], 4, actionPointsReset, STATMODIFIERTYPE.CHANGE);
+                Stats[4].AddStatModifier(statModification);
+                Stats[4].ApplyModifications();
             }
         }
     }
