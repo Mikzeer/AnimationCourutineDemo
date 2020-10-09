@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 namespace PositionerDemo
 {
     public class SetParentConfigureAnimotion<T, O> : ConfigureAnimotion<T, O> where T : Transform where O : Transform

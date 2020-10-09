@@ -1,4 +1,6 @@
-﻿namespace PositionerDemo
+﻿using UnityEngine;
+
+namespace PositionerDemo
 {
 
     public class DefendAbilityModifier : AbilityModifier
@@ -6,7 +8,6 @@
         private const int DEFENDABILITYMODIFIFERID = 0;
         private const int MODIFEREXECUTIIONORDER = 0;
         private int takeDamageAbilityID = 4;
-        IOcuppy performerIOcuppy;
         int duration = 2;
 
         public DefendAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
@@ -16,6 +17,13 @@
             executeOnShot = false;
             Enter();
         }
+
+        public DefendAbilityModifier() : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        {
+            executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
+            executeOnShot = false;
+        }
+
 
         public override void Enter()
         {
@@ -29,10 +37,20 @@
         public override void Execute(AbilityAction abilityAction)
         {
             base.Execute(abilityAction);
-            //if (unit.TakeDamageAbility.damage.damageAmountRecived > 1)
-            //{
-            //    unit.TakeDamageAbility.damage.damageAmountRecived = Mathf.FloorToInt(unit.TakeDamageAbility.damage.damageAmountRecived / 2);
-            //}
+
+            Debug.Log("Enter DefendAbilityModifier ");
+
+            if (abilityAction.AbilityType == ABILITYTYPE.TAKEDAMAGE)
+            {
+                //TakeDamageAbility ab = (TakeDamageAbility)abilityAction;
+                //if (ab != null)
+                //{
+                //    if (ab.takeDamageAbilityInfo.damageAmount > 1)
+                //    {
+                //        ab.takeDamageAbilityInfo.damageAmount = Mathf.FloorToInt(ab.takeDamageAbilityInfo.damageAmount / 2);
+                //    }
+                //}
+            }
         }
 
         public override void Expire()

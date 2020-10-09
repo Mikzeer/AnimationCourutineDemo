@@ -5,11 +5,10 @@ namespace PositionerDemo
 {
     public class Player : IOcuppy
     {
+        #region VARIABLES
+
         private Animator playerAnimator;
         private Transform playerTransform;
-
-        public int PosX { get; private set; }
-        public int PosY { get; private set; }
 
         private int _playerID;
         public int PlayerID { get => _playerID; private set => _playerID = value; }
@@ -30,15 +29,14 @@ namespace PositionerDemo
 
         private List<Kimboko> kimbokoUnits = new List<Kimboko>();
 
-        private int _actionPoints;
-        public int ActionPoints { get { return _actionPoints; } private set { _actionPoints = value; } }
-
         private Stack<Card> _deck;
         public Stack<Card> Deck { get { return _deck; } set { _deck = value; } }
         private List<Card> _playersHands;
         public List<Card> PlayersHands { get { return _playersHands; } private set { _playersHands = value; } }
         private List<Card> _graveyard;
         public List<Card> Graveyard { get { return _graveyard; } private set { _graveyard = value; } }
+
+        #endregion
 
         public Player(int PlayerID, PLAYERTYPE playerType, Stack<Card> Deck)
         {
@@ -52,7 +50,9 @@ namespace PositionerDemo
 
             Abilities = new Dictionary<int, AbilityAction>();
             SpawnAbility spawnAbility = new SpawnAbility(this);
+            TakeCardAbility takeCardAbility = new TakeCardAbility(this);
             Abilities.Add(spawnAbility.ID, spawnAbility);
+            Abilities.Add(takeCardAbility.ID, takeCardAbility);
 
             AttackPowerStat attackPow = new AttackPowerStat(2, 2);
             AttackRangeStat attackRan = new AttackRangeStat(1, 3);
@@ -65,7 +65,7 @@ namespace PositionerDemo
             Stats.Add(healthStat.id, healthStat);
             Stats.Add(actionPStat.id, actionPStat);
 
-            AnimotionHandler.OnResetActionPoints += ResetActionPoints;
+            TurnManager.OnPlayerResetActionPoints += ResetActionPoints;
         }
 
         public void OnSelect(bool isSelected, int playerID)
@@ -111,14 +111,13 @@ namespace PositionerDemo
             return actionPoints;
         }
 
-        public void ResetActionPoints(int playerID)
+        public void ResetActionPoints(int playerID, int amount)
         {
             if (PlayerID != playerID) return;
 
             if (Stats.ContainsKey(4))
             {
-                int actionPointsReset = 1;
-                StatModification statModification = new StatModification(this, Stats[4], 4, actionPointsReset, STATMODIFIERTYPE.CHANGE);
+                StatModification statModification = new StatModification(this, Stats[4], 4, amount, STATMODIFIERTYPE.CHANGE);
                 Stats[4].AddStatModifier(statModification);
                 Stats[4].ApplyModifications();
             }

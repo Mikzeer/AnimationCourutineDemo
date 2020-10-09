@@ -4,17 +4,22 @@ namespace PositionerDemo
 {
     public class ChangeUnitClassAbilityModifier : AbilityModifier
     {
-        private const int DEFENDABILITYMODIFIFERID = 0;
+        private const int ABILITYMODIFIFERID = 2;
         private const int MODIFEREXECUTIIONORDER = 0;
         private int spawnAbilityID = 0;
-        IOcuppy performerIOcuppy;
 
-        public ChangeUnitClassAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        public ChangeUnitClassAbilityModifier(IOcuppy performerIOcuppy) : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             this.performerIOcuppy = performerIOcuppy;
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
             executeOnShot = false;
             Enter();
+        }
+
+        public ChangeUnitClassAbilityModifier() : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        {
+            executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
+            executeOnShot = false;
         }
 
         public override void Enter()
@@ -45,13 +50,6 @@ namespace PositionerDemo
             {
                 Expire();
             }
-
-
-                
-            //if (unit.TakeDamageAbility.damage.damageAmountRecived > 1)
-            //{
-            //    unit.TakeDamageAbility.damage.damageAmountRecived = Mathf.FloorToInt(unit.TakeDamageAbility.damage.damageAmountRecived / 2);
-            //}
         }
 
         public override void Expire()

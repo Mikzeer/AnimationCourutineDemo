@@ -6,8 +6,8 @@ namespace PositionerDemo
     public class SpawnController
     {
         MotionController motionControllerSpawn = new MotionController();
-        int craneTweenSpeedVelocity = 5;
-        int kimbokoTweenSpeedVelocity = 5;
+        int craneTweenSpeedVelocity = 20;
+        int kimbokoTweenSpeedVelocity = 20;
         int spawnIndexID = 0;
 
         public void OnTrySpawn(Tile TileObject, Player player)
@@ -104,7 +104,7 @@ namespace PositionerDemo
             Kimboko kimboko = kimbokoXFac.CreateKimboko(spawnIndexID, player);
             spawnIndexID++;
 
-            GameObject goKimbok = GameObject.Instantiate(AnimotionHandler.Instance.kimbokoPrefab);
+            GameObject goKimbok = GameObject.Instantiate(GameCreator.Instance.kimbokoPrefab);
             kimboko.SetGameObject(goKimbok);
 
             if (TileObject.IsOccupied())
@@ -130,7 +130,7 @@ namespace PositionerDemo
 
         public void NormalSpawn(Vector3 tileObjectRealWorldLocation, Player player, GameObject goKimbok)
         {
-            //Tile TileObject = AnimotionHandler.Instance.GetBoard().GetGridObject(spawnPosition);
+            //Tile TileObject = GameCreator.Instance.GetBoard().GetGridObject(spawnPosition);
 
             List<Motion> motionsSpawn = new List<Motion>();
             List<Configurable> configureAnimotion = new List<Configurable>();
@@ -139,51 +139,49 @@ namespace PositionerDemo
             Vector3 craneStartPosition;
             Vector3 craneEndPostion;
             //B TWEEN DESDE UNA POSICION ELEVADA SOBRE LA TILE DONDE SE INDICO SPAWNEAR HASTA MAS ABAJO ASI SE VE DESDE ARRIBA EN EL TABLERO SOBRE LA TILE
-            craneStartPosition = new Vector3(tileObjectRealWorldLocation.x, AnimotionHandler.Instance.Crane.transform.position.y, 0);
-            AnimotionHandler.Instance.Crane.transform.position = craneStartPosition;
+            craneStartPosition = new Vector3(tileObjectRealWorldLocation.x, GameCreator.Instance.Crane.transform.position.y, 0);
+            GameCreator.Instance.Crane.transform.position = craneStartPosition;
             craneEndPostion = new Vector3(tileObjectRealWorldLocation.x, Helper.GetCameraTopBorderYWorldPostion().y);
 
             //A CRANE//GRUA SET ACTIVE = TRUE // INSTANCIAMOS KIMBOKO SET ACTIVE FALSE
-            AnimotionHandler.Instance.Crane.SetActive(true);
+            GameCreator.Instance.Crane.SetActive(true);
 
-            goKimbok.transform.position = AnimotionHandler.Instance.CraneEnd.position;
+            goKimbok.transform.position = GameCreator.Instance.CraneEnd.position;
             // ACTIVAMOS AL KIMBOKO SINO NO PUEDE OBTENER EL CURRENT ANIMATOR STATE INFO
             goKimbok.SetActive(true);
 
             // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
-            Motion motionTweenMove = new MoveTweenMotion(AnimotionHandler.Instance, AnimotionHandler.Instance.Crane.transform, 1, craneEndPostion, craneTweenSpeedVelocity);
+            Motion motionTweenMove = new MoveTweenMotion(GameCreator.Instance, GameCreator.Instance.Crane.transform, 1, craneEndPostion, craneTweenSpeedVelocity);
             motionsSpawn.Add(motionTweenMove);
 
             ////C ANIMATION CRANESPAWNING
-            Motion motionCraneSpawn = new SpawnMotion(AnimotionHandler.Instance, AnimotionHandler.Instance.Crane.GetComponent<Animator>(), 2);
+            Motion motionCraneSpawn = new SpawnMotion(GameCreator.Instance, GameCreator.Instance.Crane.GetComponent<Animator>(), 2);
             motionsSpawn.Add(motionCraneSpawn);
 
-            Motion motionSpawnSound = new SoundMotion(AnimotionHandler.Instance, 2, AnimotionHandler.Instance.audioSource, AnimotionHandler.Instance.audioClips[3], false);
+            Motion motionSpawnSound = new SoundMotion(GameCreator.Instance, 2, GameCreator.Instance.audioSource, GameCreator.Instance.audioClips[3], false);
             motionsSpawn.Add(motionSpawnSound);
 
-            KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, AnimotionHandler.Instance.CraneEnd, 3);
+            KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, GameCreator.Instance.CraneEnd, 3);
             configureAnimotion.Add(KimbokoPositionConfigAnimotion);
             SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(goKimbok.transform, 3);
             configureAnimotion.Add(KimbokoActiveConfigAnimotion);
 
             ////E TWEEN DESDE LA PUNTA DEL CRANE HASTA EL PISO, DE LA MISMA DURACION QUE LA ANIMACION DE SPAWN
-            Motion motionKimbokoTweenMove = new MoveTweenMotion(AnimotionHandler.Instance, goKimbok.transform, 4, tileObjectRealWorldLocation, kimbokoTweenSpeedVelocity);
+            Motion motionKimbokoTweenMove = new MoveTweenMotion(GameCreator.Instance, goKimbok.transform, 4, tileObjectRealWorldLocation, kimbokoTweenSpeedVelocity);
             motionsSpawn.Add(motionKimbokoTweenMove);
             //G TWEEN DE LA CRANE PARA QUE SALGA DEL MAPA
-            Motion motionTweenBackCraneMove = new MoveTweenMotion(AnimotionHandler.Instance, AnimotionHandler.Instance.Crane.transform, 5, craneStartPosition, craneTweenSpeedVelocity);
+            Motion motionTweenBackCraneMove = new MoveTweenMotion(GameCreator.Instance, GameCreator.Instance.Crane.transform, 5, craneStartPosition, craneTweenSpeedVelocity);
             motionsSpawn.Add(motionTweenBackCraneMove);
 
             // FINISH //
             KimbokoIdlleConfigureAnimotion<Animator, Transform> kimbokoIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(goKimbok.GetComponent<Animator>(), 6);
             configureAnimotion.Add(kimbokoIdlleConfigureAnimotion);
-            KimbokoIdlleConfigureAnimotion<Animator, Transform> craneIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(AnimotionHandler.Instance.Crane.GetComponent<Animator>(), 6);
+            KimbokoIdlleConfigureAnimotion<Animator, Transform> craneIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(GameCreator.Instance.Crane.GetComponent<Animator>(), 6);
             configureAnimotion.Add(craneIdlleConfigureAnimotion);
             AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[0], 6);
             configureAnimotion.Add(abActionConfigureAnimotion);
 
-
-
-            CombineMotion combinMoveMotion = new CombineMotion(AnimotionHandler.Instance, 1, motionsSpawn, configureAnimotion);
+            CombineMotion combinMoveMotion = new CombineMotion(GameCreator.Instance, 1, motionsSpawn, configureAnimotion);
 
             // LO DESACTIVO PARA QUE NO MOLESTE EN ESCENA ANTES DE "SPAWNEARSE"
             goKimbok.SetActive(false);
@@ -232,7 +230,7 @@ namespace PositionerDemo
         //        Kimboko kimboko = kimbokoXFac.CreateKimboko(spawnIndexID, player);
         //        spawnIndexID++;
 
-        //        GameObject goKimbok = GameObject.Instantiate(AnimotionHandler.Instance.kimbokoPrefab);
+        //        GameObject goKimbok = GameObject.Instantiate(GameCreator.Instance.kimbokoPrefab);
         //        kimboko.SetGameObject(goKimbok);
 
         //        if (TileObject.IsOccupied())

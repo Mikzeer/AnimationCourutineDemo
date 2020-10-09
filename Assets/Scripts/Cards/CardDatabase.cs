@@ -2,34 +2,40 @@
 
 namespace PositionerDemo
 {
-    public class CardDatabase
+    public static class CardDatabase
     {
-        Dictionary<int, Card> cardDatabase;
+        public static Dictionary<int, AbilityModifier> abilitiesModifier;
 
-        public CardDatabase()
+        public static AbilityModifier GetModifier(int modifierID)
         {
+            AbilityModifier abMod = null;
 
-        }
-
-        public Card GetCard(int cardIDSO)
-        {
-            if (cardDatabase.ContainsKey(cardIDSO))
+            switch (modifierID)
             {
-                return cardDatabase[cardIDSO];
+                case 0:
+                    abMod = new DefendAbilityModifier();
+                    break;
+                case 1:
+                    abMod = new ShieldAbilityModifier();
+                    break;
+                case 2:
+                    abMod = new ChangeUnitClassAbilityModifier();
+                    break;
+                default:
+                    break;
             }
 
-            return null;
+            return abMod;
         }
 
-        private void CreateCardDatabase()
-        {
-
-            CardScriptableObject CardSO = new CardScriptableObject();
-            //cardDatabase = new Dictionary<int, Card>()
-            //{
-            //    { 0, new ShieldCard (0, CardSO) },
-            //    { 1, new ShieldCard (0, CardSO) }
-            //};
-        }
+        //// Add this method to the CharacterStat class
+        //private int CompareModifierOrder(StatModifier a, StatModifier b)
+        //{
+        //    if (a.Order < b.Order)
+        //        return -1;
+        //    else if (a.Order > b.Order)
+        //        return 1;
+        //    return 0; // if (a.Order == b.Order)
+        //}
     }
 }

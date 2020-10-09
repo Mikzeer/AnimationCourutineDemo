@@ -34,8 +34,8 @@ namespace PositionerDemo
         {
             this.selectedTile = selectedTile;
             spawnAbilityInfo = new SpawnAbilityEventInfo(player, UNITTYPE.X, selectedTile);
-            ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(player);
-            AddAbilityModifier(ab);
+            //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(player);
+            //AddAbilityModifier(ab);
         }
 
         public override bool OnTryEnter()
@@ -59,16 +59,16 @@ namespace PositionerDemo
 
         public override void OnResetActionExecution()
         {
-            if (AnimotionHandler.Instance.GetPlayer() == player)
+            if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == player)
             {
-                Debug.Log("Es mi turno Player y voy a reseteaer la Spawn Hability " + player.PlayerID);
+                //Debug.Log("Es mi turno Player y voy a reseteaer la Spawn Hability " + player.PlayerID);
                 actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
             }
-            else
-            {
-                Debug.Log("NO ES MI TURNO Player " + player.PlayerID);
-                Debug.Log("Tengo Tantos Action Points " + player.GetCurrentActionPoints());
-            }
+            //else
+            //{
+            //    Debug.Log("NO ES MI TURNO Player " + player.PlayerID);
+            //    Debug.Log("NO ES MI TURNO Tengo Tantos Action Points " + player.GetCurrentActionPoints());
+            //}
         }
 
         public override bool OnTryExecute()
@@ -76,18 +76,21 @@ namespace PositionerDemo
             // 1- TENER LOS AP NECESARIOS
             if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
             {
+                Debug.Log("Spawn Ability: Not Enough Action Points");
                 return false;
             }
 
             // 2- QUE EXISTA UNA TILE SELECCIONADA
             if (selectedTile == null)
             {
+                Debug.Log("Spawn Ability: Not Selected Tile");
                 return false;
             }
 
             // 2- QUE SEA UNA TILE DE LA BASE
             if (selectedTile.tileType != TILETYPE.SPAWN)
             {
+                Debug.Log("Spawn Ability: Not Selected Spawn Tile");
                 return false;
             }
 
@@ -96,16 +99,16 @@ namespace PositionerDemo
 
             if (spawnTile == null)
             {
+                Debug.Log("Spawn Ability: Spawn Tile Null");
                 return false;
             }
-
 
             // 3- QUE SEA LA BASE DEL PLAYER QUE LA CLICKEO
             if (spawnTile.PlayerID != player.PlayerID)
             {
+                Debug.Log("Spawn Ability: Enemy Spawn Tile Selected");
                 return false;
             }
-
 
             // 5- QUE LA TILE NO ESTE OCUPADA POR UN ENEMIGO, SINO YA SERIA LA HABILIDAD DE ATTACK EN BASE
             if (spawnTile.IsOccupied())
@@ -113,7 +116,7 @@ namespace PositionerDemo
                 if (spawnTile.GetOccupier().OccupierType == OCUPPIERTYPE.UNIT)
                 {
                     Kimboko unit = (Kimboko)spawnTile.GetOccupier();
-
+                    Debug.Log("Spawn Ability: Tile Selected Is Occupied By a Kimboko");
                     if (unit.ownerPlayer != player)
                     {
                         return false;
@@ -134,7 +137,6 @@ namespace PositionerDemo
 
         public override void OnStartExecute()
         {
-
             //OnActionStarExecute?.Invoke(actor, ActionEventInformation);
         }
 
@@ -161,5 +163,4 @@ namespace PositionerDemo
         }
 
     }
-
 }

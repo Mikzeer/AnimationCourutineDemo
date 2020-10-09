@@ -36,14 +36,6 @@ namespace PositionerDemo
         public List<CardFiltterScriptableObject> CardFiltters { get { return cardFiltters; } protected set { cardFiltters = value; } }
 
         // CARD EFFECTS
-        // ACTION MODIFIERS
-        // STATS MODIFIERS
-        // ACTION MODIFIER REMOVER
-        // PERFORM ACTION REVIVIMOS UNA CARTA DEL CEMENTERIO
-        // CHANGE STAT ON EVENT +2 ATK POWER FOR EVERY ENEMY KILLED BY THIS UNIT // POR CADA TURNO RECIBE +1 ATK
-        // Desde donde levantamos esa informacion... quien va a tener el Enter o Execute para suscribirse al evento?
-        // ... O Tenemos una lista de Effects lo que se encargue de hacer el Change Turn para todos esos efectos especiales?
-        // El +1 ATK LO VA A RECIBIR LA UNIDAD QUE TENGA APLICADA EL MODIFICADOR DE STAT... 
 
         #endregion
 
@@ -91,12 +83,6 @@ namespace PositionerDemo
          * Como hago para chequear que sea el jugador correcto, por que si hackean eso ya esta
          * 
          * 
-         * SE SUMA A UNA LISTA DE ACTION MODIFIER
-         * REMUEVE UN ACTION MODIFIER DE UNA LISTA, Busca Action por ID, busca en la Lista de Action Modifier un ID de Modifier
-         * SE APLICA UN STAT MODIFIER EN UN STAT
-         * GENERA UNA ACTION DETERMINADA Ej: Levantar Una Card / Revivir una Card del cementerio / Spawn a Unit
-         * SE APLICA UN STAT MODIFIER EN UN STAT POR UN TIEMPO/SUCESO DETERMINADO
-         * SE APLICA UN STAT MODIFIER EN UN STAT CUANDO SURGE UN EVENTO
          * 
          * Los Pasos al levantar una Card
          * Chequeamos si la Card es Automatic o no
@@ -238,6 +224,11 @@ namespace PositionerDemo
         // ME SUSCRIBO AL EVENTO DE OnChangeTurn Y CUANDO HAGO EL EXPIRE LE APLICO UN NERF DE -2 DE ATAQUE A LA UNIDAD 
         // ME SUSCRIBO TAMBIEN AL EVENTO OnUnitDie POR LAS DUDAS DE QUE SE MUERA ANTES DE QUE PUEDA APLICAR EL EXPIRE Y SE LO TERMINE APLICANDO A LA NADA
 
+        public void OnCardBeginDrag()
+        {
+
+        }
+
         public virtual bool DoIHaveTarget()
         {
             // DEBERIA TENER UN METODO PARA VER SI SE PUEDE USAR O NO LA CARD, ASI CUANDO EL JUGADOR LA SUELTA EN EL CAMPO 
@@ -346,30 +337,34 @@ namespace PositionerDemo
             return filtterTargets;
         }
 
-        public void OnCardBeginDrag()
+        public void OnCardEffectApplyTarget(List<ICardTarget> cardTargets)
         {
+            // Recorro la lista de Targets y aplico el efecto
+            // Hay que saber que el/los Filtter y el/los Effect estan como enlazados de alguna manera
+            // No voy a poder aplicar robar dos Cards si antes no chequee en el Filter tener dos Cards
+            // Entonces en el momento de aplicar el Effect deberiamos chequear otra vez si los target cumplen los filtros
+            // Por las dudas que algo en el medio los haya alterado
+            // NO DEBERIAMOS PASAR POR CheckPosibleTargets SOLO POR FilterTargets
+            cardTargets = FilterTargets(cardTargets);
+
+            // Bueno... por un lado tengo los Modifiers/Effects de la Card y por el otro lado los Targets a aplicarles el efecto
+            // en el momento del Apply primero tengo que cargar el card effect con el Occupier correspondiente
+            // Esto lo puedo hacer desde el SetOccupier(IOcuppy occupier) de el AbilityModifier/Effect
+            // Y el Modifier lo puedo tener en una lista static en el CardDataBase
+            List<AbilityModifier> mods = new List<AbilityModifier>();
+
+            mods.Add(CardDatabase.GetModifier(0));
 
         }
-
     }
-
 }
 
 namespace CardsEffects
 {
-    /*
-     *  
+    /* 
      * CARD EFFECTS
      * ACTION MODIFIERS
      * STATS MODIFIERS
-     * ACTION MODIFIER REMOVER
-     * PERFORM ACTION REVIVIMOS UNA CARTA DEL CEMENTERIO
-     * CHANGE STAT ON EVENT +2 ATK POWER FOR EVERY ENEMY KILLED BY THIS UNIT // POR CADA TURNO RECIBE +1 ATK
-     * Desde donde levantamos esa informacion... quien va a tener el Enter o Execute para suscribirse al evento?
-     * ... O Tenemos una lista de Effects lo que se encargue de hacer el Change Turn para todos esos efectos especiales?
-     * El +1 ATK LO VA A RECIBIR LA UNIDAD QUE TENGA APLICADA EL MODIFICADOR DE STAT...
-     * 
-     * 
      * 
      * LAS CARDS VAN A CONTENER STATS MODIFIER / ACTION MODIFIER
      * STAT MODIFIER => MODIFICA LOS STATS DE LAS UNIDADES
@@ -379,15 +374,23 @@ namespace CardsEffects
      * 
      * enum ACTIONMODIFIEREJECUTIONTYPE{EARLY, END} // CUANDO DEBE REALIZARSE EL CHEQUEO DE LA MODIFICACION DE LA ACTION
      * 
-     * CUANDO SE ACTIVA CORRESPONDE AL MODIFIER Y NO A LA CARD EN SI, YA QUE LO QUE CADA EFECTO ES EL QUE VA A IMPLEMENTARSE
-     * CUANDO SE ACTIVA => AHORA / EN SU TURNO / SI PAAS X COSA / EN X ESTADO
+     * 
+     * CUANDO SE ACTIVA El Modifier/Effect se aplica automaticamente en el target si este es valido, ahora bien, su efecto puede surtir inmediatamente
+     *                  o el efecto puede surtir solo cuando esta en su turno, o el efecto puede activarse solo cuando surte determinado evento, o cuando
+     *                  la habilidad a la cual afecta (si es que esta enlazado a una habilidad) comienza a ejecutarse.                  
+     *                  => INMEDIATA 
+     *                  => CUANDO SE EJECUTA LA HABILIDAD
+     *                  => CUANDO EL JUGADOR ESTA EN SU TURNO
+     *                  => SI PASAS DETERMINADO EVENTO
      * 
      * Enter()//OnUse() -> ni bien arrancamos la MODIFICACION la prepara y llena todas sus dependencias y suscripciones
      * Expire() -> cuando la accion deja de surtir efecto y se va del actor
      * ExpireCondition => Puede llegar a ser una clase que tenga las condiciones para que un modifier deje de actuar, y se puede modificar en determinados eventos EJ: OnTurnChangeEvent()
      * ActivationCondition => Puede tambien ser una clase que tenga las condiciones para que se active un modifier, puede activarse con eventos EJ: OnUnitTakeDamage()
      * 
-     * CUANTO TIEMPO LO AFECTA => PERMANENTE / POR "X" CANTIDAD DE TURNOS / HASTA QUE PASE "X" COSA EJ "X" CANTIDAD DE ATAQUES, SI UNA UNIDAD COMBINO "X" CANTIDAD DE VECES
+     * CUANTO TIEMPO LO AFECTA => PERMANENTE
+     *                         => POR TURNOS (DURA "X" CANTIDAD DE TURNOS 1 TURNO = 2)
+     *                         => HASTA QUE PASE DETERMINADO EVENTO (X DANO, LEVANTE MAS DE 2 CARDS, ETC)
      * 
      * 
      *  Todos los Action Modifier deberian tener un ORDER, una forma de ordenarlo y decir como van a afectar en la lista
@@ -412,29 +415,88 @@ namespace CardsEffects
      *  Todos los action Modifier van a tener un ID, para poder encontrarlos facilmente en una lista
      *  
      *  
-     *  
-     *  WHEN GAME CHANGE TURN 
-     *  WHEN PLAYER ADD CARD TO THE HAND
+     *  // Todas estas habilidades van a tener un OnEnter/Exit para poder avisarle a otras habilidades o modificadores lo que esta pasando
+     *  WHEN PLAYER TAKE CARD FROM THE DECK
      *  WHEN PLAYER USE A CARD AND CARD GOES TO GRAVEYARD
-     *  WHEN PLAYER REVIVE A CARD FROM GRAVEYARD
-     *  WHEN PLAYER INVOKE UNITS  
-     *  WHEN MOVES A UNIT 
-     *  WHEN UNIT ATTACK ANOTHER UNIT 
-     *  WHEN UNIT RECIVE DAMAGE
+     *  WHEN PLAYER SPAWN UNIT
+     *  WHEN UNIT MOVES 
+     *  WHEN UNIT/PLAYER ATTACK 
+     *  WHEN UNIT/PLAYER/BOARDOBJECT TAKE DAMAGE
      *  WHEN UNIT DIE
-     *  WHEN PLAYER RECIVED DAMAGE 
-     *  WHEN PLAYER ATACKAS UNIT ON BASE 
-     *  WHEN DEFENDE A UNIT 
-     *  WHEN COMBINE A UNIT 
-     *  WHEN DECOMBINE A UNIT 
-     *  WHEN FUSION A UNIT 
-     *  WHEN EVOLVE A UNIT
+     *  WHEN UNIT ENTER DEFENSE MODE 
+     *  WHEN UNIT COMBINE/BEEINGCOMBINE Entra como lo mismo, ya que cuando esta efectuando la descombinacion podemos buscar a todas sus unidades y aplicarles un efecto
+     *  WHEN UNIT 
+     *  WHEN UNIT DECOMBINE/BEEING DECOMBINE Tanto la principal como todos sus hijos pueden recibir modificaciones
+     *  WHEN UNIT FUSION
+     *  WHEN UNIT EVOLVE
      *  
-     *  WHEN CHAIN ACEPT
+     *  
+     *  
+     *  
+     *  
+     *  REMUEVE UN ACTION MODIFIER DE UNA LISTA, Busca Action por ID, busca en la Lista de Action Modifier un ID de Modifier
+     *  SE SUMA A UNA LISTA DE ABILITIESMODIFIER DENTRO DE UNA ABILITYACTION
+     *  SE APLICA UN STAT MODIFIER EN UN STAT 
+     *  
+     *  
+     *  
+     *  
+     *  GENERA UNA ACTION DETERMINADA Ej: Levantar Una Card / Revivir una Card del cementerio / Spawn a Unit
+     *  PERFORM ACTION REVIVIMOS UNA CARTA DEL CEMENTERIO
+     *  Esta no se si entra, ya que revivir una carta del cementerio es como un Modifier/Effect especial de una Card especifica, entonces no entraria
+     *  como AbilityAction ya que el jugador no va a tener esa ability action... como la ejecutariamos..
+     *  Primero buscamos que el jugador tenga cartas en el cementerio
+     *  Pueden cumplir cierto criterio esas Cards para ser seleccionadas
+     *  Una vez que tenemos las listas hacemos una animacion de esas Cards del cementerio al centro de la pantalla en fila???
+     *  Esto es complicado ya que puede ser que 1 Card cumpla el requisito, como 20 Cards cumplan el requisito....
+     *  Hay que mostrarlas de una manera ordenada ya sea 1 o 20 Cards
+     *  Luego hay que entrar en el State de WaitTargetSelection
+     *  Seleccionamos una Card o varias Cards segun lo que el Efecto Diga
+     *  Puede ser que algunas vayan a la Mano, y otras se usen Automaticamente
+     *  Puede ser que se usen automaticamente
+     *  Aca va a entrar tener una lista de Cards para usarse como en una Cadena
+     *  WHEN PLAYER REVIVE A CARD FROM GRAVEYARD
+     *  
+     *  
+     *  Todas estas entran en lo mismo, ya que dijimos que podemos crear una lista especial List<AbilityModifier> en cada Ocuppier
+     *  Asi podemos tener todas estos efectos especiales que requieren algun evento y que no estan enlazados a una habilidad en especifica
+     *  WHEN GAME CHANGE TURN 
+     *  WHEN GAME ADD ACTION POINTS TO PLAYER
      *  WHEN ACTION MODIFIER IS APPLY / END
-     *  WHEN STAT MODIFIER IS APPLY / END     
+     *  WHEN CHAIN ACEPT
      *  
      *  
+     *  SE APLICA UN STAT MODIFIER EN UN STAT POR UN TIEMPO/SUCESO DETERMINADO
+     *  POR CADA TURNO RECIBE +1 ATK
+     *  Desde donde levantamos esa informacion... quien va a tener el Enter o Execute para suscribirse al evento?
+     *  ... O Tenemos una lista de Effects lo que se encargue de hacer el Change Turn para todos esos efectos especiales?
+     *  El +1 ATK LO VA A RECIBIR LA UNIDAD QUE TENGA APLICADA EL MODIFICADOR DE STAT... 
+     *  WHEN STAT MODIFIER IS APPLY / END 
+     *  Este tambien es medio complicado, ya que para aplicarse no hay problema... pero... tecnicamente Stat Modifier "Termina"
+     *  Salvo que dure una cierta cantidad de turnos, en donde Suscribimos el Expire, ya que el Effect al momento de aplicarse va a
+     *  Decir, Unidad +2hp // Al momento de irse va a decir Unidad -2hp
+     *  Cada ocuppier podria tener una lista de SpecialEffects/Modifiers para estos casos "Especiales".
+     *  Entonces, si es un AbilityModifier o un EventAbilityModifier que me agrega dos de vida, y despues de dos turnos me saca los dos de vida que me agrego
+     *  En el momento del de setear el Occupier hacemos el Enter()
+     *  Enter()=> Chequeamos que la unidad tenga el Stat Health, y le aplicamos un buff de +2hp
+     *         => Nos suscribimos al OnChangeTurn event la funcion Expire()
+     *  Expire() => Aca vamos descontando de a 4 ya que 2 = 1 turno 4 = 2 turnos
+     *           => Cuando llega a 4 vamos a seguir vivos por que esta en la unidad el evento
+     *           => Chequeamos que la unidad tenga el Stat Health, y le aplicamos un nerf de -2hp
+     *           => Nos desuscribimos al OnChangeTurn event la funcion Expire()
+     * 
+     * 
+     *  SE APLICA UN STAT MODIFIER EN UN STAT CUANDO SURGE UN EVENTO
+     *  CHANGE STAT ON EVENT +2 ATK POWER FOR EVERY ENEMY KILLED BY THIS UNIT
+     *  Enter()=> Chequeamos que la unidad tenga el AttakPow Stat
+     *         => Nos suscribimos al OnUnitDie event la funcion Execute()
+     *  Execute() => Aca vemos si el AbilityEvntInfo es de tipo DieAbilityInfo
+     *            => Si es asi entonces vemos si el Killer de la unit somos nosotros
+     *            => Chequeamos que la unidad tenga el Stat AttakPow, y le aplicamos un buff de +2atkPow
+     *           => Si la unit que esta muriendo dieOccuppy somos nosotros entonces
+     *           => Cuando la Unit muere nos desuscribimos al OnUnitDie event la funcion Execute()
+     *           
+     *           
      */
 }
 

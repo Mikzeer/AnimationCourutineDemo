@@ -7,6 +7,8 @@ namespace PositionerDemo
 
     public abstract class Kimboko : IOcuppy
     {
+        #region VARIABLES
+
         private int _id;
         public int ID { get => _id; protected set => _id = value; }
         public Player ownerPlayer { get; set; }
@@ -28,6 +30,8 @@ namespace PositionerDemo
         private MOVEDIRECTIONTYPE _moveDirectionerType;
         public MOVEDIRECTIONTYPE MoveDirectionerType { get => _moveDirectionerType; protected set => _moveDirectionerType = value; }
 
+        #endregion
+
         public Kimboko(int ID, Player ownerPlayer, UNITTYPE UnitType, MOVEDIRECTIONTYPE MoveDirectionerType)
         {
             this.ID = ID;
@@ -37,7 +41,7 @@ namespace PositionerDemo
 
             this.UnitType = UnitType;
             this.MoveDirectionerType = MoveDirectionerType;
-            AnimotionHandler.OnResetActionPoints += ResetActionPoints;
+            TurnManager.OnUnitResetActionPoints += ResetActionPoints;
         }
 
         public void OnSelect(bool isSelected, int playerID)
@@ -79,13 +83,13 @@ namespace PositionerDemo
             return actionPoints;
         }
 
-        public void ResetActionPoints(int playerID)
+        public void ResetActionPoints(int playerID, int amount)
         {
             if (ownerPlayer.PlayerID != playerID) return;
 
             if (Stats.ContainsKey(4))
             {
-                int actionPointsReset = 1;
+                int actionPointsReset = 2;
                 StatModification statModification = new StatModification(this, Stats[4], 4, actionPointsReset, STATMODIFIERTYPE.CHANGE);
                 Stats[4].AddStatModifier(statModification);
                 Stats[4].ApplyModifications();

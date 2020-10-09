@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+
 namespace PositionerDemo
 {
-
     public abstract class AbilityAction : Ability
     {
         private const int ACTIONPOINTSTATID = 4;
@@ -15,17 +16,13 @@ namespace PositionerDemo
         public ABILITYTYPE AbilityType { get { return abilityType; } private set { abilityType = value; } }
         public List<AbilityModifier> abilityModifier { get; private set; }
 
-        // Esto lo va a tener cada clase en si... 
-        //event Action<ActionEventInformation> OnActionStartExecute { get; set; }
-        //event Action<ActionEventInformation> OnActionEndExecute { get; set; }
-
         public AbilityAction(int ID, IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
         {
             this.performerIOcuppy = performerIOcuppy;
             this.ID = ID;
             this.actionPointsRequired = actionPointsRequired;
             abilityModifier = new List<AbilityModifier>();
-            AnimotionHandler.OnChangeTurn += OnResetActionExecution;
+            TurnManager.OnChangeTurn += OnResetActionExecution;
             this.abilityType = abilityType;
         }
 
@@ -90,6 +87,11 @@ namespace PositionerDemo
                 StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[ACTIONPOINTSTATID], ACTIONPOINTSTATID, -actionPointsRequired, STATMODIFIERTYPE.NERF);
                 performerIOcuppy.Stats[ACTIONPOINTSTATID].AddStatModifier(statModification);
                 performerIOcuppy.Stats[ACTIONPOINTSTATID].ApplyModifications();
+
+                //if (performerIOcuppy.Stats[ACTIONPOINTSTATID].ActualStatValue == 0)
+                //{
+                //    Debug.Log("Llegue a Zero Action Points de Habilidad ACA DEBERIA ACTIVAR EL ON CHANGE TURN SI FUERA UN PLAYER....");
+                //}
             }          
         }
 
@@ -109,4 +111,114 @@ namespace PositionerDemo
         }
 
     }
+}
+
+namespace MikzeerGameNotas
+{
+    //public class UseCardAbility : AbilityAction
+    //{
+    //    private const int specificID = 8;
+    //    private int amount = 0;
+    //    private Player player;
+    //    Card card;
+    //    IUseCardCommnad useCardCommand;
+
+    //    ICardTarget cardTarget;
+
+    //    public List<Tile2D> posibleTargetTiles { get; protected set; }
+    //    public Tile2D selectedTargetTile;
+
+
+    //    public UseCardAbility(Player player) : base(specificID)
+    //    {
+    //        this.player = player;
+    //        SetActionPointsRequired(amount);
+    //        SetPerformerAPActor(player);
+    //    }
+
+    //    public void Set(Card card)
+    //    {
+    //        this.card = card;
+    //    }
+
+    //    public void SetTarget(ICardTarget cardTarget)
+    //    {
+    //        this.cardTarget = cardTarget;
+    //    }
+
+    //    public override void OnResetActionExecution()
+    //    {
+
+    //    }
+
+    //    public override bool OnTryExecute()
+    //    {
+    //        // 1- QUE LA CARTA TENGA UN TARGET
+    //        if (!card.DoIHaveTarget())
+    //        {
+    //            return false;
+    //        }
+
+    //        return true;
+    //    }
+
+    //    public override void StartActionModifierCheck()
+    //    {
+
+    //    }
+
+    //    public override void OnStartExecute()
+    //    {
+
+    //    }
+
+    //    public override void Execute()
+    //    {
+    //        if (actionStatus == ACTIONEXECUTIONSTATUS.CANCELED)
+    //        {
+    //            Debug.Log("UseCardAbility CANCEL");
+    //            return;
+    //        }
+
+    //        useCardCommand = new IUseCardCommnad(player, card);
+
+    //        Invoker.AddNewCommand(useCardCommand);
+    //        Invoker.ExecuteCommands(null);
+
+    //        //actionStatus = ACTIONEXECUTIONSTATUS.STARTED;
+    //        //dummy.StartCoroutine(CheckExecution());
+    //    }
+
+    //    public override void EndActionModifierCheck()
+    //    {
+
+    //    }
+
+    //    public override void OnEndExecute()
+    //    {
+
+    //    }
+
+    //    public IEnumerator CheckExecution()
+    //    {
+    //        bool hasEnd = false;
+    //        do
+    //        {
+    //            if (useCardCommand.hasFinish)
+    //            {
+    //                //Debug.Log("Ya termine de Spawnear segunda capa");
+    //                actionStatus = ACTIONEXECUTIONSTATUS.EXECUTED;
+    //                hasEnd = true;
+    //                yield break;
+    //            }
+
+    //            //Debug.Log("Todavia no termine");
+    //            yield return new WaitForSeconds(0.15f);
+    //        } while (!hasEnd);
+
+    //        //Debug.Log("Termine de Spawnear");
+
+    //    }
+
+    //}
 }

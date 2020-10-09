@@ -67,12 +67,12 @@ public static class Helper
         objectToMove.position = b;
     }
 
-    private static bool IsMouseOverUI()
+    public static bool IsMouseOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    private static bool IsMouseOverUIWithIgnores()
+    public static bool IsMouseOverUIWithIgnores()
     {
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = Input.mousePosition;
