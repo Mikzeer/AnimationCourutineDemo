@@ -224,29 +224,11 @@ namespace PositionerDemo
         // ME SUSCRIBO AL EVENTO DE OnChangeTurn Y CUANDO HAGO EL EXPIRE LE APLICO UN NERF DE -2 DE ATAQUE A LA UNIDAD 
         // ME SUSCRIBO TAMBIEN AL EVENTO OnUnitDie POR LAS DUDAS DE QUE SE MUERA ANTES DE QUE PUEDA APLICAR EL EXPIRE Y SE LO TERMINE APLICANDO A LA NADA
 
-        public void OnCardBeginDrag()
-        {
-
-        }
-
-        public virtual bool DoIHaveTarget()
-        {
-            // DEBERIA TENER UN METODO PARA VER SI SE PUEDE USAR O NO LA CARD, ASI CUANDO EL JUGADOR LA SUELTA EN EL CAMPO 
-            // ESTA VERIFICA SI TIENE ALGUN TARGET, Y DE SER ASI NOS DEJA ELEGIR EL TARGET O SE EJECUTA AUTOMATICAMENTE 
-            // SI NO REQUIERE TARGET
-            return true;
-        }
-
-        public virtual void ApllyCard()
-        {
-            // para apply la card ya deberiamos haber tenido un target
-        }
-
         public virtual void OnDropCard(int ID)
         {
             if (this.ID == ID)
             {
-                Debug.Log("I have been droped ");
+                Debug.Log("I have been droped " + CardSO.Description);
                 CheckPosibleTargets();
             }
         }
@@ -255,7 +237,7 @@ namespace PositionerDemo
         {
             // CHEQUEAR DE QUIEN ES EL TURNO
             // SI NO ES NUESTRO TURNO ENTONCES SOLO MOVEMOS LA CARTA PARA ACOMODARLA ASI QUE ACA NO PASA NADA
-            if (ownerPlayer != AnimotionHandler.Instance.GetPlayer()) return;
+            if (ownerPlayer != GameCreator.Instance.turnManager.GetActualPlayerTurn()) return;
 
             //bool onTargetSelection = true;
 
@@ -265,11 +247,11 @@ namespace PositionerDemo
             for (int i = 0; i < posibleTargets.Count; i++)
             {
                 // RECORREMOS LA LISTA DE TILES
-                for (int x = 0; x < AnimotionHandler.Instance.withd; x++)
+                for (int x = 0; x < GameCreator.Instance.board2D.GridArray.GetLength(0); x++)
                 {
-                    for (int y = 0; y < AnimotionHandler.Instance.height; y++)
+                    for (int y = 0; y < GameCreator.Instance.board2D.GridArray.GetLength(1); y++)
                     {
-                        Tile actualTile = AnimotionHandler.Instance.GetBoard().GetGridObject(x, y);
+                        Tile actualTile = GameCreator.Instance.board2D.GetGridObject(x, y);
                         if (actualTile.IsOccupied())
                         {
                             if (actualTile.GetOccupier().CardTargetType == posibleTargets[i])

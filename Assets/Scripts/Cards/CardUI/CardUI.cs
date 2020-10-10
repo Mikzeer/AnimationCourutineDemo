@@ -14,7 +14,7 @@ namespace MikzeerGame
         private Transform playerHandTransform;
         private GraphicRaycaster m_Raycaster;
         private CanvasGroup canvasGroup;
-        int siblingIndex;
+        //int siblingIndex;
         bool isDragin = false;
         public static bool isACardDraging = false;
         int indexBeforeEnter = 0;
@@ -68,9 +68,8 @@ namespace MikzeerGame
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            //Debug.Log("OnPointerDown ");
             //siblingIndex = cardRectTansform.GetSiblingIndex();
-            siblingIndex = indexBeforeEnter;
+            //siblingIndex = indexBeforeEnter;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -111,7 +110,7 @@ namespace MikzeerGame
 
             if (results.Count == 0)
             {
-                //Debug.Log("NO CHOCO CONTRA NINGUNA UI");
+                Debug.Log("NO CHOCO CONTRA NINGUNA UI");
                 cardRectTansform.SetParent(playerHandTransform);
                 playerHandTransform.GetChild(indexBeforeEnter).SetAsLastSibling();
                 cardRectTansform.SetSiblingIndex(indexBeforeEnter);
@@ -144,6 +143,7 @@ namespace MikzeerGame
 
                     if (result.gameObject.CompareTag("Card"))
                     {
+                        Debug.Log("CARD");
                         int newSiblingIndex = result.gameObject.transform.GetSiblingIndex();
                         playerHandTransform.GetChild(indexBeforeEnter).SetAsLastSibling();
                         cardRectTansform.SetParent(playerHandTransform);

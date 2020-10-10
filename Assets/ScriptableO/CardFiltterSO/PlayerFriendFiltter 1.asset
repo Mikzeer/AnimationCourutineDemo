@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: UnitFoeInBattlefieldFiltter
-  m_EditorClassIdentifier: Assembly-CSharp:PositionerDemo:UnitFoeInBattlefieldCardFiltterScriptableObject
+  m_Script: {fileID: 11500000, guid: 42bf3cf40dff4f144a0fe85fb3ff5045, type: 3}
+  m_Name: PlayerFriendFiltter 1
+  m_EditorClassIdentifier: 

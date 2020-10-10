@@ -59,6 +59,46 @@ public class TurnManager
         OnPlayerResetActionPoints?.Invoke(actualPlayerTurn.PlayerID, mngPoints);
     }
 
+    public State ChangeTurnChain(State nextChainState)
+    {
+        if (actualPlayerTurn == null)
+        {
+            if (players == null)
+            {
+                Debug.Log("NO EXISTEN PLAYERS");
+                return null;
+            }
+            actualPlayerTurn = players[1];
+            playerOneTurn = false;
+        }
+
+        List<AbilityAction> unfinishActions = GetUnfinishActions();
+
+        if (playerOneTurn == true)
+        {
+            actualPlayerTurn = players[1];
+            playerOneTurn = false;
+        }
+        else
+        {
+            actualPlayerTurn = players[0];
+            playerOneTurn = true;
+        }
+
+        State nextState;
+
+        if (unfinishActions.Count > 0)
+        {
+            nextState = new WaitingState(100, GameCreator.Instance, unfinishActions, nextChainState);
+        }
+        else
+        {
+            nextState = nextChainState;
+        }
+
+        return nextState;
+    }
+
     public State ChangeTurnState(int mngPoints, State posibleNextState)
     {
         if (actualPlayerTurn == null)

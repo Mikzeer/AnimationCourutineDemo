@@ -6,8 +6,8 @@ namespace PositionerDemo
     public class SpawnController
     {
         MotionController motionControllerSpawn = new MotionController();
-        int craneTweenSpeedVelocity = 20;
-        int kimbokoTweenSpeedVelocity = 20;
+        int craneTweenSpeedVelocity = 1;
+        int kimbokoTweenSpeedVelocity = 1;
         int spawnIndexID = 0;
 
         public void OnTrySpawn(Tile TileObject, Player player)

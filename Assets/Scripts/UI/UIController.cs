@@ -28,6 +28,7 @@ public class UIController : MonoBehaviour
         btnTakeCard.gameObject.SetActive(false);
         GameCreator.OnTimeStart += SetTimer;
         GameCreator.OnTakeCardAvailable += SetCardButtonVisibility;
+        GameCreator.OnEndTurnAvailable += SetEndTurnVisibility;
     }
 
 
@@ -52,6 +53,11 @@ public class UIController : MonoBehaviour
     private void SetCardButtonVisibility(bool obj)
     {
         btnTakeCard.gameObject.SetActive(obj);
+    }
+
+    private void SetEndTurnVisibility(bool obj)
+    {
+        btnEndTurn.gameObject.SetActive(obj);
     }
 
     #region BUTTON EVENT REGION

@@ -1,6 +1,9 @@
-﻿namespace PositionerDemo
+﻿using UnityEngine;
+
+namespace PositionerDemo
 {
-    public class UnitFoeCardFiltter : CardFiltter
+    [CreateAssetMenu(fileName = "UnitFriendFiltter", menuName = "Cards/Filtter/ New Unit Friend Card Filtter")]
+    public class UnitFriendCardFiltterScriptableObject : CardFiltterScriptableObject
     {
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
@@ -13,7 +16,7 @@
 
             if (kimboko != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() != kimboko.ownerPlayer)
+                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == kimboko.ownerPlayer)
                 {
                     return cardTarget;
                 }

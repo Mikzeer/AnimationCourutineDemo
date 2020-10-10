@@ -2,15 +2,11 @@
 
 namespace PositionerDemo
 {
-    public class UnitFoeInBattlefieldCardFiltter : CardFiltter
+    [CreateAssetMenu(fileName = "UnitFoeInBattlefieldFiltter", menuName = "Cards/Filtter/ New Unit Foe In Battlefield Card Filtter")]
+    public class UnitFoeInBattlefieldCardFiltterScriptableObject : CardFiltterScriptableObject
     {
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
-            if (cardTarget.CardTargetType != CARDTARGETTYPE.UNIT)
-            {
-                return null;
-            }
-
             Kimboko kimboko = (Kimboko)cardTarget;
 
             if (kimboko != null)
@@ -20,7 +16,7 @@ namespace PositionerDemo
                     // AHORA DEBERIA VER COMO CHOTA ME FIJO DONDE ESTA 
                     Vector3 position = kimboko.GetTransform().position;
 
-                    Tile tile = AnimotionHandler.Instance.GetBoard().GetGridObject(position);
+                    Tile tile = GameCreator.Instance.board2D.GetGridObject(position);
 
                     if (tile != null)
                     {

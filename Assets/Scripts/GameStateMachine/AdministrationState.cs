@@ -50,13 +50,11 @@ public class AdministrationState : TimeConditionState
     public override State Update()
     {
         base.Update();
-
+        Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
         if (Helper.IsMouseOverUIWithIgnores() == false)
         {            
             if (Input.GetMouseButtonDown(0))
             {
-                Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
-
                 if (TileObject != null)
                 {
                     if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
@@ -71,10 +69,12 @@ public class AdministrationState : TimeConditionState
             }
         }
 
+        GameCreator.Instance.highLightTile.OnTileSelection(TileObject, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+
         if (CheckCondition())
         {
             State nextState = new AdministrationState(15, GameCreator.Instance, 2);
-           
+            GameCreator.Instance.highLightTile.OnTileSelection(null, GameCreator.Instance.turnManager.GetActualPlayerTurn());
             return GameCreator.Instance.turnManager.ChangeTurnState(managmentPoints, nextState);
             //return nextState;
         }

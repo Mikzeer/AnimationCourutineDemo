@@ -5,11 +5,14 @@ public class InitialAdministrationState : AdministrationState
 {
     private int managmentPoints;
     int index;
-
+    MouseController mouseController;
+    KeyBoardController keyBoardController;
     public InitialAdministrationState(int duration, GameCreator gameCreator, int mngPoints, int index) : base(duration, gameCreator, mngPoints)
     {
-        this.managmentPoints = mngPoints;
+        managmentPoints = mngPoints;
         this.index = index;
+        mouseController = new MouseController(0);
+        keyBoardController = new KeyBoardController(1);
     }
 
     public override void Enter()
@@ -43,17 +46,42 @@ public class InitialAdministrationState : AdministrationState
     {
         gameTimer.RestTime();
 
-        if (Helper.IsMouseOverUIWithIgnores() == false)
-        {
-            Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
+        //Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
 
-            if (Input.GetMouseButtonDown(0))
+        //if (Helper.IsMouseOverUIWithIgnores() == false)
+        //{
+           
+        //    if (Input.GetMouseButtonDown(0))
+        //    {
+        //        if (TileObject != null)
+        //        {
+        //            if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+        //            {
+        //                GameCreator.Instance.spawnCotroller.OnTrySpawn(TileObject, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+        //            }
+        //            else
+        //            {
+        //                Debug.Log("CANT ENTER");
+        //            }
+        //        }
+        //    }
+        //}
+
+        Tile tileP1 = mouseController.GetTile();
+        Tile tileP2 = keyBoardController.GetTile();
+
+        GameCreator.Instance.highLightTile.OnTileSelection(tileP1, GameCreator.Instance.players[0]);
+        GameCreator.Instance.highLightTile.OnTileSelection(tileP2, GameCreator.Instance.players[1]);
+
+        if (mouseController.playerID == GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID)
+        {
+            if (mouseController.Select() == true)
             {
-                if (TileObject != null)
+                if (tileP1 != null)
                 {
                     if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
                     {
-                        GameCreator.Instance.spawnCotroller.OnTrySpawn(TileObject, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+                        GameCreator.Instance.spawnCotroller.OnTrySpawn(tileP1, GameCreator.Instance.turnManager.GetActualPlayerTurn());
                     }
                     else
                     {
@@ -61,7 +89,30 @@ public class InitialAdministrationState : AdministrationState
                     }
                 }
             }
+
+            mouseController.SpecialSelection();
         }
+
+        if (keyBoardController.playerID == GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID)
+        {
+            if (keyBoardController.Select() == true)
+            {
+                if (tileP2 != null)
+                {
+                    if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+                    {
+                        GameCreator.Instance.spawnCotroller.OnTrySpawn(tileP2, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+                    }
+                    else
+                    {
+                        Debug.Log("CANT ENTER");
+                    }
+                }
+            }
+
+            keyBoardController.SpecialSelection();
+        }
+
 
         if (CheckCondition())
         {
@@ -91,6 +142,7 @@ public class InitialAdministrationState : AdministrationState
             }
 
             //return nextState;
+            GameCreator.Instance.highLightTile.OnTileSelection(null, GameCreator.Instance.turnManager.GetActualPlayerTurn());
             return GameCreator.Instance.turnManager.ChangeTurnState(mngPts, nextState);
         }
         else

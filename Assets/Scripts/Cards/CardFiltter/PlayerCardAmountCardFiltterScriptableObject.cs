@@ -1,7 +1,14 @@
-﻿namespace PositionerDemo
+﻿using UnityEngine;
+
+namespace PositionerDemo
 {
-    public class PlayerFoeCardFiltter : CardFiltter
+    [CreateAssetMenu(fileName = "PlayerCardAmountFiltter", menuName = "Cards/Filtter/ New Player Card Amount Filtter")]
+    public class PlayerCardAmountCardFiltterScriptableObject : CardFiltterScriptableObject
     {
+        // CHEQUEAR QUE EL RIVAL/JUGADOR TENGA CARTAS TARGETTYPE BASENEXUS 
+        // CheckCardAmount => PLAYER
+        public int amountToFind = 2;
+
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
             if (cardTarget.CardTargetType != CARDTARGETTYPE.BASENEXO) return null;
@@ -10,7 +17,7 @@
 
             if (player != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() != player)
+                if (player.Deck.Count >= amountToFind)
                 {
                     return cardTarget;
                 }

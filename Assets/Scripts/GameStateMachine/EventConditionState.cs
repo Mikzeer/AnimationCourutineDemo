@@ -20,7 +20,7 @@ public class EventConditionState : State
 
     public void Exit()
     {
-        Debug.Log("Exit EVENT CONDIOTION STATE");
+        //Debug.Log("Exit EVENT CONDIOTION STATE");
         //endState = true;
     }
 

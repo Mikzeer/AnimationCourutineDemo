@@ -316,5 +316,11 @@ namespace PositionerDemo
             return tileSize;
         }
 
+        public Vector3 GetNexusSpriteSize()
+        {
+            SpriteRenderer spRendererNexo = playerTilePrefab.GetComponent<SpriteRenderer>();            
+            return spRendererNexo.bounds.size;
+        }
+
     }
 }

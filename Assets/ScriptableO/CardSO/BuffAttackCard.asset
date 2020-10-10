@@ -25,7 +25,7 @@ MonoBehaviour:
   activationType: 0
   posibleTargets: 03000000
   filtters:
-  - {fileID: 11400000, guid: 0780bd69445ac824696b36e6afaae7b6, type: 2}
+  - {fileID: 11400000, guid: dec512a15402afe44925839a8073e457, type: 2}
   cardGrapghics: {fileID: 0}
   cardText: {fileID: 0}
   cardProperties: {fileID: 0}

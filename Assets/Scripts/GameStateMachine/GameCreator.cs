@@ -52,6 +52,8 @@ public class GameCreator : GameStateMachine
     public List<AudioClip> audioClips;
     public Camera cam;
 
+    public GameObject tileSelectionPrefab;
+    public HighLightTile highLightTile;
     public GameObject cardUIPrefab;
     public RectTransform canvasRootTransform;
     public InfoPanel infoPanel;
@@ -60,6 +62,7 @@ public class GameCreator : GameStateMachine
 
     public static event Action OnTimeStart;
     public static event Action<bool> OnTakeCardAvailable;
+    public static event Action<bool> OnEndTurnAvailable;
 
     #endregion
 
@@ -70,6 +73,7 @@ public class GameCreator : GameStateMachine
         cam = Camera.main;
 
         UIController.OnTakeCardActionClicked += AddCard;
+        UIController.OnEndTurnActionClicked += EndTurn;
 
         if (instance == null)
         {
@@ -87,6 +91,7 @@ public class GameCreator : GameStateMachine
     void Start()
     {
         CrearEstadoInicial();
+        highLightTile = new HighLightTile(tileSelectionPrefab);
     }
 
     #endregion
@@ -99,7 +104,17 @@ public class GameCreator : GameStateMachine
         Initialize(creationState);
     }
 
-    public void AddCard()
+    private void AddCard()
+    {
+        TryTakeCard(turnManager.GetActualPlayerTurn());
+    }
+
+    public void TryTakeCard(Player player)
+    {
+        cardManager.OnTryTakeCard(player);
+    }
+
+    public void EndTurn()
     {
         cardManager.OnTryTakeCard(turnManager.GetActualPlayerTurn());
     }
@@ -112,6 +127,11 @@ public class GameCreator : GameStateMachine
     public void TakeCardAvailable(bool available)
     {
         OnTakeCardAvailable?.Invoke(available);
+    }
+
+    public void EndTurnAvailable(bool available)
+    {
+        OnEndTurnAvailable?.Invoke(available);
     }
 
     #endregion

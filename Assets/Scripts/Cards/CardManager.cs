@@ -8,7 +8,6 @@ namespace PositionerDemo
     public class CardManager
     {
         Dictionary<int, Card> allCards = new Dictionary<int, Card>();
-        int allCardIndex = 0;
         MotionController motionControllerCardSpawn = new MotionController();
         private int cardIndex = 0;
 
@@ -19,7 +18,9 @@ namespace PositionerDemo
 
             for (int i = 0; i < cardSOList.Count; i++)
             {
-                Card card = new Card(cardSOList[i].ID, player, cardSOList[i]);
+                //Card card = new Card(cardSOList[i].ID, player, cardSOList[i]);
+                Card card = new Card(cardIndex, player, cardSOList[i]);
+                cardIndex++;
                 cardsOnDeck.Add(card);
             }
 
@@ -56,8 +57,9 @@ namespace PositionerDemo
             if (AreThereCardAvailables(player) == false) return null;
 
             Card card = player.Deck.Pop();
-            allCards.Add(allCardIndex, card);
-            allCardIndex++;
+            //allCards.Add(allCardIndex, card);
+            allCards.Add(card.ID, card);
+            //allCardIndex++;
             return card;
             //return player.Deck.Pop();
         }
@@ -105,13 +107,13 @@ namespace PositionerDemo
 
             if (takceCardAbility == null)
             {
-                Debug.Log("La ID de la Spawn Ability puede estar mal no funciono el casteo");
+                Debug.Log("La ID de la TakeCard Ability puede estar mal no funciono el casteo");
                 return;
             }
 
             if (takceCardAbility.OnTryExecute() == false)
             {
-                Debug.Log("Fallo en el On Try Execte de la Spawn Ability");
+                Debug.Log("Fallo en el On Try Execte de la TakeCard Ability");
                 return;
             }
             else
@@ -121,7 +123,7 @@ namespace PositionerDemo
 
             if (takceCardAbility.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
             {
-                Debug.Log("Se Cancelo desde la Ability la Spawn Ability");
+                Debug.Log("Se Cancelo desde la Ability la TakeCard Ability");
                 return;
             }
 
@@ -157,15 +159,14 @@ namespace PositionerDemo
                 Vector3 screenCenter = Helper.GetCameraCenterWorldPositionWithZoffset();
                 GameObject createdCardGameObject = GameObject.Instantiate(GameCreator.Instance.cardUIPrefab, screenCenter, Quaternion.identity, GameCreator.Instance.canvasRootTransform);
 
-                createdCardGameObject.name = "CARD N " + cardIndex;
-                cardIndex++;
                 createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
                 MikzeerGame.CardUI cardUI = createdCardGameObject.GetComponent<MikzeerGame.CardUI>();
-
 
                 Card newCard = TakeCardFromDeck(player);
                 player.PlayersHands.Add(newCard);
                 MikzeerGame.CardDisplay cardDisplay = createdCardGameObject.GetComponent<MikzeerGame.CardDisplay>();
+
+                createdCardGameObject.name = "CARD N " + newCard.ID;
 
                 if (cardDisplay != null)
                 {
@@ -249,6 +250,24 @@ namespace PositionerDemo
         public void FireCardUITest(MikzeerGame.CardUI cardUI)
         {
             Debug.Log("Se disparo el ON CARD USE");
+
+            // CUANDO USAMOS UNA CARD SI NO TIENE TARGET 
+            // DE TENER TARGET:
+            // SI RequireSelectTarget ES FALSO SE APLICA EL EFECTO INMEDIATAMENTE SIN SELECCIONAR AL/LOS TARGET/S
+            // SI RequireSelectTarget ES VERDADERO ENTONCES HAY QUE ESPERAR A QUE SELECCIONE UNO O VARIOS TARGETS
+            // SI ES AUTOMATICA Y TIENE TARGETS VAMOS A ESTAR OBLIGADOS A SELECCIONARLOS
+            // SI ES AUTOMATICA Y NO TIENE TARGETS ENTONCES VAMOS A USARLA AUTOMATICAMENTE
+            if (allCards.ContainsKey(cardUI.ID))
+            {
+                allCards[cardUI.ID].CheckPosibleTargets();
+            }
+            else
+            {
+                Debug.Log("No esta en el dictionary");
+            }
+
+
+
 
             //if (allCards.ContainsKey(cardUI.ID))
             //{

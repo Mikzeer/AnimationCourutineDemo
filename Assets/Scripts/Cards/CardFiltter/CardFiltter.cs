@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace PositionerDemo
+﻿namespace PositionerDemo
 {
     [System.Serializable]
     public class CardFiltter
@@ -39,15 +37,6 @@ namespace PositionerDemo
             // CheckActionModifierID => UNIT / PLAYER / BOARDOBJECT
             // CheckUnitBackSpace => UNIT / BOARDOBJECT
 
-        }
-    }
-
-
-    public abstract class CardFiltterScriptableObject : ScriptableObject
-    {
-        public virtual ICardTarget CheckTarget(ICardTarget cardTarget)
-        {
-            return cardTarget;
         }
     }
 
