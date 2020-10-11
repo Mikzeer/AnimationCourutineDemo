@@ -15,12 +15,12 @@ namespace PositionerDemo
 
             if (kimboko != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() != kimboko.ownerPlayer)
+                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() != kimboko.ownerPlayer)
                 {
                     // AHORA DEBERIA VER COMO CHOTA ME FIJO DONDE ESTA 
                     Vector3 position = kimboko.GetTransform().position;
 
-                    Tile tile = AnimotionHandler.Instance.GetBoard().GetGridObject(position);
+                    Tile tile = GameCreator.Instance.board2D.GetGridObject(position);
 
                     if (tile != null)
                     {

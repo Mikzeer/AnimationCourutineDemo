@@ -11,7 +11,7 @@ namespace PositionerDemo
 
             if (kimboko != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() != kimboko.ownerPlayer)
+                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() != kimboko.ownerPlayer)
                 {
                     // AHORA DEBERIA VER COMO CHOTA ME FIJO DONDE ESTA 
                     Vector3 position = kimboko.GetTransform().position;

@@ -8,7 +8,7 @@
 
             if (kimboko != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() == kimboko.ownerPlayer)
+                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == kimboko.ownerPlayer)
                 {
                     return cardTarget;
                 }

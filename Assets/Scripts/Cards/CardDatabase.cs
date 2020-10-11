@@ -28,6 +28,19 @@ namespace PositionerDemo
             return abMod;
         }
 
+        public static Dictionary<int,int> GetMaximumCardPerLevelPerDeck()
+        {
+            Dictionary<int, int> maximumCardPerLevelPerDeck = new Dictionary<int, int>();
+
+            maximumCardPerLevelPerDeck.Add(1, 5); // LEVEL 1 / MAX AMOUNT 5
+            maximumCardPerLevelPerDeck.Add(2, 4);
+            maximumCardPerLevelPerDeck.Add(3, 3);
+            maximumCardPerLevelPerDeck.Add(4, 2);
+            maximumCardPerLevelPerDeck.Add(5, 1); // LEVEL 5 / MAX AMOUNT 1
+
+            return maximumCardPerLevelPerDeck;
+        }
+
         //// Add this method to the CharacterStat class
         //private int CompareModifierOrder(StatModifier a, StatModifier b)
         //{

@@ -10,7 +10,7 @@
 
             if (player != null)
             {
-                if (AnimotionHandler.Instance.GetPlayer() == player)
+                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == player)
                 {
                     return cardTarget;
                 }

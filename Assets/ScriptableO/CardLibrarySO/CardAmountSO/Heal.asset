@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e9c2affdc7450c479c2da472a565686, type: 3}
+  m_Name: Heal
+  m_EditorClassIdentifier: 
+  amount: 4
+  cardSO: {fileID: 11400000, guid: 27225101ecdf0434ea57978f9eb38a4c, type: 2}
