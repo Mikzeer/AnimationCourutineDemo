@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Card
   - DropeableArea
+  - OpenPackArea
   layers:
   - Default
   - TransparentFX

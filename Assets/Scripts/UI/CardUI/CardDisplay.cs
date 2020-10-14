@@ -73,6 +73,51 @@ namespace MikzeerGame
             }
         }
 
+        public void SetDisplay(CardAsset cardSO)
+        {
+            txtCardName.text = cardSO.CardName;
+            txtCardDescription.text = cardSO.Description;
+
+            if (txtCardLevel != null)
+            {
+                txtCardLevel.text = cardSO.CardRarity.ToString();
+            }
+
+            if (txtDarkPoints != null)
+            {
+                txtDarkPoints.text = cardSO.DarkPoints.ToString();
+            }
+
+
+            cardSprite.sprite = cardSO.CardImage;
+            switch (cardSO.CardType)
+            {
+                case CARDTYPE.BUFF:
+                    cardImage.color = Color.green;
+                    break;
+                case CARDTYPE.NERF:
+                    cardImage.color = Color.red;
+                    break;
+                case CARDTYPE.NEUTRAL:
+                    break;
+                default:
+                    break;
+            }
+
+            chainGameObject.SetActive(cardSO.IsChainable);
+            switch (cardSO.ActivationType)
+            {
+                case ACTIVATIONTYPE.HAND:
+                    automaticGameObject.SetActive(false);
+                    break;
+                case ACTIVATIONTYPE.AUTOMATIC:
+                    automaticGameObject.SetActive(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -12,7 +13,7 @@ namespace PositionerDemo
         [SerializeField] private string description;
         [SerializeField] private int id;
         [SerializeField] private int amountPerDeck;
-        [SerializeField] private int level;
+        [SerializeField] private int level; // RARITY
         [SerializeField] private int darkPoints;
         [SerializeField] private bool isChainable;
         [SerializeField] private CARDTYPE cardType;
@@ -44,6 +45,4 @@ namespace PositionerDemo
         public List<CARDTARGETTYPE> PosibleTargets { get { return posibleTargets; } protected set { posibleTargets = value; } }
         public List<CardFiltterScriptableObject> Filtters { get { return filtters; } protected set { filtters = value; } }
     }
-
-
 }
