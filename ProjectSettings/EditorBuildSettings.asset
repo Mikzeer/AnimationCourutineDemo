@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TutorialDeckBuilderScene.unity
     guid: 096fbfb863c2b6b489edd431ec3ef6e1
+  - enabled: 1
+    path: Assets/Scenes/DragDropUITestScene.unity
+    guid: 892bf36f20120c54ab511625481eafb1
   m_configObjects: {}

@@ -22,7 +22,6 @@ namespace PositionerDemo
         int indexBeforeEnter = 0;
         bool isPointerOverCard = false;
         bool isComingFromDrag = false;
-
         Vector2 startAnchoredPosition;
 
         #endregion
@@ -178,7 +177,6 @@ namespace PositionerDemo
         #endregion
 
         int ID;
-
         public void SetEvent(Action OnCardDropOnDeck, int ID)
         {
             this.OnCardDropOnDeck = OnCardDropOnDeck;
@@ -186,4 +184,5 @@ namespace PositionerDemo
         }
 
     }
+
 }
