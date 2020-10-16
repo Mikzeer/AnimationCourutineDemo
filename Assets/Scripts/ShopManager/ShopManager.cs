@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using PositionerDemo;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -17,11 +18,11 @@ public class ShopManager : MonoBehaviour
     [Header("Rect Placement")]
     [SerializeField] private Transform PacksParent;
     [SerializeField] private Transform InitialPackSpot;
-    [SerializeField] private float PosXRange = 4f;
-    [SerializeField] private float PosYRange = 8f;
     [SerializeField] private float RotationRange = 10f;
     [SerializeField] private PackOpeningArea OpeningArea;
     private float packPlacementOffset = -0.01f;
+    private float PosXRange = 4f;
+    private float PosYRange = 8f;
 
     [Header("Money And Price")]
     [SerializeField] private Text MoneyText;
@@ -86,23 +87,49 @@ public class ShopManager : MonoBehaviour
         LoadMoneyFromPlayerPrefs();
     }
 
+    private void OnEnable()
+    {
+        //RectTransform rect = PacksParent.GetComponent<RectTransform>();
+        //Debug.Log("Rect Size  X " + (rect.rect.width - rect.anchoredPosition.x));
+        //Debug.Log("Rect Size  Y " + (rect.rect.height - rect.anchoredPosition.y));
+        //Debug.Log("rect.rect.size " + rect.rect.size);
+        //sizeDelta.x = UIElementRectangle.width - AnchorsRectangle.width;
+        //sizeDelta.y = UIElementRectangle.height - AnchorsRectangle.height;
+
+        //PosXRange = 50;
+        //PosYRange = 100;       
+    }
+
     public IEnumerator GivePacks(int NumberOfPacks, bool instant = false)
     {
         for (int i = 0; i < NumberOfPacks; i++)
         {
             GameObject newPack = Instantiate(PackPrefab, PacksParent);
-            Vector3 localPositionForNewPack = new Vector3(Random.Range(-PosXRange, PosXRange), Random.Range(-PosYRange, PosYRange), PacksCreated * packPlacementOffset);
+
+            Vector3 CardSize = newPack.GetComponent<Image>().sprite.rect.max;
+
+            float halfCardWidht = CardSize.x / 2;
+            float halfCardHeight = CardSize.y / 2;
+
+            PosXRange -= halfCardWidht;
+            PosYRange -= halfCardHeight;
+            //Debug.Log("PosXRange " + PosXRange);
+            //Debug.Log("PosYRange " + PosYRange);
+
+
+            Vector3 localPositionForNewPack = new Vector3(Random.Range(-PosXRange, PosXRange), Random.Range(-PosYRange, PosYRange), 0);
+            //Debug.Log("localPositionForNewPack " + localPositionForNewPack);
             newPack.transform.localEulerAngles = new Vector3(0f, 0f, Random.Range(-RotationRange, RotationRange));
             PacksCreated++;
 
             // make this pack appear on top of all the previous packs using PacksCreated;
             //newPack.GetComponentInChildren<Canvas>().sortingOrder = PacksCreated;
-            newPack.GetComponent<CardPackUI>().SetCardPackOpeningArea(OpeningArea);
+            newPack.GetComponent<CardPackUINEW>().SetCardPackOpeningArea(OpeningArea);
             if (instant)
-                newPack.transform.localPosition = localPositionForNewPack;
+                newPack.transform.localPosition = PacksParent.position;//PacksParent // localPositionForNewPack
             else
             {
-                newPack.transform.position = InitialPackSpot.position;
+                //newPack.transform.position = InitialPackSpot.position;
                 newPack.transform.DOLocalMove(localPositionForNewPack, 0.5f);
                 yield return new WaitForSeconds(0.5f);
             }
@@ -113,7 +140,10 @@ public class ShopManager : MonoBehaviour
     public void LoadMoneyFromPlayerPrefs()
     {
         if (PlayerPrefs.HasKey("Money"))
+        {
+            PlayerPrefs.SetInt("Money", 1000);
             Money = PlayerPrefs.GetInt("Money");
+        }           
         else
             Money = StartingAmountOfMoney;  // default value of dust to give to player
     }
@@ -155,6 +185,11 @@ public class ShopManager : MonoBehaviour
 
     public void BuyPack()
     {
+        RectTransform rect = PacksParent.GetComponent<RectTransform>();
+        
+        PosXRange = rect.rect.size.x / 2;
+        PosYRange = rect.rect.size.y / 2;
+        //Debug.Log("rect.rect.size " + rect.rect.size);
         if (money >= PackPrice)
         {
             Money -= PackPrice;

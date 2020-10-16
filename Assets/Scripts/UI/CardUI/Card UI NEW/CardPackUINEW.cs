@@ -23,6 +23,7 @@ namespace PositionerDemo
             packOpeningArea.AllowedToDragAPack = false;
             // Disable back button so that player can not exit the pack opening screen while he has not opened a pack
             packOpeningArea.BackButton.interactable = false;
+            //isSomethingDraggin = true;
         }
 
         protected override void InitializeSimpleUI()
@@ -34,18 +35,29 @@ namespace PositionerDemo
         protected override void OnSuccesfulPointerEnter()
         {
             if (allowedToOpen)
+            {
+                GlowImage.gameObject.SetActive(true);
                 GlowImage.DOColor(GlowColor, 0.5f);
+            }
         }
 
         protected override void OnSuccesfulPointerExit()
         {
             // turn the glow Off
-            GlowImage.DOColor(Color.clear, 0.5f);
+            if (allowedToOpen)
+            {
+                GlowImage.gameObject.SetActive(false);
+                GlowImage.DOColor(Color.clear, 0.5f);
+            }
         }
 
-        protected override void OnSuccesfulBeginDrag()
+        protected override void OnSuccesfulBeginDrag(PointerEventData eventData)
         {
-            if (packOpeningArea.AllowedToDragAPack == false) return;
+            if (packOpeningArea.AllowedToDragAPack == false)
+            {
+                eventData.pointerDrag = null;
+                return;
+            }
         }
 
         public override void OnPointerDown(PointerEventData eventData)
@@ -55,6 +67,7 @@ namespace PositionerDemo
             if (allowedToOpen)
             {
                 // prevent from opening again
+                GlowImage.gameObject.SetActive(false);
                 allowedToOpen = false;
                 packOpeningArea.OnPackCardOpen(uiRectTansform);
             }
@@ -73,10 +86,12 @@ namespace PositionerDemo
 
         protected override void OnFaliedDrop()
         {
+            Debug.Log("startAnchoredPosition " + startAnchoredPosition);
+            uiRectTansform.SetParent(parentRectTransform);
             transform.DOLocalMove(startAnchoredPosition, 1f).OnComplete(() =>
             {
                 packOpeningArea.AllowedToDragAPack = true;
-                uiRectTansform.SetParent(parentRectTransform);
+                
                 uiRectTansform.SetSiblingIndex(startSiblingIndex);
             });
         }
@@ -84,7 +99,8 @@ namespace PositionerDemo
         protected override void OnSuccesfulDrop(RaycastResult result)
         {
             // snap the pack to the center of the pack opening area
-            transform.DOMove(packOpeningArea.transform.position, 0.5f).OnComplete(() =>
+            uiRectTansform.SetParent(packOpeningArea.packOpeningParent.transform);
+            uiRectTansform.DOLocalMove(packOpeningArea.packOpeningParent.transform.position, 0.5f).OnComplete(() =>
             {
                 // enable opening on click
                 AllowToOpenThisPack();

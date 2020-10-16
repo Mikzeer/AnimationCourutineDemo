@@ -7,6 +7,7 @@ using DG.Tweening;
 public class PackOpeningArea : MonoBehaviour
 {
     public bool AllowedToDragAPack { get; set; }
+    public Transform packOpeningParent;
     public GameObject cardPrefab;
     public Button DoneButton;
     public Button BackButton;
@@ -38,6 +39,8 @@ public class PackOpeningArea : MonoBehaviour
         set
         {
             numOfCardsOpened = value;
+            Debug.Log("numOfCardsOpened " + numOfCardsOpened);
+            Debug.Log("SlotsForCards.Length " + SlotsForCards.Length);
             if (value == SlotsForCards.Length)
             {
                 // activate the Done button
@@ -56,7 +59,7 @@ public class PackOpeningArea : MonoBehaviour
         GlowColorsByRarity.Add(CardRarity.LEGENDARY, LegendaryColor);
     }
 
-    private GameObject CardFromPack(CardRarity rarity)
+    private GameObject CardFromPack(CardRarity rarity, Transform cardParent)
     {
         List<CardAsset> CardsOfThisRarity = CardCollection.Instance.GetCardsWithCardRarity(rarity);
         CardAsset cardAssetAux = CardsOfThisRarity[Random.Range(0, CardsOfThisRarity.Count)];
@@ -64,8 +67,8 @@ public class PackOpeningArea : MonoBehaviour
         // add this card to your collection. 
         CardCollection.Instance.QuantityOfEachCard[cardAssetAux]++;
 
-        GameObject card = Instantiate(cardPrefab);
-        card.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        GameObject card = Instantiate(cardPrefab, cardParent);
+        card.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
         MikzeerGame.CardDisplay cardDisplay = card.GetComponent<MikzeerGame.CardDisplay>();
         cardDisplay.SetDisplay(cardAssetAux);
@@ -109,10 +112,12 @@ public class PackOpeningArea : MonoBehaviour
 
         for (int i = 0; i < rarities.Length; i++)
         {
-            GameObject card = CardFromPack(rarities[i]);
+            GameObject card = CardFromPack(rarities[i], SlotsForCards[i]);
+            card.GetComponentInChildren<SimpleCardFromPackUINEW>().SetSimpleCardFromPackUI(GlowColorsByRarity[rarities[i]], this);
             CardsFromPackCreated.Add(card);
-            card.transform.position = cardsInitialPosition;
-            card.transform.DOMove(SlotsForCards[i].position, 0.5f);
+            //card.transform.SetParent(SlotsForCards[i]);
+            card.transform.localPosition = cardsInitialPosition;
+            card.transform.DOLocalMove(SlotsForCards[i].position, 0.5f);
         }
     }
 
@@ -127,30 +132,35 @@ public class PackOpeningArea : MonoBehaviour
             Destroy(g);
         }
         BackButton.interactable = true;
+        DoneButton.gameObject.SetActive(false);
     }
 
     public void OnPackCardOpen(RectTransform cardPackRect)
     {
-        if (AllowedToDragAPack == false)
-        {
-            return;
-        }
+        //if (AllowedToDragAPack == false)
+        //{
+        //    return;
+        //}
 
         AllowedToDragAPack = false;
         // Disable back button so that player can not exit the pack opening screen while he has not opened a pack
         BackButton.interactable = false;
 
+        cardPackRect.SetParent(packOpeningParent);
+
         // Start a dotween sequence
         Sequence tweenSequence = DOTween.Sequence();
         // 1) raise the pack to opening position
-        tweenSequence.Append(cardPackRect.DOLocalMoveZ(-2f, 0.5f));
+        //tweenSequence.Append(cardPackRect.DOLocalMove(packOpeningParent.position, 0.5f));
         tweenSequence.Append(cardPackRect.DOShakeRotation(1f, 20f, 20));
 
         tweenSequence.OnComplete(() =>
         {
             // 2) add glow, particle system
             // 3): 
-            ShowPackOpening(cardPackRect.localPosition);
+            Debug.Log("ONCOMPLETE SEQUENCE");
+            //ShowPackOpening(cardPackRect.localPosition);
+            ShowPackOpening(cardPackRect.position);
             if (ShopManager.Instance.PacksCreated > 0)
                 ShopManager.Instance.PacksCreated--;
             // 4) destroy this pack in the end of the sequence

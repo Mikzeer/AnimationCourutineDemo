@@ -25,7 +25,7 @@ namespace PositionerDemo
             m_Raycaster = FindObjectOfType<GraphicRaycaster>();
         }
 
-        protected virtual void OnSuccesfulBeginDrag()
+        protected virtual void OnSuccesfulBeginDrag(PointerEventData eventData)
         {
         }
 
@@ -58,12 +58,16 @@ namespace PositionerDemo
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (isSomethingDraggin) return;
+            if (isSomethingDraggin)
+            {
+                eventData.pointerDrag = null;
+                return;
+            }
             uiRectTansform.SetParent(canvas.transform);
             uiRectTansform.SetAsLastSibling();
             isSomethingDraggin = true;
 
-            OnSuccesfulBeginDrag();
+            OnSuccesfulBeginDrag(eventData);
         }
 
         public void OnInitializePotentialDrag(PointerEventData eventData)
@@ -79,7 +83,11 @@ namespace PositionerDemo
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            canvasGroup.blocksRaycasts = false;
+            if (canvasGroup != null)
+            {
+                canvasGroup.blocksRaycasts = false;
+            }
+
             isSomethingDraggin = false;
             results.Clear();
             m_Raycaster.Raycast(eventData, results);

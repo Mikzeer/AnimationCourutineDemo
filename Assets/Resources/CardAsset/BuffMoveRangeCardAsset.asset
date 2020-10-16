@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: 2
   CardName: BUFF MOVE RANGE
   Description: Buff Move Range
-  CardRarity: 0
+  CardRarity: 3
   CardImage: {fileID: 21300000, guid: 265fedf92c37bd9419acc3d610120e54, type: 3}
   CardType: 0
   ActivationType: 0

@@ -8,21 +8,25 @@ namespace PositionerDemo
     public class SimpleCardFromPackUINEW : SimpleClickeableUI
     {
         public Image GlowImage;
+        public GameObject cardFront;
+        public GameObject cardBack;
+
         private Color32 GlowColor;
         PackOpeningArea packOpeningArea;
-        private float InitialScale;
+        private Vector3 initialScale;
         private float scaleFactor = 1.1f;
         private bool turnedOver = false;
-
+          
         public void SetSimpleCardFromPackUI(Color32 GlowColor, PackOpeningArea packOpeningArea)
         {
+            Debug.Log("POINTER DOWN");
             this.GlowColor = GlowColor;
             this.packOpeningArea = packOpeningArea;
         }
 
         protected override void InitializeSimpleUI()
         {
-            InitialScale = uiRectTansform.localScale.x;
+            initialScale = uiRectTansform.localScale;
         }
 
         public override void OnPointerDown(PointerEventData eventData)
@@ -31,21 +35,29 @@ namespace PositionerDemo
                 return;
 
             turnedOver = true;
+            GlowImage.DOColor(Color.clear, 0.5f);
             // turn the card over
-            transform.DORotate(Vector3.zero, 0.5f);
-            // add this card to collection as unlocked
-            packOpeningArea.NumberOfCardsOpenedFromPack++;
+            transform.DORotate(Vector3.zero, 0.5f).OnComplete(() =>
+            {
+                cardBack.SetActive(false);
+                cardFront.SetActive(true);
+                // add this card to collection as unlocked
+                packOpeningArea.NumberOfCardsOpenedFromPack++;
+            });
+
         }
 
         protected override void OnSuccesfulPointerEnter()
         {
-            uiRectTansform.DOScale(InitialScale * scaleFactor, 0.5f);
+            uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
+            GlowImage.gameObject.SetActive(true);
             GlowImage.DOColor(GlowColor, 0.5f);
         }
 
         protected override void OnSuccesfulPointerExit()
         {
-            uiRectTansform.DOScale(InitialScale, 0.5f);
+            uiRectTansform.DOScale(initialScale, 0.5f); // SetEase(ease)
+            GlowImage.gameObject.SetActive(false);
             GlowImage.DOColor(Color.clear, 0.5f);
         }
     }

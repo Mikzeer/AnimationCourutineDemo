@@ -28,6 +28,7 @@ public class SimpleCardFromPackUI : MonoBehaviour, IPointerDownHandler, IPointer
     public void OnPointerEnter(PointerEventData eventData)
     {
         cardRectTansform.DOScale(InitialScale * scaleFactor, 0.5f);
+        GlowImage.gameObject.SetActive(true);
         GlowImage.DOColor(GlowColor, 0.5f);
     }
 
@@ -46,6 +47,7 @@ public class SimpleCardFromPackUI : MonoBehaviour, IPointerDownHandler, IPointer
     public void OnPointerExit(PointerEventData eventData)
     {
         cardRectTansform.DOScale(InitialScale, 0.5f);
+        GlowImage.gameObject.SetActive(false);
         GlowImage.DOColor(Color.clear, 0.5f);
     }
 

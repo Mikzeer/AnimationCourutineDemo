@@ -80,7 +80,7 @@ namespace PositionerDemo
             onCardInfo?.Invoke("CARD NAME: " + name, cardRectInScreenPosition / canvas.scaleFactor);
         }
 
-        protected override void OnSuccesfulBeginDrag()
+        protected override void OnSuccesfulBeginDrag(PointerEventData eventData)
         {
             onCardEnter?.Invoke(false);
             isPointerOverCard = false;
