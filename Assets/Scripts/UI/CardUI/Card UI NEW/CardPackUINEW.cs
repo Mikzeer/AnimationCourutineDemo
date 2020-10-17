@@ -11,25 +11,19 @@ namespace PositionerDemo
         private bool allowedToOpen = false;
         public Image GlowImage;
         public Color32 GlowColor;
+        private Vector3 initialScale;
+        private float scaleFactor = 1.1f;
 
         public void SetCardPackOpeningArea(PackOpeningArea packOpeningArea)
         {
             this.packOpeningArea = packOpeningArea;
         }
 
-        public void AllowToOpenThisPack()
-        {
-            allowedToOpen = true;
-            packOpeningArea.AllowedToDragAPack = false;
-            // Disable back button so that player can not exit the pack opening screen while he has not opened a pack
-            packOpeningArea.BackButton.interactable = false;
-            //isSomethingDraggin = true;
-        }
-
         protected override void InitializeSimpleUI()
         {
             base.InitializeSimpleUI();
             canvasGroup = GetComponent<CanvasGroup>();
+            initialScale = uiRectTansform.localScale;
         }
 
         protected override void OnSuccesfulPointerEnter()
@@ -38,6 +32,10 @@ namespace PositionerDemo
             {
                 GlowImage.gameObject.SetActive(true);
                 GlowImage.DOColor(GlowColor, 0.5f);
+            }
+            else
+            {
+                uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
             }
         }
 
@@ -49,6 +47,10 @@ namespace PositionerDemo
                 GlowImage.gameObject.SetActive(false);
                 GlowImage.DOColor(Color.clear, 0.5f);
             }
+            else
+            {
+                uiRectTansform.DOScale(initialScale, 0.5f); // SetEase(ease)
+            }
         }
 
         protected override void OnSuccesfulBeginDrag(PointerEventData eventData)
@@ -56,6 +58,7 @@ namespace PositionerDemo
             if (packOpeningArea.AllowedToDragAPack == false)
             {
                 eventData.pointerDrag = null;
+                isSomethingDraggin = false;
                 return;
             }
         }
@@ -69,7 +72,7 @@ namespace PositionerDemo
                 // prevent from opening again
                 GlowImage.gameObject.SetActive(false);
                 allowedToOpen = false;
-                packOpeningArea.OnPackCardOpen(uiRectTansform);
+                packOpeningArea.OnCardPackOpen(uiRectTansform);
             }
         }
 
@@ -77,7 +80,7 @@ namespace PositionerDemo
         {
             if (result.gameObject.CompareTag("OpenPackArea"))
             {
-                Debug.Log("Hit " + result.gameObject.name);
+                //Debug.Log("Hit " + result.gameObject.name);
                 return true;
             }
 
@@ -86,24 +89,33 @@ namespace PositionerDemo
 
         protected override void OnFaliedDrop()
         {
-            Debug.Log("startAnchoredPosition " + startAnchoredPosition);
+            isSomethingDraggin = true;
+            //Debug.Log("startAnchoredPosition " + startAnchoredPosition);
             uiRectTansform.SetParent(parentRectTransform);
             transform.DOLocalMove(startAnchoredPosition, 1f).OnComplete(() =>
             {
                 packOpeningArea.AllowedToDragAPack = true;
                 
                 uiRectTansform.SetSiblingIndex(startSiblingIndex);
+                isSomethingDraggin = false;
             });
         }
 
         protected override void OnSuccesfulDrop(RaycastResult result)
         {
+            //Debug.Log("OnSuccesfulDrop ");
+            isSomethingDraggin = true;
+            packOpeningArea.AllowedToDragAPack = false;
+            // Disable back button so that player can not exit the pack opening screen while he has not opened a pack
+            packOpeningArea.BackButton.interactable = false;
+
             // snap the pack to the center of the pack opening area
             uiRectTansform.SetParent(packOpeningArea.packOpeningParent.transform);
             uiRectTansform.DOLocalMove(packOpeningArea.packOpeningParent.transform.position, 0.5f).OnComplete(() =>
             {
                 // enable opening on click
-                AllowToOpenThisPack();
+                allowedToOpen = true;
+                isSomethingDraggin = false;
             });
         }
 

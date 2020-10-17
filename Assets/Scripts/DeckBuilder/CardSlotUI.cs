@@ -21,6 +21,7 @@ public class CardSlotUI : MonoBehaviour
         deckAmount.text = cardSlot.deckAmount.ToString();
         totalAmountPerDeck.text = cardSlot.totalAmountPerDeck.ToString();
         cardSlot.OnCardInfoChange += ChangeSlotData;
+        cardSlotRect = GetComponent<RectTransform>();
     }
 
     public void ChangeSlotData(CardSlot cardSlot)

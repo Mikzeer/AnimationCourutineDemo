@@ -58,6 +58,7 @@ namespace PositionerDemo
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            //Debug.Log("BEGING DRAGGING");
             if (isSomethingDraggin)
             {
                 eventData.pointerDrag = null;

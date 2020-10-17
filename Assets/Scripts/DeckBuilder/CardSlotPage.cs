@@ -6,8 +6,8 @@ public class CardSlotPage
     CardSlotUI[,] cardSlotsUI;
     int pageIndex;
 
-    public int rows = 3;
-    public int columns = 5;
+    public int rows = 2;
+    public int columns = 4;
     int maxSlotsPerPage;
 
     int actualrow = 0;

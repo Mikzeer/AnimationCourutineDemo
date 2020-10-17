@@ -82,7 +82,7 @@ public class CardPackUI : MonoBehaviour, IPointerDownHandler, IDragHandler, IBeg
         {
             // prevent from opening again
             allowedToOpen = false;
-            packOpeningArea.OnPackCardOpen(cardRectTansform);
+            packOpeningArea.OnCardPackOpen(cardRectTansform);
         }
 
         //siblingIndex = cardRectTansform.GetSiblingIndex();

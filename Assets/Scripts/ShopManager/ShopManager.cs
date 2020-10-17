@@ -87,19 +87,6 @@ public class ShopManager : MonoBehaviour
         LoadMoneyFromPlayerPrefs();
     }
 
-    private void OnEnable()
-    {
-        //RectTransform rect = PacksParent.GetComponent<RectTransform>();
-        //Debug.Log("Rect Size  X " + (rect.rect.width - rect.anchoredPosition.x));
-        //Debug.Log("Rect Size  Y " + (rect.rect.height - rect.anchoredPosition.y));
-        //Debug.Log("rect.rect.size " + rect.rect.size);
-        //sizeDelta.x = UIElementRectangle.width - AnchorsRectangle.width;
-        //sizeDelta.y = UIElementRectangle.height - AnchorsRectangle.height;
-
-        //PosXRange = 50;
-        //PosYRange = 100;       
-    }
-
     public IEnumerator GivePacks(int NumberOfPacks, bool instant = false)
     {
         for (int i = 0; i < NumberOfPacks; i++)

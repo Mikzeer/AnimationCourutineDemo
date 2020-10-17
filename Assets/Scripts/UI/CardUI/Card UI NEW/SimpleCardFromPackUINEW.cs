@@ -19,7 +19,7 @@ namespace PositionerDemo
           
         public void SetSimpleCardFromPackUI(Color32 GlowColor, PackOpeningArea packOpeningArea)
         {
-            Debug.Log("POINTER DOWN");
+            //Debug.Log("POINTER DOWN");
             this.GlowColor = GlowColor;
             this.packOpeningArea = packOpeningArea;
         }
@@ -37,10 +37,13 @@ namespace PositionerDemo
             turnedOver = true;
             GlowImage.DOColor(Color.clear, 0.5f);
             // turn the card over
-            transform.DORotate(Vector3.zero, 0.5f).OnComplete(() =>
+            transform.DORotate(new Vector3(0,90,0), 0.5f).OnComplete(() =>
             {
                 cardBack.SetActive(false);
                 cardFront.SetActive(true);
+                Vector3 changeRot = new Vector3(0, -90, 0);
+                cardFront.transform.rotation = Quaternion.Euler(changeRot);
+                cardFront.transform.DORotate(new Vector3(0, 0, 0), 0.5f);
                 // add this card to collection as unlocked
                 packOpeningArea.NumberOfCardsOpenedFromPack++;
             });

@@ -39,8 +39,8 @@ public class PackOpeningArea : MonoBehaviour
         set
         {
             numOfCardsOpened = value;
-            Debug.Log("numOfCardsOpened " + numOfCardsOpened);
-            Debug.Log("SlotsForCards.Length " + SlotsForCards.Length);
+            //Debug.Log("numOfCardsOpened " + numOfCardsOpened);
+            //Debug.Log("SlotsForCards.Length " + SlotsForCards.Length);
             if (value == SlotsForCards.Length)
             {
                 // activate the Done button
@@ -135,16 +135,11 @@ public class PackOpeningArea : MonoBehaviour
         DoneButton.gameObject.SetActive(false);
     }
 
-    public void OnPackCardOpen(RectTransform cardPackRect)
+    public void OnCardPackOpen(RectTransform cardPackRect)
     {
-        //if (AllowedToDragAPack == false)
-        //{
-        //    return;
-        //}
-
-        AllowedToDragAPack = false;
-        // Disable back button so that player can not exit the pack opening screen while he has not opened a pack
-        BackButton.interactable = false;
+        //AllowedToDragAPack = false;
+        //// Disable back button so that player can not exit the pack opening screen while he has not opened a pack
+        //BackButton.interactable = false;
 
         cardPackRect.SetParent(packOpeningParent);
 
@@ -158,7 +153,7 @@ public class PackOpeningArea : MonoBehaviour
         {
             // 2) add glow, particle system
             // 3): 
-            Debug.Log("ONCOMPLETE SEQUENCE");
+            //Debug.Log("ONCOMPLETE SEQUENCE");
             //ShowPackOpening(cardPackRect.localPosition);
             ShowPackOpening(cardPackRect.position);
             if (ShopManager.Instance.PacksCreated > 0)
