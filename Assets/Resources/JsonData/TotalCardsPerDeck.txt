@@ -1,0 +1,3 @@
+{
+  "limitOfCardsPerDeck": 20
+}

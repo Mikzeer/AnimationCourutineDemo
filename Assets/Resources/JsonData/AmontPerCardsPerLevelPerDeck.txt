@@ -1,0 +1,9 @@
+{
+  "AmountPerCardsPerLevelPerDeck": {
+    "BASIC": 5,
+    "COMMON": 4,
+    "EPIC": 3,
+    "LEGENDARY": 2,
+    "RARE": 1
+  }
+}

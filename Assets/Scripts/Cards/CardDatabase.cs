@@ -4,7 +4,17 @@ namespace PositionerDemo
 {
     public static class CardDatabase
     {
-        public static Dictionary<int, AbilityModifier> abilitiesModifier;
+
+        public static Dictionary<CardRarity, int> amountPerCardPerLevelPerDeck = new Dictionary<CardRarity, int>
+        {
+            {CardRarity.BASIC, 5} ,
+            {CardRarity.COMMON, 4} ,
+            {CardRarity.EPIC, 3} ,
+            {CardRarity.LEGENDARY, 2} ,
+            {CardRarity.RARE, 1} 
+        };
+
+        public static int limitOfCardsPerDeck { get { return 20;} private set {; } }
 
         public static AbilityModifier GetModifier(int modifierID)
         {
@@ -39,6 +49,11 @@ namespace PositionerDemo
             maximumCardPerLevelPerDeck.Add(5, 1); // LEVEL 5 / MAX AMOUNT 1
 
             return maximumCardPerLevelPerDeck;
+        }
+
+        public static Dictionary<CardRarity, int> GetAmountPerCardPerLevelPerDeck()
+        {
+            return amountPerCardPerLevelPerDeck;
         }
 
         //// Add this method to the CharacterStat class
