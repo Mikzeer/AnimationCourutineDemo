@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "226234349654",
+    "firebase_url": "https://kimbokotooltest.firebaseio.com",
+    "project_id": "kimbokotooltest",
+    "storage_bucket": "kimbokotooltest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226234349654:android:af09724dfc50299d7b63f7",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.AnimationCoroutineDemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "226234349654-jg6lq1oh866tu549b7aulsgbakit94te.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhssyXZZRMcBHZ7kOoZlk7AYxD7yKIUiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "226234349654-jg6lq1oh866tu549b7aulsgbakit94te.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

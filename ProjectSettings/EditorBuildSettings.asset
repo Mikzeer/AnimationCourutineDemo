@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DragDropUITestScene.unity
     guid: 892bf36f20120c54ab511625481eafb1
+  - enabled: 1
+    path: Assets/Scenes/LoginScene.unity
+    guid: 44a48d2dd57771f459ec1b8e0c4f4527
   m_configObjects: {}
