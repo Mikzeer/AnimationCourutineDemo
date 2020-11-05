@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Net;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Security.Cryptography;
-using System.Text;
-using System;
 using Proyecto26;
 using Firebase;
 using Firebase.Unity.Editor;
 using Firebase.Database;
+using Firebase.Auth;
 using System.Threading.Tasks;
+using System.Collections;
 
 public class UserLogin : MonoBehaviour
 {
@@ -21,49 +18,22 @@ public class UserLogin : MonoBehaviour
     [SerializeField] private Text txtUserNameLogin;
     [SerializeField] private Text txtPassLogin;
 
+    FirebaseAuth auth;
+    FirebaseUser user;
+    DependencyStatus dependencyStatus;
+
     private const string projectId = "kimbokotooltest"; // You can find this in your Firebase project settings
     private static readonly string databaseURL = $"https://{projectId}.firebaseio.com/";
-
-    private FirebaseDatabase fbDB;
-    DatabaseReference reference;
-
-    private void Awake()
-    {
-        //Debug.Log("MacAddress: " + GetMacAddress());
-        //Debug.Log("LocalIPAddress: " + GetLocalIPAddress());
-
-        string plaintext = "Mikzeer";
-
-        string passwordHashMD5 = ComputeHash(plaintext, "MD5", null);
-        string passwordHashSha1 = ComputeHash(plaintext, "SHA1", null);
-        string passwordHashSha256 = ComputeHash(plaintext, "SHA256", null);
-        string passwordHashSha384 = ComputeHash(plaintext, "SHA384", null);
-        string passwordHashSha512 = ComputeHash(plaintext, "SHA512", null);
-
-        //Debug.Log("Original String   : " + plaintext);
-        //Debug.Log("Hash values :\r\n");
-        //Debug.Log("MD5   : "+ passwordHashMD5);
-        //Debug.Log("SHA1  : "+ passwordHashSha1);
-        //Debug.Log("SHA256: "+ passwordHashSha256);
-        //Debug.Log("SHA384: "+ passwordHashSha384);
-        //Debug.Log("SHA512: "+ passwordHashSha512);
-    }
+    private DatabaseReference reference;
 
     private void Start()
     {
-        //await FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
-        //{
-        //    if (task.Exception != null)
-        //    {
-        //        Debug.Log("Error INIRIALIZAIN DATABASE");
-        //    }
-
-        //    fbDB = FirebaseDatabase.DefaultInstance;
-        //});
-
-        //bool x = await SaveExist();
-
-        //Debug.Log("Save " + x);
+        //string plaintext = "Mikzeer";
+        //string passwordHashMD5 = ComputeHash(plaintext, "MD5", null);
+        //string passwordHashSha1 = ComputeHash(plaintext, "SHA1", null);
+        //string passwordHashSha256 = ComputeHash(plaintext, "SHA256", null);
+        //string passwordHashSha384 = ComputeHash(plaintext, "SHA384", null);
+        //string passwordHashSha512 = ComputeHash(plaintext, "SHA512", null);
 
         // Set up the Editor before calling into the realtime database.
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl(databaseURL);
@@ -73,44 +43,41 @@ public class UserLogin : MonoBehaviour
 
 
 
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            dependencyStatus = task.Result;
+            if (dependencyStatus == DependencyStatus.Available)
+            {
+                InitializeFirebase();
+            }
+            else
+            {
+                Debug.LogError("Could not resolve all Firebase dependecies: " + dependencyStatus);
+            }
+        });
+    }
 
+    private void InitializeFirebase()
+    {
+        Debug.Log("Setting up Firebase Auth");
+        auth = FirebaseAuth.DefaultInstance;
     }
 
     public async void TestCreateUserButton()
     {
         await CreateNewUser();
-    }
 
-    public async Task CreateNewUser()
-    {
-        bool isDataCorrect = await CheckIfDataIsCorrect();
-        if (isDataCorrect)
-        {
-            string userName = txtUserNameRegister.text;
-            string userPass = txtPassRegister.text;
-            string macAddres = GetMacAddress();
-            string localIP = GetLocalIPAddress();
-
-            HashWithSaltResult hashSalt = HashWithSalt(userPass, 32, new SHA256Managed());
-            string pSalt = hashSalt.Salt;
-            string hasPass = hashSalt.Digest;
-
-            UserDB userDB = new UserDB(userName, macAddres, pSalt, hasPass);
-
-            //Every time you call Push(), Firebase generates a unique key that can also be used as a unique identifier,
-            // such as user-scores/<user-id>/<unique-score-id>.
-            string key = reference.Child("Users").Push().Key;
-            userDB.ID = key;
-            string json = JsonUtility.ToJson(userDB);
-            
-            //PostUserWithRestApi(userDB);
-            PostUserWithFireBaseRT(key, json);
-        }
+        //await DatosFirebaseRTHelper.Instance.CreateNewUser();
     }
 
     public async void TestButton()
     {
         await GetValueTest();
+    }
+
+    public void TestButtonNormal()
+    {
+        //DeleteUserWithFireBaseRT("Ru");
     }
 
     public async void TestBtnLogin()
@@ -125,6 +92,38 @@ public class UserLogin : MonoBehaviour
         {
             Debug.Log("Login SUccesfull");
         }
+
+        StartCoroutine(LoginUserWithAuthentication("test@test.com", "123456"));
+    }
+
+    public async Task CreateNewUser()
+    {
+        bool isDataCorrect = await CheckIfDataIsCorrect();
+        if (isDataCorrect)
+        {
+            string userName = txtUserNameRegister.text;
+            string userPass = txtPassRegister.text;
+            string macAddres = HelperUserData.GetMacAddress();
+            string localIP = HelperUserData.GetLocalIPAddress();
+
+            HashWithSaltResult hashSalt = HelperUserData.HashWithSalt(userPass, 32, new SHA256Managed());
+            string pSalt = hashSalt.Salt;
+            string hasPass = hashSalt.Digest;
+
+            UserDB userDB = new UserDB(userName, macAddres, pSalt, hasPass);
+
+            //Every time you call Push(), Firebase generates a unique key that can also be used as a unique identifier,
+            // such as user-scores/<user-id>/<unique-score-id>.
+            string key = reference.Child("Users").Push().Key;
+            userDB.ID = key;
+            string json = JsonUtility.ToJson(userDB);
+            
+            //PostUserWithRestApi(userDB);
+            //PostUserWithFireBaseRT(key, json);
+            PostUserWithFireBaseRT(userName.ToLower(), json);
+
+            StartCoroutine(RegisterUserWithAuthentication("test@test.com", userName, "123456"));
+        }
     }
 
     public async Task<UserDB> NewLoginUserData()
@@ -137,10 +136,13 @@ public class UserLogin : MonoBehaviour
             if (userNameExist.Exists)
             {
                 UserDB user = JsonUtility.FromJson<UserDB>(userNameExist.GetRawJsonValue());
-                if (isCorrectPassword(user.Salt, user.Password, txtPassLogin.text, new SHA256Managed()))
+
+                if (HelperUserData.isCorrectPassword(user.Salt, user.Password, txtPassLogin.text, new SHA256Managed()))
                 {
                     Debug.Log("PASSWORD CORRECT");
                     logedUser = user;
+
+
                 }
                 else
                 {
@@ -194,6 +196,7 @@ public class UserLogin : MonoBehaviour
     private async Task<bool> NameExist(string name)
     {
         bool exist = false;
+
         await FirebaseDatabase.DefaultInstance.GetReference("Users").GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
@@ -221,15 +224,36 @@ public class UserLogin : MonoBehaviour
         return exist;
     }
 
-    private async Task<DataSnapshot> PlayerDataSnapshotNameExist(string name)
+    private async Task<bool> NameExistNew(string name)
     {
         bool exist = false;
+        name = name.ToLower();
+
+        await FirebaseDatabase.DefaultInstance.GetReference("Users").OrderByKey().GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.Log("NoChild");
+                // Handle the error...
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                exist = snapshot.Child(name).Exists;
+            }
+        });
+
+        return exist;
+    }
+
+    private async Task<DataSnapshot> PlayerDataSnapshotNameExist(string name)
+    {
         DataSnapshot dtSnapshot = null;
         await FirebaseDatabase.DefaultInstance.GetReference("Users").GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
             {
-                Debug.Log("NoChild");
+                //Debug.Log("NoChild");
                 // Handle the error...
             }
             else if (task.IsCompleted)
@@ -241,8 +265,7 @@ public class UserLogin : MonoBehaviour
                     {
                         if (child.Child("Name").Value.ToString().ToLower() == name.ToLower())
                         {
-                            Debug.Log("NAME FAUND");
-                            exist = true;
+                            //Debug.Log("NAME FAUND");
                             dtSnapshot = child;
                         }
                     }
@@ -251,13 +274,6 @@ public class UserLogin : MonoBehaviour
         });
 
         return dtSnapshot;
-    }
-
-    private async Task<bool> SaveExist()
-    {
-        var dataSnapshot = await fbDB.GetReference("Users").GetValueAsync();
-
-        return dataSnapshot.Exists;
     }
 
     private async Task<bool> CheckIfDataIsCorrect()
@@ -270,12 +286,14 @@ public class UserLogin : MonoBehaviour
 
         // CHEQUEAR SI HAY ALGUN CARACTER QUE NO SE PERMITE
         // CHEQUEAR QUE NO SEA UN NOMBRE OFENSIVO DE USUARIO
-
+        // CHEQUEAR QUE EL NOMBRE TENGA MAS DE UNA CANTIDAD DETERMINADA DE CARACTERES
 
 
         // CHEQUEAR SI HAY UN USUARIO CON EL MISMO NOMBRE
-        bool userNameExist = await NameExist(txtUserNameRegister.text);
-        if (userNameExist)
+        //bool userNameExist = await NameExist(txtUserNameRegister.text);
+        bool us = await NameExistNew(txtUserNameRegister.text);
+
+        if (us)
         {
             Debug.Log("User Name Not Valid");
             return false;
@@ -306,7 +324,6 @@ public class UserLogin : MonoBehaviour
     {
         string key = reference.Child("Users").Push().Key;
         RestClient.Put<UserDB>($"{databaseURL}Users/{key}.json", user);
-        //RestClient.Put<UserDB>($"{databaseURL}Users/.json", user);
     }
 
     private void PostUserWithFireBaseRT(string key, string json)
@@ -314,276 +331,123 @@ public class UserLogin : MonoBehaviour
         reference.Child("Users").Child(key).SetRawJsonValueAsync(json);
     }
 
-    private string GetMacAddress()
+    private void DeleteUserWithFireBaseRT(string key)
     {
-        string physicalAddress = "";
+        reference.Child("Users").Child(key).SetValueAsync(null);
+    }
 
-        NetworkInterface[] nice = NetworkInterface.GetAllNetworkInterfaces();
 
-        foreach (NetworkInterface adaper in nice)
+
+
+
+
+    private void SignUpUserWithAuthentication(string email, string username, string password)
+    {
+        string userData = $"https://www.googleapis.com/v1/accounts:signUp?key=" + "[API_KEY]";
+    }
+
+    private IEnumerator RegisterUserWithAuthentication(string email, string username, string password)
+    {
+        var RegisterTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
+        yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
+
+        if (RegisterTask.Exception != null)
         {
+            Debug.LogWarning(message: $"failed to register task with {RegisterTask.Exception}");
+            FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
-            //Debug.Log("Adapter Data: " + adaper.Description);
-
-            if (adaper.Description == "en0")
+            string message = "Login Failed";
+            switch (errorCode)
             {
-                physicalAddress = adaper.GetPhysicalAddress().ToString();
-                break;
-            }
-            else
-            {
-                physicalAddress = adaper.GetPhysicalAddress().ToString();
-
-                if (physicalAddress != "")
-                {
+                case AuthError.EmailAlreadyInUse:
                     break;
-                };
+                case AuthError.InvalidEmail:
+                    message = "Invalid Email";
+                    break;
+                case AuthError.WrongPassword:
+                    message = "Wrong Password";
+                    break;
+                case AuthError.MissingEmail:
+                    message = "Missing Email";
+                    break;
+                case AuthError.MissingPassword:
+                    message = "Missing Password";
+                    break;
+                case AuthError.UserNotFound:
+                    message = "Account does not exist";
+                    break;
+                default:
+                    break;
             }
-        }
+            Debug.Log(message);
 
-        return physicalAddress;
-    }
-
-    private string GetLocalIPAddress()
-    {
-        if (NetworkInterface.GetIsNetworkAvailable() == false)
-        {
-            return string.Empty;
         }
-        
-        var host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (var ip in host.AddressList)
+        else
         {
-            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            user = RegisterTask.Result;
+            if (user != null)
             {
-                return ip.ToString();
+                UserProfile profile = new UserProfile { DisplayName = user.DisplayName };
+
+                var ProfileTask = user.UpdateUserProfileAsync(profile);
+                yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
+
+                if (ProfileTask.Exception != null)
+                {
+                    Debug.LogWarning(message: $"failed to register task with {ProfileTask.Exception}");
+                    FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
+                    AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+                    Debug.Log("Username set failed");
+                }
             }
         }
-
-        throw new System.Exception("No network adapters with an IPv4 address in the system!");
     }
 
-    private string GenerateRandomCryptographicKeySalt(int keyLengthSize)
+    private IEnumerator LoginUserWithAuthentication(string email, string password)
     {
-        // EL KEY LENGTH ES LA CANTIDAD DE BYTES QUE VAMOS A UTILIZAR PARA NUESTRA SALT
-        // LO IDEAL ES QUE LA MISMA CANTIDAD DE BYTES DEL TEXTO DE LA CLAVE SEA PARA LA SALT
-        // Return a Base64 string representation of the random number.
-        return Convert.ToBase64String(GenerateRandomCryptographicBytesSalt(keyLengthSize));
-    }
+        var LoginTask = auth.SignInWithEmailAndPasswordAsync(email, password);
 
-    private byte[] GenerateRandomCryptographicBytesSalt(int keyLengthSize)
-    {
-        //A cryptographically secure pseudorandom number generator(CSPRNG) is an algorithm that produces a pseudorandom sequence of bytes.
-        // RNGCryptoServiceProvider() whose sole job is to generate random numbers.
-        RNGCryptoServiceProvider rngCryptoServiceProvider = new RNGCryptoServiceProvider();
-        byte[] randomBytes = new byte[keyLengthSize];
-        rngCryptoServiceProvider.GetBytes(randomBytes);
-        // Fill the salt with cryptographically strong byte values.
-        //rngCryptoServiceProvider.GetNonZeroBytes(randomBytes);
-        return randomBytes;
-    }
+        yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
 
-    private HashWithSaltResult HashWithSalt(string password, int saltLength, HashAlgorithm hashAlgo)
-    {
-        // genero una Salt nueva segun la saltLength que queremos
-        byte[] saltBytes = GenerateRandomCryptographicBytesSalt(saltLength);
-        // trnasformo el password en bytes
-        byte[] passwordAsBytes = Encoding.UTF8.GetBytes(password);
-        // creo una lista y la agrego el array de PASS + arra de SALT
-        List<byte> passwordWithSaltBytes = new List<byte>();
-        passwordWithSaltBytes.AddRange(passwordAsBytes);
-        passwordWithSaltBytes.AddRange(saltBytes);
-        // segun el algoritmo deseado creo el array de bytes con el PASS + SALT
-        byte[] digestBytes = hashAlgo.ComputeHash(passwordWithSaltBytes.ToArray());
-
-        // Create list which will hold hash and original salt bytes.
-        List<byte> hashWithSaltBytes = new List<byte>();
-        // Copy hash bytes into resulting list.
-        hashWithSaltBytes.AddRange(digestBytes);
-        // Append salt bytes to the result.
-        hashWithSaltBytes.AddRange(saltBytes);
-        // Convert result into a base64-encoded string.
-        string hashValue = Convert.ToBase64String(hashWithSaltBytes.ToArray());
-
-        // devuelvo una clase que tiene el string SALT y el string del HASHPASS + SALT
-        return new HashWithSaltResult(Convert.ToBase64String(saltBytes), hashValue);
-    }
-
-    private bool isCorrectPassword(string saltDeLaBDOnline, string passHashDeLaBDOnline, string passQueElUserIntrodujoAhora, HashAlgorithm hashAlgo)
-    {
-        // trnasformo el password y la salt en bytes
-        byte[] passwordAsBytes = Encoding.UTF8.GetBytes(passQueElUserIntrodujoAhora);
-        //byte[] saltBytes = Encoding.UTF8.GetBytes(saltDeLaBDOnline);
-        byte[] saltBytes = Convert.FromBase64String(saltDeLaBDOnline);
-        // creo una lista y la agrego el array de PASS + arra de SALT
-        List<byte> passwordWithSaltBytes = new List<byte>();
-        passwordWithSaltBytes.AddRange(passwordAsBytes);
-        passwordWithSaltBytes.AddRange(saltBytes);
-
-        // segun el algoritmo deseado creo el array de bytes con el PASS + SALT
-        byte[] digestBytes = hashAlgo.ComputeHash(passwordWithSaltBytes.ToArray());
-
-        // convierto ese hash en string
-        //string hashSaltQueIntrodujoElUsuario = Convert.ToBase64String(digestBytes);
-
-        // Create list which will hold hash and original salt bytes.
-        List<byte> hashWithSaltBytes = new List<byte>();
-        // Copy hash bytes into resulting list.
-        passwordWithSaltBytes.AddRange(digestBytes);
-        // Append salt bytes to the result.
-        passwordWithSaltBytes.AddRange(saltBytes);
-        // Convert result into a base64-encoded string.
-        string hashValue = Convert.ToBase64String(hashWithSaltBytes.ToArray());
-
-        // comparo el string de la bd con el que creamos segun la Salt guardad en la BD y el pass transformado en bytes que puso el user
-        if (string.Equals(passHashDeLaBDOnline, hashValue))
+        if (LoginTask.Exception != null)
         {
-            return true;
+            Debug.LogWarning(message: $"failed to register task with {LoginTask.Exception}");
+            FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+            string message = "Login Failed";
+            switch (errorCode)
+            {
+                case AuthError.EmailAlreadyInUse:
+                    break;
+                case AuthError.InvalidEmail:
+                    message = "Invalid Email";
+                    break;
+                case AuthError.WrongPassword:
+                    message = "Wrong Password";
+                    break;
+                case AuthError.MissingEmail:
+                    message = "Missing Email";
+                    break;
+                case AuthError.MissingPassword:
+                    message = "Missing Password";
+                    break;
+                case AuthError.UserNotFound:
+                    message = "Account does not exist";
+                    break;
+                default:
+                    break;
+            }
+            Debug.Log(message);
+
         }
-
-        return false;
-    }
-
-    private string ComputeHash(string plainText, string hashAlgorithm, byte[] saltBytes)
-    {
-        // If salt is not specified, generate it on the fly.
-        if (saltBytes == null)
+        else
         {
-            // Define min and max salt sizes.
-            int minSaltSize = 4;
-            int maxSaltSize = 8;
-
-            // Generate a random number for the size of the salt.
-            System.Random random = new System.Random();
-            int saltSize = random.Next(minSaltSize, maxSaltSize);
-
-            // Allocate a byte array, which will hold the salt.
-            saltBytes = new byte[saltSize];
-
-            // Initialize a random number generator.
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-
-            // Fill the salt with cryptographically strong byte values.
-            rng.GetNonZeroBytes(saltBytes);
+            user = LoginTask.Result;
+            Debug.LogFormat("User signed in succesfully: {0} ({1})", user.DisplayName, user.Email);
+            Debug.Log("Logged IN");
         }
-        // Convert plain text into a byte array.
-        byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-        // Allocate array, which will hold plain text and salt.
-        byte[] plainTextWithSaltBytes = new byte[plainTextBytes.Length + saltBytes.Length];
-        // Copy plain text bytes into resulting array.
-        for (int i = 0; i < plainTextBytes.Length; i++)
-            plainTextWithSaltBytes[i] = plainTextBytes[i];
-        // Append salt bytes to the resulting array.
-        for (int i = 0; i < saltBytes.Length; i++)
-            plainTextWithSaltBytes[plainTextBytes.Length + i] = saltBytes[i];
-
-        HashAlgorithm hash;
-        // Make sure hashing algorithm name is specified.
-        if (hashAlgorithm == null)
-            hashAlgorithm = "";
-        // Initialize appropriate hashing algorithm class.
-        switch (hashAlgorithm.ToUpper())
-        {
-            case "SHA1":
-                hash = new SHA1Managed();
-                break;
-            case "SHA256":
-                hash = new SHA256Managed();
-                break;
-            case "SHA384":
-                hash = new SHA384Managed();
-                break;
-            case "SHA512":
-                hash = new SHA512Managed();
-                break;
-            default:
-                hash = new MD5CryptoServiceProvider();
-                break;
-        }
-
-        // Compute hash value of our plain text with appended salt.
-        byte[] hashBytes = hash.ComputeHash(plainTextWithSaltBytes);
-
-        // Create array which will hold hash and original salt bytes.
-        byte[] hashWithSaltBytes = new byte[hashBytes.Length +
-                                            saltBytes.Length];
-
-        // Copy hash bytes into resulting array.
-        for (int i = 0; i < hashBytes.Length; i++)
-            hashWithSaltBytes[i] = hashBytes[i];
-
-        // Append salt bytes to the result.
-        for (int i = 0; i < saltBytes.Length; i++)
-            hashWithSaltBytes[hashBytes.Length + i] = saltBytes[i];
-
-        // Convert result into a base64-encoded string.
-        string hashValue = Convert.ToBase64String(hashWithSaltBytes);
-
-        // Return the result.
-        return hashValue;
     }
 
-}
-
-public class HashWithSaltResult
-{
-    public string Salt { get; }
-    public string Digest { get; set; }
-
-    public HashWithSaltResult(string salt, string digest)
-    {
-        Salt = salt;
-        Digest = digest;
-    }
-}
-
-[Serializable]
-public class UserDB
-{
-    public string ID;
-    public string Name;
-    public string Macaddress;
-    public string Salt;
-    public string Password;
-    public string LocalIP;
-
-    public UserDB()
-    {
-
-    }
-
-    public UserDB(string Name, string Password)
-    {
-        this.Name = Name;
-        this.Password = Password;
-    }
-
-    public UserDB(string Name, string Macaddress, string Salt, string Password)
-    {
-        this.Name = Name;
-        this.Macaddress = Macaddress;
-        this.Salt = Salt;
-        this.Password = Password;
-    }
-
-    public UserDB(string Name, string Macaddress, string Salt, string Password, string ID)
-    {
-        this.Name = Name;
-        this.Macaddress = Macaddress;
-        this.Salt = Salt;
-        this.Password = Password;
-        this.ID = ID;
-    }
-
-    public Dictionary<string, System.Object> ToDictionary()
-    {
-        Dictionary<string, System.Object> result = new Dictionary<string, System.Object>();
-        result["ID"] = ID;
-        result["Name"] = Name;
-        result["Macaddress"] = Macaddress;
-        result["Salt"] = Salt;
-        result["Password"] = Password;
-
-        return result;
-    }
 }

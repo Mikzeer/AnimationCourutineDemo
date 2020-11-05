@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
+using System.Threading.Tasks;
 
 public class CardCollection : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class CardCollection : MonoBehaviour
     private Dictionary<string, CardAsset> AllCardsDictionary = new Dictionary<string, CardAsset>(); // ALL THE CARDS THAT EXIST IN THE GAME BUT IN A DICTIONARY TO FIND BY NAME
     public Dictionary<CardAsset, int> QuantityOfEachCard = new Dictionary<CardAsset, int>(); // HOW MUCH OF EACH CARD DOES THE PLAYER HAS IN HIS LIBRARY
 
+    private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>();
+
     void Awake()
     {
         if (instance == null)
@@ -49,7 +52,7 @@ public class CardCollection : MonoBehaviour
         }
 
         LoadCardsArrays();
-
+        LoadCardLibraryFromBDOnline();
     }
 
     private void LoadCardsArrays()
@@ -62,6 +65,31 @@ public class CardCollection : MonoBehaviour
         }
 
         LoadQuantityOfCardsFromPlayerPrefs();
+    }
+
+    private async void LoadCardLibraryFromBDOnline()
+    {
+        List<CardDataRT> cardData = await DatosFirebaseRTHelper.Instance.GetAllCardCollectionLibrary();
+        foreach (CardDataRT ca in cardData)
+        {
+            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
+                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+        }
+
+        ShowCarD();
+    }
+
+    private void ShowCarD()
+    {
+        Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
+
+        foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
+        {
+            Debug.Log(item.Value.frontImageBytes.ToString());
+            Sprite sp = DatosFirebaseRTHelper.Instance.GetSpriteFromByteArray(item.Value.frontImageBytes.ToArray());
+            DatosFirebaseRTHelper.Instance.pruebaSprite.sprite = sp;
+            break;
+        }              
     }
 
     private void LoadQuantityOfCardsFromPlayerPrefs()
