@@ -37,7 +37,9 @@ public class CardCollection : MonoBehaviour
     private Dictionary<string, CardAsset> AllCardsDictionary = new Dictionary<string, CardAsset>(); // ALL THE CARDS THAT EXIST IN THE GAME BUT IN A DICTIONARY TO FIND BY NAME
     public Dictionary<CardAsset, int> QuantityOfEachCard = new Dictionary<CardAsset, int>(); // HOW MUCH OF EACH CARD DOES THE PLAYER HAS IN HIS LIBRARY
 
-    private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>();
+
+    private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // 
+    public Dictionary<int, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<int, int>(); // id / amount
 
     void Awake()
     {
@@ -52,7 +54,71 @@ public class CardCollection : MonoBehaviour
         }
 
         LoadCardsArrays();
-        LoadCardLibraryFromBDOnline();
+        //LoadCardLibraryFromBDOnline();
+    }
+
+    private void SaveWithJSon()
+    {
+        string json = JsonUtility.ToJson(this, true);//true for you can read the file
+        string path = Path.Combine(Application.persistentDataPath, "saved files", "data.json");
+        File.WriteAllText(path, json);
+    }
+
+    [Serializable]
+    public class aux
+    {
+        public long uctCreatedUnix;
+
+        public aux()
+        {
+
+        }
+
+        public aux(long uctCreatedUnix)
+        {
+            this.uctCreatedUnix = uctCreatedUnix;
+        }
+    }
+
+    public DateTime LastCollectionUpdate()
+    {
+        DateTime dtLastUpdate = DateTime.Today;
+
+        long uctCreatedUnix = 1604766896680;
+
+        aux dateAux = new aux(uctCreatedUnix);
+
+        //string path = Path.Combine(Application.persistentDataPath, "Resources", "lastcollectionupdate.json");
+        string path = Path.Combine("Assets/", "Resources/", "lastcollectionupdate.json");
+
+
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
+
+        string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+        File.WriteAllText(path, jsonSave);
+
+        string json = File.ReadAllText(path);
+
+        aux dateAux2 = new aux();
+
+        JsonUtility.FromJsonOverwrite(json, dateAux2);
+
+        dtLastUpdate = UnixTimeStampToDateTimeMiliseconds(dateAux2.uctCreatedUnix);
+
+        Debug.Log("CREATED DATE " + dtLastUpdate);
+
+        return dtLastUpdate;
+    }
+
+    private static DateTime UnixTimeStampToDateTimeMiliseconds(long unixTimeStamp)
+    {
+        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp);
+        return dtDateTime;
     }
 
     private void LoadCardsArrays()

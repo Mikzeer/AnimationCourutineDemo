@@ -46,6 +46,8 @@ public class DatosFirebaseRTHelper : MonoBehaviour
 
     private const string usersTable = "Users";
     private const string cardsTable = "Cards";
+    private const string DefaultCollectionTable = "DefaultCollection";
+    private const string UsersCardCollectionTable = "UsersCardCollection";
     private bool isInit = false;
 
     public Image pruebaSprite;
@@ -175,6 +177,20 @@ public class DatosFirebaseRTHelper : MonoBehaviour
         return acType;
     }
 
+    private static DateTime UnixTimeStampToDateTimeSeconds(long unixTimeStamp)
+    {
+        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+        dtDateTime = dtDateTime.AddSeconds(unixTimeStamp);
+        return dtDateTime;
+    }
+
+    private static DateTime UnixTimeStampToDateTimeMiliseconds(long unixTimeStamp)
+    {
+        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp);
+        return dtDateTime;
+    }
+
     private void Awake()
     {
         Init();
@@ -199,6 +215,23 @@ public class DatosFirebaseRTHelper : MonoBehaviour
             {
                 Debug.LogError("Could not resolve all Firebase dependecies: " + dependencyStatus);
             }
+
+            if (long.TryParse(ServerValue.Timestamp.ToString(), out utcCreatedTimestamp))
+            {
+                Debug.Log("utcCreatedTimestamp " + utcCreatedTimestamp);
+            }
+            else
+            {
+                Debug.Log("NO utcCreatedTimestamp ");
+                Debug.Log("ServerValue.Timestamp " + ServerValue.Timestamp);
+                Debug.Log("ServerValue.Timestamp.ToString() " + ServerValue.Timestamp.ToString());
+                //string timestampAdd = @"timestamp"": {"".sv"" : ""timestamp""} } ";
+
+                reference.Child("Users").Child("new1").UpdateChildrenAsync(new Dictionary<string, object> { { "utcLastDownloadCollectionUnix", ServerValue.Timestamp } , { "utcLastDownloadOwnedCards", ServerValue.Timestamp } });
+                //reference.Child("Users").Child("pepe").SetRawJsonValueAsync(timestampAdd);
+                //DateTime dtTest = ;
+            }
+
         });
     }
 
@@ -217,6 +250,10 @@ public class DatosFirebaseRTHelper : MonoBehaviour
         isInit = true;
     }
 
+    //readonly object Timestamp = ServerValue.Timestamp.CreateServerValuePlaceholder("timestamp")
+    public long utcCreatedTimestamp;
+
+
     public async Task CreateNewUser(UserDB userDB, string password, string email)
     {
         if (isInit == false) return;
@@ -228,6 +265,7 @@ public class DatosFirebaseRTHelper : MonoBehaviour
             // such as user-scores/<user-id>/<unique-score-id>.
             string key = reference.Child(usersTable).Push().Key;
             userDB.ID = key;
+            userDB.IsFirstTime = true;
             string json = JsonUtility.ToJson(userDB);
 
             //PostUserWithRestApi(userDB);
@@ -379,7 +417,47 @@ public class DatosFirebaseRTHelper : MonoBehaviour
                 if (HelperUserData.isCorrectPassword(user.Salt, user.Password, password, new SHA256Managed()))
                 {
                     Debug.Log("PASSWORD CORRECT");
+                    Debug.Log("user.Name.ToLower() " + user.Name.ToLower());
                     logedUser = user;
+                    if (user.IsFirstTime == true)
+                    {
+                        List<DefaultCollectionDataDB> allCardList = await GetAndSetDefaultCardCollection();
+                        
+                        if (allCardList != null && allCardList.Count > 0)
+                        {
+                            DefCollectionListDB df = new DefCollectionListDB(allCardList);
+                            await reference.Child(usersTable).Child(user.Name.ToLower()).Child("IsFirstTime").SetValueAsync(false);
+
+                            foreach (DefaultCollectionDataDB dcData in allCardList)
+                            {
+                                string json = JsonUtility.ToJson(dcData);
+                                await reference.Child(UsersCardCollectionTable).Child(user.Name.ToLower()).Child(dcData.ID).SetRawJsonValueAsync(json);
+                            }
+
+                        }
+                    }
+
+                    //DateTime createdDate = UnixTimeStampToDateTimeSeconds(user.utcCreatedTimestamp);
+
+                    //Debug.Log("CREATED DATE " + createdDate);
+
+                    Debug.Log("user.utcCreatedUnix " + user.utcLastDownloadCollectionUnix);
+                    Debug.Log("user.utcCreated " + user.utcDownloadCollection);
+
+                    long milliseconds;
+                    if (long.TryParse(user.utcLastDownloadCollectionUnix.ToString(), out milliseconds))
+                    {
+                        utcCreatedTimestamp = milliseconds;
+
+                        DateTime createdDate = UnixTimeStampToDateTimeMiliseconds(utcCreatedTimestamp);
+
+                        Debug.Log("CREATED DATE " + createdDate);
+
+                        //DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    }
+
+                    CardCollection.Instance.LastCollectionUpdate();
+
                 }
                 else
                 {
@@ -451,6 +529,33 @@ public class DatosFirebaseRTHelper : MonoBehaviour
         return allCardList;
     }
 
+    public async Task<List<DefaultCollectionDataDB>> GetAndSetDefaultCardCollection()
+    {
+        if (isInit == false) return null;
+
+        List<DefaultCollectionDataDB> allCardList = new List<DefaultCollectionDataDB>();
+
+        await FirebaseDatabase.DefaultInstance.GetReference(DefaultCollectionTable).GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                //Debug.Log("NoChild");
+                // Handle the error...
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                foreach (var child in snapshot.Children)
+                {
+                    DefaultCollectionDataDB card = JsonUtility.FromJson<DefaultCollectionDataDB>(child.GetRawJsonValue());
+                    allCardList.Add(card);
+                }
+            }
+        });
+
+        return allCardList;
+    }
+
     private IEnumerator LoginUserWithAuthentication(string email, string password)
     {
         var LoginTask = auth.SignInWithEmailAndPasswordAsync(email, password);
@@ -506,4 +611,45 @@ public class DatosFirebaseRTHelper : MonoBehaviour
         reference.Child(usersTable).Child(key).SetValueAsync(null);
     }
 
+}
+
+[Serializable]
+public class DefaultCollectionDataDB
+{
+    public string ID;
+    public int Amount;
+
+    public DefaultCollectionDataDB(string ID, int Amount)
+    {
+        this.ID = ID;
+        this.Amount = Amount;
+    }
+
+    public Dictionary<string, System.Object> ToDictionary()
+    {
+        Dictionary<string, System.Object> result = new Dictionary<string, System.Object>();
+        result["ID"] = ID;
+        result["Amount"] = Amount;
+
+        return result;
+    }
+}
+
+[Serializable]
+public class DefCollectionListDB
+{
+    public List<DefaultCollectionDataDB> CardCollection;
+
+    public DefCollectionListDB(List<DefaultCollectionDataDB> CardCollection)
+    {
+        this.CardCollection = CardCollection;
+    }
+
+    public Dictionary<string, System.Object> ToDictionary()
+    {
+        Dictionary<string, System.Object> result = new Dictionary<string, System.Object>();
+        result["defData"] = CardCollection;
+
+        return result;
+    }
 }
