@@ -10,6 +10,7 @@ public class UserRegistrationManager : MonoBehaviour
     [SerializeField] private Text txtRePassRegister;
 
     [SerializeField] private Button btnRegister;
+    [SerializeField] private UserRegistrationFirebase userRegistrationFirebase;
 
     private void OnEnable()
     {
@@ -42,7 +43,8 @@ public class UserRegistrationManager : MonoBehaviour
             UserDB userDB = new UserDB(userName, macAddres, pSalt, hasPass);
 
             string email = txtEmailRegister.text;
-            await DatosFirebaseRTHelper.Instance.CreateNewUser(userDB, userPass, email);
+
+            await userRegistrationFirebase.CreateNewUser(userDB, userPass, email);
         }
     }
 

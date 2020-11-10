@@ -22,11 +22,9 @@ public class UserDB
     [NonSerialized]
     public DateTime utcDownloadOwnedCards; // LAS CARD COLLECTION UPDATE
 
-
-
     public UserDB()
     {
-
+        this.IsFirstTime = true;
     }
 
     public UserDB(string Name, string Macaddress, string Salt, string Password)
@@ -35,6 +33,7 @@ public class UserDB
         this.Macaddress = Macaddress;
         this.Salt = Salt;
         this.Password = Password;
+        this.IsFirstTime = true;
     }
 
     public UserDB(string Name, string Macaddress, string Salt, string Password, string ID)
@@ -44,6 +43,17 @@ public class UserDB
         this.Salt = Salt;
         this.Password = Password;
         this.ID = ID;
+        this.IsFirstTime = true;
+    }
+
+    public UserDB(string Name, string Macaddress, string Salt, string Password, string ID, bool isFirstTime)
+    {
+        this.Name = Name;
+        this.Macaddress = Macaddress;
+        this.Salt = Salt;
+        this.Password = Password;
+        this.ID = ID;
+        this.IsFirstTime = isFirstTime;
     }
 
     public Dictionary<string, System.Object> ToDictionary()

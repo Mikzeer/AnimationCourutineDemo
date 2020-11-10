@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PositionerDemo;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+
 using System.IO;
 using System;
 using System.Threading.Tasks;
@@ -38,6 +38,7 @@ public class CardCollection : MonoBehaviour
     public Dictionary<CardAsset, int> QuantityOfEachCard = new Dictionary<CardAsset, int>(); // HOW MUCH OF EACH CARD DOES THE PLAYER HAS IN HIS LIBRARY
 
 
+    [SerializeField] private CardCollectionFirebase cardCollectionFirebase;
     private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // 
     public Dictionary<int, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<int, int>(); // id / amount
 
@@ -57,68 +58,87 @@ public class CardCollection : MonoBehaviour
         //LoadCardLibraryFromBDOnline();
     }
 
-    private void SaveWithJSon()
+    public DateTime GetLastGameCollectionUpdateFromJson()
     {
-        string json = JsonUtility.ToJson(this, true);//true for you can read the file
-        string path = Path.Combine(Application.persistentDataPath, "saved files", "data.json");
-        File.WriteAllText(path, json);
-    }
-
-    [Serializable]
-    public class aux
-    {
-        public long uctCreatedUnix;
-
-        public aux()
-        {
-
-        }
-
-        public aux(long uctCreatedUnix)
-        {
-            this.uctCreatedUnix = uctCreatedUnix;
-        }
-    }
-
-    public DateTime LastCollectionUpdate()
-    {
-        DateTime dtLastUpdate = DateTime.Today;
-
-        long uctCreatedUnix = 1604766896680;
-
-        aux dateAux = new aux(uctCreatedUnix);
-
-        //string path = Path.Combine(Application.persistentDataPath, "Resources", "lastcollectionupdate.json");
-        string path = Path.Combine("Assets/", "Resources/", "lastcollectionupdate.json");
-
-
+        string path = Path.Combine("Assets/", "Resources/");
         if (!Directory.Exists(path))
         {
-            Directory.CreateDirectory(path);
+            return DateTime.Today;
         }
+        else
+        {            
+            path += "lastcollectionupdate.json";
 
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
 
-        string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
-        File.WriteAllText(path, jsonSave);
+                LastUpdateAuxiliar dateAux2 = new LastUpdateAuxiliar();
 
-        string json = File.ReadAllText(path);
+                JsonUtility.FromJsonOverwrite(json, dateAux2);
 
-        aux dateAux2 = new aux();
+                DateTime dtLastUpdate = Helper.UnixTimeStampToDateTimeMiliseconds(dateAux2.uctCreatedUnix);
 
-        JsonUtility.FromJsonOverwrite(json, dateAux2);
-
-        dtLastUpdate = UnixTimeStampToDateTimeMiliseconds(dateAux2.uctCreatedUnix);
-
-        Debug.Log("CREATED DATE " + dtLastUpdate);
-
-        return dtLastUpdate;
+                return dtLastUpdate;
+            }
+            else
+            {
+                return DateTime.Today;
+            }
+        }
     }
 
-    private static DateTime UnixTimeStampToDateTimeMiliseconds(long unixTimeStamp)
+    public void SetLastGameCollectionUpdateToJson(DateTime pLastUpdate)
     {
-        DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp);
-        return dtDateTime;
+        long uctCreatedUnix = Helper.DateTimeToUnixTimeStampSeconds(pLastUpdate);
+        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return;
+        }
+        else
+        {
+            path += "lastcollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    private async void LoadCardLibraryFromBDOnline()
+    {
+        List<CardDataRT> cardData = await cardCollectionFirebase.GetAllCardCollectionLibrary();
+        foreach (CardDataRT ca in cardData)
+        {
+            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
+                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+        }
+
+        Debug.Log("CARD DATA FROM BD " + cardData.Count);
+
+        //ShowCarD();
+    }
+
+    private void ShowCarD()
+    {
+        Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
+
+        foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
+        {
+            Debug.Log(item.Value.frontImageBytes.ToString());
+            Sprite sp = Helper.GetSpriteFromByteArray(item.Value.frontImageBytes.ToArray());
+            //DatosFirebaseRTHelper.Instance.pruebaSprite.sprite = sp;
+            break;
+        }              
     }
 
     private void LoadCardsArrays()
@@ -131,31 +151,6 @@ public class CardCollection : MonoBehaviour
         }
 
         LoadQuantityOfCardsFromPlayerPrefs();
-    }
-
-    private async void LoadCardLibraryFromBDOnline()
-    {
-        List<CardDataRT> cardData = await DatosFirebaseRTHelper.Instance.GetAllCardCollectionLibrary();
-        foreach (CardDataRT ca in cardData)
-        {
-            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
-                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
-        }
-
-        ShowCarD();
-    }
-
-    private void ShowCarD()
-    {
-        Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
-
-        foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
-        {
-            Debug.Log(item.Value.frontImageBytes.ToString());
-            Sprite sp = DatosFirebaseRTHelper.Instance.GetSpriteFromByteArray(item.Value.frontImageBytes.ToArray());
-            DatosFirebaseRTHelper.Instance.pruebaSprite.sprite = sp;
-            break;
-        }              
     }
 
     private void LoadQuantityOfCardsFromPlayerPrefs()
@@ -174,25 +169,6 @@ public class CardCollection : MonoBehaviour
         foreach (CardAsset cardAsset in allCardsArray)
         {
             PlayerPrefs.SetInt("NumberOf" + cardAsset.CardName + cardAsset.ID, QuantityOfEachCard[cardAsset]);
-        }
-    }
-
-    private void SaveWithBinaryFormatter()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/playerInfo.dat");
-        bf.Serialize(file, QuantityOfEachCard);
-        file.Close();
-    }
-
-    private void LoadWithBianaryFormatter()
-    {
-        if (File.Exists(Application.persistentDataPath + "/playerInfo.dat"))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/playerInfo.dat", FileMode.Open);
-
-            QuantityOfEachCard = (Dictionary<CardAsset, int>)bf.Deserialize(file);
         }
     }
 
@@ -261,5 +237,21 @@ public class CardCollection : MonoBehaviour
         returnList.Sort();
 
         return returnList;
+    }
+}
+
+[Serializable]
+public class LastUpdateAuxiliar
+{
+    public long uctCreatedUnix;
+
+    public LastUpdateAuxiliar()
+    {
+
+    }
+
+    public LastUpdateAuxiliar(long uctCreatedUnix)
+    {
+        this.uctCreatedUnix = uctCreatedUnix;
     }
 }

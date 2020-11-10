@@ -7,7 +7,7 @@ public class UserLoginManager : MonoBehaviour
     [SerializeField] private Text txtUserNameLogin;
     [SerializeField] private Text txtPassLogin;
     [SerializeField] private Button btnLogin;
-
+    [SerializeField] private UserLoginFirebase userLoginFirebase;
     private void OnEnable()
     {
         btnLogin.onClick.AddListener(LoginUserButton);
@@ -27,7 +27,7 @@ public class UserLoginManager : MonoBehaviour
     {
         if (IsLoginDataComplete() == true)
         {
-            UserDB logedUser = await DatosFirebaseRTHelper.Instance.UserLoginMultipleInterface(txtUserNameLogin.text, txtPassLogin.text, txtEmail.text);
+            UserDB logedUser = await userLoginFirebase.UserLoginMultipleInterface(txtUserNameLogin.text, txtPassLogin.text, txtEmail.text);
         }
     }
 
