@@ -53,28 +53,34 @@ public class UserLoginFirebase : MonoBehaviour
                     logedUser = user;
                     if (user.IsFirstTime == true)
                     {
-                        List<DefaultCollectionDataDB> allCardList = await GetAndSetDefaultCardCollection();
 
-                        if (allCardList != null && allCardList.Count > 0)
-                        {
-                            await DatosFirebaseRTHelper.Instance.reference.Child(usersTable).Child(user.Name.ToLower()).Child("IsFirstTime").SetValueAsync(false);
+                        CardCollection.Instance.CreateNewUserCollections(user);
 
-                            foreach (DefaultCollectionDataDB dcData in allCardList)
-                            {
-                                string json = JsonUtility.ToJson(dcData);
-                                await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable).Child(user.Name.ToLower()).Child(dcData.ID).SetRawJsonValueAsync(json);
-                            }
-                        }
+                        // DE TODO ESTO SE DEBERIA ENCARGAR LA CARD COLLECTION ONDA... CARDCOLLECTION.INSTANCE.SECREOUNNUEVOUSUARIO.AGREGALEELMAZOPORDEFECTO
+                        // Y AHI LE PASAMOS AL CARDCOLLECTION.INSTANCE EL USUARIO QUE ESTAMOS CREANDO
+
+
+                        //List<DefaultCollectionDataDB> allCardList = await GetAndSetDefaultCardCollection();
+
+                        //if (allCardList != null && allCardList.Count > 0)
+                        //{
+                        //    await DatosFirebaseRTHelper.Instance.reference.Child(usersTable).Child(user.Name.ToLower()).Child("IsFirstTime").SetValueAsync(false);
+
+                        //    foreach (DefaultCollectionDataDB dcData in allCardList)
+                        //    {
+                        //        string json = JsonUtility.ToJson(dcData);
+                        //        await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable).Child(user.Name.ToLower()).Child(dcData.ID).SetRawJsonValueAsync(json);
+                        //    }
+                        //}
                     }
 
-                    long milliseconds;
-                    if (long.TryParse(user.utcLastDownloadCollectionUnix.ToString(), out milliseconds))
-                    {
-                        long utcCreatedTimestamp = milliseconds;
-                        DateTime createdDate = Helper.UnixTimeStampToDateTimeMiliseconds(utcCreatedTimestamp);
-                    }
-
-                    CardCollection.Instance.GetLastGameCollectionUpdateFromJson();
+                    //long milliseconds;
+                    //if (long.TryParse(user.utcLastDownloadGameCollectionUnix.ToString(), out milliseconds))
+                    //{
+                    //    long utcCreatedTimestamp = milliseconds;
+                    //    DateTime createdDate = Helper.UnixTimeStampToDateTimeMiliseconds(utcCreatedTimestamp);
+                    //}
+                    //CardCollection.Instance.GetLastGameCollectionUpdateFromJsonDateTime();
 
                 }
                 else

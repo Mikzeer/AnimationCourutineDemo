@@ -23,13 +23,6 @@ public class UserRegistrationFirebase : MonoBehaviour
             userDB.ID = key;
             string json = JsonUtility.ToJson(userDB);
 
-
-            //string timestampAdd = @"timestamp"": {"".sv"" : ""timestamp""} } ";
-            //reference.Child("Users").Child("new1").UpdateChildrenAsync(new Dictionary<string, object> { { "utcLastDownloadCollectionUnix", ServerValue.Timestamp } , { "utcLastDownloadOwnedCards", ServerValue.Timestamp } });
-            //reference.Child("Users").Child("pepe").SetRawJsonValueAsync(timestampAdd);
-
-
-
             // TAL VEZ EL ID DE ESTO DEBERIA SER EL 
             PostUserWithFireBaseRT(userDB.Name.ToLower(), json);
 

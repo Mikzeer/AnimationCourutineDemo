@@ -13,8 +13,8 @@ public class UserDB
     public string LocalIP;
     public bool IsFirstTime;
 
-    public long utcLastDownloadCollectionUnix;
-    public long utcLastDownloadOwnedCards;
+    public long utcLastDownloadGameCollectionUnix;
+    public long utcLastDownloadUserCollectionUnix;
 
     [NonSerialized]
     public DateTime utcDownloadCollection; // LAS CARD COLLECTION UPDATE
@@ -77,12 +77,12 @@ public class UserDB
         Salt = fromFirebaseResult.ContainsKey("Salt") ? fromFirebaseResult.First(x => x.Key == "Salt").Value.ToString() : string.Empty;
         Password = fromFirebaseResult.ContainsKey("Password") ? fromFirebaseResult.First(x => x.Key == "Password").Value.ToString() : string.Empty;
 
-        if (fromFirebaseResult.ContainsKey("utcLastDownloadCollectionUnix"))
+        if (fromFirebaseResult.ContainsKey("utcLastDownloadGameCollectionUnix"))
         {
             long milliseconds;
-            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadCollectionUnix").Value.ToString(), out milliseconds))
+            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadGameCollectionUnix").Value.ToString(), out milliseconds))
             {
-                utcLastDownloadCollectionUnix = milliseconds;
+                utcLastDownloadGameCollectionUnix = milliseconds;
 
                 DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -90,12 +90,12 @@ public class UserDB
             }
         }
 
-        if (fromFirebaseResult.ContainsKey("utcLastDownloadOwnedCards"))
+        if (fromFirebaseResult.ContainsKey("utcLastDownloadUserCollectionUnix"))
         {
             long milliseconds;
-            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadOwnedCards").Value.ToString(), out milliseconds))
+            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadUserCollectionUnix").Value.ToString(), out milliseconds))
             {
-                utcLastDownloadOwnedCards = milliseconds;
+                utcLastDownloadUserCollectionUnix = milliseconds;
 
                 DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

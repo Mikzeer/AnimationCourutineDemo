@@ -39,8 +39,8 @@ public class CardCollection : MonoBehaviour
 
 
     [SerializeField] private CardCollectionFirebase cardCollectionFirebase;
-    private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // 
-    public Dictionary<int, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<int, int>(); // id / amount
+    private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // id // carddata
+    public Dictionary<string, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<string, int>(); // id / amount
 
     void Awake()
     {
@@ -58,7 +58,74 @@ public class CardCollection : MonoBehaviour
         //LoadCardLibraryFromBDOnline();
     }
 
-    public DateTime GetLastGameCollectionUpdateFromJson()
+    public async void CreateNewUserCollections(UserDB pUser)
+    {
+        List<DefaultCollectionDataDB> dfCollection = await cardCollectionFirebase.CreateNewUserCollection(pUser);
+
+        foreach (DefaultCollectionDataDB ca in dfCollection)
+        {
+            if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
+                quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
+        }
+    }
+
+    private async void LoadCollections(UserDB pUser)
+    {
+        // Local Time
+        DateTime now = DateTime.Now;
+        Debug.Log($"Local time {now:HH:mm:ss}");
+        
+        //One global time helps to avoid confusion about time zones and daylight saving time. The UTC (Universal Coordinated time)
+        DateTime utc = DateTime.UtcNow;
+        Debug.Log($"UTC time {utc:HH:mm:ss}");
+
+
+        // CHEQUEAR LA ULTIMA ACTUALIZACION DE LA BASE DE DATOS CONTRA LA ULTIMA ACTUALIZACION DEL JUGADOR
+        long bdLastUpdate = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestamp(pUser.Name.ToLower());
+        long jsonLastUpdate = GetLastGameCollectionUpdateFromJsonLong();
+
+        Debug.Log("bdLastUpdate " + bdLastUpdate);
+        Debug.Log("jsonLastUpdate " + jsonLastUpdate);
+
+        DateTime dtBD = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUpdate);
+        DateTime dtJson = Helper.UnixTimeStampToDateTimeMiliseconds(jsonLastUpdate);
+
+        Debug.Log("dtBD " + dtBD);
+        Debug.Log("dtJson " + dtJson);
+
+        int dtComp = DateTime.Compare(dtBD, dtJson);
+
+        // ACA ESTOY HACIENDO MAL, YA QUE LA FECHA DE ULTIMA ACTUALIZACION DE LA BASE DE DATOS ES UNA
+        // Y LA DE CADA USUARIO ES PARTICULAR A CADA USUARIO... ENTONCES NO HACE FALTA GUARDAR UN JSON EN LA COMPU
+        // YA QUE EL USUARIO CUANDO SE DESCARGA LA GAME CARD COLLECTION ACTUALIZA EN SU REGISTRO ONLINE LA ULTIMA FECHA DE UPDATE
+        // Y LA BASE DE DATOS ONLINE TIENE UN SOLO REGISTRO PARA GUARDAR LA ULTIMA ACTUALIZACION DE LA GAME CARD COLLECTION
+        // ENTONCES LO QUE HAGO ES REVISAR LA INFORMACION EN LA BD QUE ESTA GUARDADA EN EL USUARIO Y LA QUE ESTA GUARDAD EN EL GENERAL DE LA BD
+        // SI LA BASE DE DATOS GENERAL ACTUALIZO Y EL USUARIO NO, ENTONCES EL DATO VA A ESTAR GUARDADO
+        // UNA VEZ QUE ACTUALICE EL USUARIO ESTE SUBE A LA BASE DE DATOS LA FECHA QUE ACTUALIZO QUE VA A SER MAYOR A LA DE LA BD SIEMPRE
+
+        // MIENTRAS QUE LA FECHA DE ACTUALIZACION DEL USUARIO SEA MAYOR A LA QUE ESTA EN EL GENERAL DE LA BD SIGNIFICA QUE EL USUARIO ESTA UPDATEADO
+        // ENTONCES NO HACE FALTA DESCARGAR LA CARD COLLECTION DE LA BD ONLINE, SOLO LA LEEMOS DESDE EL JSON GUARDADO SIEMPRE Y CUANDO NO SEA NULO
+
+        switch (dtComp)
+        {
+            case -1:
+                //date1 is earlier than date2.
+                // ACA ESTA TODO MAL
+                break;
+            case 0:
+                //date1 is the same as date2.
+                // ACA NO HACE FALTA ACTUALIZAR DE LA BD Y SOLO CARGAMOS DESDE EL JSON GUARDADO
+                break;
+            case 1:
+                // If date1 is later than date2.
+                // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+                break;
+            default:
+                break;
+        }
+    }
+
+    public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
     {
         string path = Path.Combine("Assets/", "Resources/");
         if (!Directory.Exists(path))
@@ -84,6 +151,34 @@ public class CardCollection : MonoBehaviour
             else
             {
                 return DateTime.Today;
+            }
+        }
+    }
+
+    public long GetLastGameCollectionUpdateFromJsonLong()
+    {
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return 0;
+        }
+        else
+        {
+            path += "lastcollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                LastUpdateAuxiliar dateAux2 = new LastUpdateAuxiliar();
+
+                JsonUtility.FromJsonOverwrite(json, dateAux2);
+
+                return dateAux2.uctCreatedUnix;
+            }
+            else
+            {
+                return 0;
             }
         }
     }
@@ -114,27 +209,80 @@ public class CardCollection : MonoBehaviour
         }
     }
 
-    private async void LoadCardLibraryFromBDOnline()
+    public void SetLastGameCollectionUpdateToJson(long uctCreatedUnix)
     {
-        List<CardDataRT> cardData = await cardCollectionFirebase.GetAllCardCollectionLibrary();
+        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return;
+        }
+        else
+        {
+            path += "lastcollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    public void SetLastUserCollectionUpdateToJson(long uctCreatedUnix)
+    {
+        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return;
+        }
+        else
+        {
+            path += "lastusercollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    public async void LoadGameCollectionFromFirebase()
+    {
+        List<CardDataRT> cardData = await cardCollectionFirebase.GetGameCardCollection();
         foreach (CardDataRT ca in cardData)
         {
             if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
                 cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
         }
 
-        Debug.Log("CARD DATA FROM BD " + cardData.Count);
+        Debug.Log("GAME CARD COLLECTION LOADED");
 
-        //ShowCarD();
+        //long lastLoadCollection = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestamp();
+
+        //SetLastGameCollectionUpdateToJson(DateTime.Now);
+
     }
 
     private void ShowCarD()
     {
-        Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
+        //Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
 
         foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
         {
-            Debug.Log(item.Value.frontImageBytes.ToString());
+            //Debug.Log(item.Value.frontImageBytes.ToString());
             Sprite sp = Helper.GetSpriteFromByteArray(item.Value.frontImageBytes.ToArray());
             //DatosFirebaseRTHelper.Instance.pruebaSprite.sprite = sp;
             break;
@@ -237,21 +385,5 @@ public class CardCollection : MonoBehaviour
         returnList.Sort();
 
         return returnList;
-    }
-}
-
-[Serializable]
-public class LastUpdateAuxiliar
-{
-    public long uctCreatedUnix;
-
-    public LastUpdateAuxiliar()
-    {
-
-    }
-
-    public LastUpdateAuxiliar(long uctCreatedUnix)
-    {
-        this.uctCreatedUnix = uctCreatedUnix;
     }
 }
