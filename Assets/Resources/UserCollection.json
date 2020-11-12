@@ -1,0 +1,32 @@
+{
+    "dfCollection": [
+        {
+            "ID": "CardID1",
+            "Amount": 4
+        },
+        {
+            "ID": "CardID2",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID3",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID4",
+            "Amount": 2
+        },
+        {
+            "ID": "CardID5",
+            "Amount": 2
+        },
+        {
+            "ID": "CardID6",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID7",
+            "Amount": 3
+        }
+    ]
+}

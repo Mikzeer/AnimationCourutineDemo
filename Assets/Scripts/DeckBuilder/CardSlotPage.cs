@@ -50,7 +50,7 @@ public class CardSlotPage
             {
                 actualrow--;
                 isFull = true;
-                Debug.Log("NO MORE SPACE IN PAGE");
+                //Debug.Log("NO MORE SPACE IN PAGE");
                 return;
             }
         }

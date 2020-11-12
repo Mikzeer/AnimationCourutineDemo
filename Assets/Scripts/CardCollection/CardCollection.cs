@@ -55,7 +55,27 @@ public class CardCollection : MonoBehaviour
         }
 
         LoadCardsArrays();
-        //LoadCardLibraryFromBDOnline();
+
+
+    }
+
+    private void Start()
+    {
+        //List<DefaultCollectionDataDB> cd = await cardCollectionFirebase.GetAndSetDefaultCardCollection();
+        //SetUserCollectionToJson(cd);
+
+        //List<CardDataRT> cdata = await cardCollectionFirebase.GetGameCardCollection();
+        //SetGameCollectionToJson(cdata);
+
+        //List<DefaultCollectionDataDB> cd = GetUserCollectionFromJson();
+        //Debug.Log("PEPE");
+
+        //List<CardDataRT> cdata = GetGameCollectionFromJson();
+        //Debug.Log("PEPE");
+
+        UserDB user = new UserDB("mmm", "", "", "");
+        LoadUserCollectionFromFirebase(user);
+        //Debug.Log("PEPE");
     }
 
     public async void CreateNewUserCollections(UserDB pUser)
@@ -67,6 +87,37 @@ public class CardCollection : MonoBehaviour
             if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
                 quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
         }
+
+        LoadGameCollectionFromFirebase(pUser);
+    }
+
+    public async void LoadGameCollectionFromFirebase(UserDB pUser)
+    {
+        List<CardDataRT> cardData = await cardCollectionFirebase.GetGameCardCollection(pUser);
+        foreach (CardDataRT ca in cardData)
+        {
+            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
+                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+        }
+        Debug.Log("GAME CARD COLLECTION LOADED");
+    }
+
+    public async void LoadUserCollectionFromFirebase(UserDB pUser)
+    {
+        List<DefaultCollectionDataDB> dfCollection = await cardCollectionFirebase.GetUserCardCollection(pUser);
+
+        foreach (DefaultCollectionDataDB ca in dfCollection)
+        {
+            if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
+                quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
+        }
+        Pito();
+    }
+
+    private void Pito()
+    {
+        Debug.Log("PEPE " + quantityOfCardsUserHaveFromBDOnline.Count);
+        Debug.Log("USER CARD COLLECTION LOADED");
     }
 
     private async void LoadCollections(UserDB pUser)
@@ -81,7 +132,7 @@ public class CardCollection : MonoBehaviour
 
 
         // CHEQUEAR LA ULTIMA ACTUALIZACION DE LA BASE DE DATOS CONTRA LA ULTIMA ACTUALIZACION DEL JUGADOR
-        long bdLastUpdate = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestamp(pUser.Name.ToLower());
+        long bdLastUpdate = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
         long jsonLastUpdate = GetLastGameCollectionUpdateFromJsonLong();
 
         Debug.Log("bdLastUpdate " + bdLastUpdate);
@@ -125,34 +176,194 @@ public class CardCollection : MonoBehaviour
         }
     }
 
-    public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
+    private void SetGameCollectionToJson(List<CardDataRT> cardData)
     {
+        CardDataRTList cDataList = new CardDataRTList(cardData);
+
         string path = Path.Combine("Assets/", "Resources/");
         if (!Directory.Exists(path))
         {
-            return DateTime.Today;
+            Directory.CreateDirectory(path);
+
+            path += "GameCollection.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(cDataList, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(@"GameCollection.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(cDataList, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
+            }
         }
         else
-        {            
-            path += "lastcollectionupdate.json";
+        {
+            path += "GameCollection.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(cDataList, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(@"GameCollection.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(cDataList, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
+            }
+        }
+    }
+
+    private void SetUserCollectionToJson(List<DefaultCollectionDataDB> dfCollection)
+    {
+        DefaultCollectionDataDBList dfList = new DefaultCollectionDataDBList(dfCollection);
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+
+            path += "UserCollection.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dfList, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(@"UserCollection.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(dfList, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
+            }
+        }
+        else
+        {
+            path += "UserCollection.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dfList, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(@"UserCollection.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(dfList, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
+            }
+        }
+    }
+
+    private List<DefaultCollectionDataDB> GetUserCollectionFromJson()
+    {
+        List<DefaultCollectionDataDB> userCollection = new List<DefaultCollectionDataDB>();
+
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return userCollection;
+        }
+        else
+        {
+            path += "UserCollection.json";
 
             if (File.Exists(path))
             {
                 string json = File.ReadAllText(path);
 
-                LastUpdateAuxiliar dateAux2 = new LastUpdateAuxiliar();
+                DefaultCollectionDataDBList collDbList = new DefaultCollectionDataDBList();
 
-                JsonUtility.FromJsonOverwrite(json, dateAux2);
+                JsonUtility.FromJsonOverwrite(json, collDbList);
 
-                DateTime dtLastUpdate = Helper.UnixTimeStampToDateTimeMiliseconds(dateAux2.uctCreatedUnix);
+                foreach (DefaultCollectionDataDB data in collDbList.dfCollection)
+                {
+                    userCollection.Add(data);
+                }
 
-                return dtLastUpdate;
+                return userCollection;
             }
             else
             {
-                return DateTime.Today;
+                return userCollection;
             }
         }
+    }
+
+    private List<CardDataRT> GetGameCollectionFromJson()
+    {
+        List<CardDataRT> gameCollection = new List<CardDataRT>();
+
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return gameCollection;
+        }
+        else
+        {
+            path += "GameCollection.json";
+
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                CardDataRTList collDbList = new CardDataRTList();
+
+                JsonUtility.FromJsonOverwrite(json, collDbList);
+
+                foreach (CardDataRT data in collDbList.cardDataList)
+                {
+                    gameCollection.Add(data);
+                }
+
+                return gameCollection;
+            }
+            else
+            {
+                return gameCollection;
+            }
+        }
+    }
+
+
+    public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
+    {
+        long lastUpdUnix = GetLastGameCollectionUpdateFromJsonLong();
+        DateTime dtLastUpdate = Helper.UnixTimeStampToDateTimeMiliseconds(lastUpdUnix);
+        return dtLastUpdate;
     }
 
     public long GetLastGameCollectionUpdateFromJsonLong()
@@ -186,27 +397,7 @@ public class CardCollection : MonoBehaviour
     public void SetLastGameCollectionUpdateToJson(DateTime pLastUpdate)
     {
         long uctCreatedUnix = Helper.DateTimeToUnixTimeStampSeconds(pLastUpdate);
-        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
-
-        string path = Path.Combine("Assets/", "Resources/");
-        if (!Directory.Exists(path))
-        {
-            return;
-        }
-        else
-        {
-            path += "lastcollectionupdate.json";
-
-            if (File.Exists(path))
-            {
-                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
-                File.WriteAllText(path, jsonSave);
-            }
-            else
-            {
-                return;
-            }
-        }
+        SetLastGameCollectionUpdateToJson(uctCreatedUnix);
     }
 
     public void SetLastGameCollectionUpdateToJson(long uctCreatedUnix)
@@ -259,27 +450,10 @@ public class CardCollection : MonoBehaviour
         }
     }
 
-    public async void LoadGameCollectionFromFirebase()
-    {
-        List<CardDataRT> cardData = await cardCollectionFirebase.GetGameCardCollection();
-        foreach (CardDataRT ca in cardData)
-        {
-            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
-                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
-        }
 
-        Debug.Log("GAME CARD COLLECTION LOADED");
-
-        //long lastLoadCollection = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestamp();
-
-        //SetLastGameCollectionUpdateToJson(DateTime.Now);
-
-    }
-
-    private void ShowCarD()
+    private void ConvertBiteArrayToSprite()
     {
         //Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
-
         foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
         {
             //Debug.Log(item.Value.frontImageBytes.ToString());
@@ -385,5 +559,37 @@ public class CardCollection : MonoBehaviour
         returnList.Sort();
 
         return returnList;
+    }
+}
+
+[Serializable]
+public class DefaultCollectionDataDBList
+{
+    public List<DefaultCollectionDataDB> dfCollection;
+
+    public DefaultCollectionDataDBList()
+    {
+        dfCollection = new List<DefaultCollectionDataDB>();
+    }
+
+    public DefaultCollectionDataDBList(List<DefaultCollectionDataDB> dfCollection)
+    {
+        this.dfCollection = dfCollection;
+    }
+}
+
+[Serializable]
+public class CardDataRTList
+{
+    public List<CardDataRT> cardDataList;
+
+    public CardDataRTList()
+    {
+        cardDataList = new List<CardDataRT>();
+    }
+
+    public CardDataRTList(List<CardDataRT> dfCollection)
+    {
+        this.cardDataList = dfCollection;
     }
 }
