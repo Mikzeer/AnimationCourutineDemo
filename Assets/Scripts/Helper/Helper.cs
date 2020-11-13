@@ -216,21 +216,6 @@ public static class Helper
         return null;
     }
 
-    public static PositionerDemo.ACTIVATIONTYPE GetActivationTypeFromInt(int pIDActType)
-    {
-        //var myEnumMemberCount = Enum.GetNames(typeof(MyEnum)).Length;
-        //YourEnum foo = (YourEnum)yourInt;
-        int acTypeTotalCount = Enum.GetNames(typeof(PositionerDemo.ACTIVATIONTYPE)).Length;
-
-        if (pIDActType >= acTypeTotalCount)
-        {
-            return PositionerDemo.ACTIVATIONTYPE.NONE;
-        }
-
-        PositionerDemo.ACTIVATIONTYPE acType = (PositionerDemo.ACTIVATIONTYPE)pIDActType;
-        return acType;
-    }
-
     private static void SaveWithBinaryFormatter(string path, object objToSerialize)
     {
         BinaryFormatter bf = new BinaryFormatter();

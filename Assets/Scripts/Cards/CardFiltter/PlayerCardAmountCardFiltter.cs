@@ -6,6 +6,12 @@
         // CheckCardAmount => PLAYER
         protected int amountToFind = 2;
 
+        private const int FILTTER_ID = 6;
+
+        public PlayerCardAmountCardFiltter() : base(FILTTER_ID)
+        {
+        }
+
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
             if (cardTarget.CardTargetType != CARDTARGETTYPE.BASENEXO) return null;

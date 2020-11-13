@@ -1,25 +1,25 @@
 ﻿namespace PositionerDemo
 {
-    public class UnitFoeCardFiltter : CardFiltter
+    public class FreeSpaceInBattlefieldCardFiltter : CardFiltter
     {
-        private const int FILTTER_ID = 4;
+        private const int FILTTER_ID = 7;
 
-        public UnitFoeCardFiltter() : base(FILTTER_ID)
+        public FreeSpaceInBattlefieldCardFiltter() : base(FILTTER_ID)
         {
         }
 
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
-            if (cardTarget.CardTargetType != CARDTARGETTYPE.UNIT)
+            if (cardTarget.CardTargetType != CARDTARGETTYPE.BATTLEFIELD)
             {
                 return null;
             }
 
-            Kimboko kimboko = (Kimboko)cardTarget;
+            Tile tile = (Tile)cardTarget;
 
-            if (kimboko != null)
+            if (tile != null)
             {
-                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() != kimboko.ownerPlayer)
+                if (tile.tileType == TILETYPE.BATTLEFILED && tile.IsOccupied() == false)
                 {
                     return cardTarget;
                 }
@@ -32,5 +32,4 @@
             return null;
         }
     }
-
 }

@@ -1,10 +1,12 @@
 ﻿namespace PositionerDemo
 {
-    public class UnitFoeCardFiltter : CardFiltter
+    public class UnitHPGreaterThanCardFiltter : CardFiltter
     {
-        private const int FILTTER_ID = 4;
+        private const int FILTTER_ID = 10;
+        private const int HEALTHSTATID = 0;
+        private int hpValueToEvaluate = 2;
 
-        public UnitFoeCardFiltter() : base(FILTTER_ID)
+        public UnitHPGreaterThanCardFiltter() : base(FILTTER_ID)
         {
         }
 
@@ -19,18 +21,22 @@
 
             if (kimboko != null)
             {
-                if (GameCreator.Instance.turnManager.GetActualPlayerTurn() != kimboko.ownerPlayer)
+                if (kimboko.Stats.ContainsKey(HEALTHSTATID))
                 {
-                    return cardTarget;
+                    if (kimboko.Stats[HEALTHSTATID].ActualStatValue > hpValueToEvaluate)
+                    {
+                        return cardTarget;
+                    }
+                    
                 }
             }
             else
             {
                 return null;
             }
-
             return null;
         }
     }
-
 }
+
+

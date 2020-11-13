@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using PositionerDemo;
 using System.Linq;
-
 using System.IO;
 using System;
 using System.Threading.Tasks;
@@ -53,10 +52,7 @@ public class CardCollection : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         LoadCardsArrays();
-
-
     }
 
     private void Start()
@@ -73,9 +69,13 @@ public class CardCollection : MonoBehaviour
         //List<CardDataRT> cdata = GetGameCollectionFromJson();
         //Debug.Log("PEPE");
 
-        UserDB user = new UserDB("mmm", "", "", "");
-        LoadUserCollectionFromFirebase(user);
+        //UserDB user = new UserDB("mmm", "", "", "");
+        //LoadUserCollectionFromFirebase(user);
         //Debug.Log("PEPE");
+
+        //cardCollectionFirebase.UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST();
+
+        //CardDatabase.GetCardFiltterSubClassByReflection();
     }
 
     public async void CreateNewUserCollections(UserDB pUser)
@@ -99,7 +99,18 @@ public class CardCollection : MonoBehaviour
             if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
                 cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
         }
-        Debug.Log("GAME CARD COLLECTION LOADED");
+        Debug.Log("GAME CARD COLLECTION LOADED FROM DB ONLINE");
+    }
+
+    public void LoadGameCollectionFromJson()
+    {
+        List<CardDataRT> cardData = GetGameCollectionFromJson();
+        foreach (CardDataRT ca in cardData)
+        {
+            if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
+                cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+        }
+        Debug.Log("GAME CARD COLLECTION LOADED FROM JSON");
     }
 
     public async void LoadUserCollectionFromFirebase(UserDB pUser)
@@ -111,65 +122,140 @@ public class CardCollection : MonoBehaviour
             if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
                 quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
         }
-        Pito();
+        Debug.Log("USER CARD COLLECTION LOADED FROM DB ONLINE");
     }
 
-    private void Pito()
+    public void LoadUserCollectionFromJson()
     {
-        Debug.Log("PEPE " + quantityOfCardsUserHaveFromBDOnline.Count);
-        Debug.Log("USER CARD COLLECTION LOADED");
+        List<DefaultCollectionDataDB> dfCollection = GetUserCollectionFromJson();
+
+        foreach (DefaultCollectionDataDB ca in dfCollection)
+        {
+            if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
+                quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
+        }
+        Debug.Log("USER CARD COLLECTION LOADED FROM JSON");
     }
 
-    private async void LoadCollections(UserDB pUser)
+    private void LoadCollections(UserDB pUser)
     {
-        // Local Time
-        DateTime now = DateTime.Now;
-        Debug.Log($"Local time {now:HH:mm:ss}");
-        
-        //One global time helps to avoid confusion about time zones and daylight saving time. The UTC (Universal Coordinated time)
-        DateTime utc = DateTime.UtcNow;
-        Debug.Log($"UTC time {utc:HH:mm:ss}");
+        CheckLastGameCollectionUpdate(pUser);
+        CheckLastUserCollectionUpdate(pUser);
 
+        //// Local Time
+        //DateTime now = DateTime.Now;
+        //Debug.Log($"Local time {now:HH:mm:ss}");        
+        ////One global time helps to avoid confusion about time zones and daylight saving time. The UTC (Universal Coordinated time)
+        //DateTime utc = DateTime.UtcNow;
+        //Debug.Log($"UTC time {utc:HH:mm:ss}");
 
-        // CHEQUEAR LA ULTIMA ACTUALIZACION DE LA BASE DE DATOS CONTRA LA ULTIMA ACTUALIZACION DEL JUGADOR
-        long bdLastUpdate = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-        long jsonLastUpdate = GetLastGameCollectionUpdateFromJsonLong();
+        //// CHEQUEAR LA ULTIMA ACTUALIZACION DE LA BASE DE DATOS CONTRA LA ULTIMA ACTUALIZACION DEL JUGADOR
+        //long bdLastGameCollectionUpdate = await cardCollectionFirebase.GetLastGameCardCollectionUpdateTimestamp();
+        //long bdLastGameCollectionDownloadByUser = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
 
-        Debug.Log("bdLastUpdate " + bdLastUpdate);
-        Debug.Log("jsonLastUpdate " + jsonLastUpdate);
+        //Debug.Log("bdLastGameCollectionUpdate " + bdLastGameCollectionUpdate);
+        //Debug.Log("bdLastGameCollectionDownloadByUser " + bdLastGameCollectionDownloadByUser);
 
-        DateTime dtBD = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUpdate);
-        DateTime dtJson = Helper.UnixTimeStampToDateTimeMiliseconds(jsonLastUpdate);
+        //DateTime dtLGCU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionUpdate);
+        //DateTime dtLGCDBU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionDownloadByUser);
 
-        Debug.Log("dtBD " + dtBD);
-        Debug.Log("dtJson " + dtJson);
+        //Debug.Log("dtLGCU " + dtLGCU);
+        //Debug.Log("dtLGCDBU " + dtLGCDBU);
 
-        int dtComp = DateTime.Compare(dtBD, dtJson);
+        //int dtCompareGameCollection = DateTime.Compare(dtLGCU, dtLGCDBU);
 
-        // ACA ESTOY HACIENDO MAL, YA QUE LA FECHA DE ULTIMA ACTUALIZACION DE LA BASE DE DATOS ES UNA
-        // Y LA DE CADA USUARIO ES PARTICULAR A CADA USUARIO... ENTONCES NO HACE FALTA GUARDAR UN JSON EN LA COMPU
-        // YA QUE EL USUARIO CUANDO SE DESCARGA LA GAME CARD COLLECTION ACTUALIZA EN SU REGISTRO ONLINE LA ULTIMA FECHA DE UPDATE
-        // Y LA BASE DE DATOS ONLINE TIENE UN SOLO REGISTRO PARA GUARDAR LA ULTIMA ACTUALIZACION DE LA GAME CARD COLLECTION
-        // ENTONCES LO QUE HAGO ES REVISAR LA INFORMACION EN LA BD QUE ESTA GUARDADA EN EL USUARIO Y LA QUE ESTA GUARDAD EN EL GENERAL DE LA BD
-        // SI LA BASE DE DATOS GENERAL ACTUALIZO Y EL USUARIO NO, ENTONCES EL DATO VA A ESTAR GUARDADO
-        // UNA VEZ QUE ACTUALICE EL USUARIO ESTE SUBE A LA BASE DE DATOS LA FECHA QUE ACTUALIZO QUE VA A SER MAYOR A LA DE LA BD SIEMPRE
+        //switch (dtCompareGameCollection)
+        //{
+        //    case -1:
+        //        //date1 is earlier than date2.
+        //        // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION
+        //        LoadGameCollectionFromJson();
+        //        break;
+        //    case 0:
+        //        //date1 is the same as date2.
+        //        // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION MUY RARO ESTO PERO PUEDE SER...
+        //        LoadGameCollectionFromJson();
+        //        break;
+        //    case 1:
+        //        // If date1 is later than date2.
+        //        // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+        //        LoadGameCollectionFromFirebase(pUser);
+        //        break;
+        //    default:
+        //        break;
+        //}
+    }
 
-        // MIENTRAS QUE LA FECHA DE ACTUALIZACION DEL USUARIO SEA MAYOR A LA QUE ESTA EN EL GENERAL DE LA BD SIGNIFICA QUE EL USUARIO ESTA UPDATEADO
-        // ENTONCES NO HACE FALTA DESCARGAR LA CARD COLLECTION DE LA BD ONLINE, SOLO LA LEEMOS DESDE EL JSON GUARDADO SIEMPRE Y CUANDO NO SEA NULO
+    private async void CheckLastGameCollectionUpdate(UserDB pUser)
+    {
+        long bdLastGameCollectionUpdate = await cardCollectionFirebase.GetLastGameCardCollectionUpdateTimestamp();
+        long bdLastGameCollectionDownloadByUser = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
 
-        switch (dtComp)
+        Debug.Log("bdLastGameCollectionUpdate " + bdLastGameCollectionUpdate);
+        Debug.Log("bdLastGameCollectionDownloadByUser " + bdLastGameCollectionDownloadByUser);
+
+        DateTime dtLGCU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionUpdate);
+        DateTime dtLGCDBU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionDownloadByUser);
+
+        Debug.Log("dtLGCU " + dtLGCU);
+        Debug.Log("dtLGCDBU " + dtLGCDBU);
+
+        int dtCompareGameCollection = DateTime.Compare(dtLGCU, dtLGCDBU);
+
+        switch (dtCompareGameCollection)
         {
             case -1:
                 //date1 is earlier than date2.
-                // ACA ESTA TODO MAL
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION
+                LoadGameCollectionFromJson();
                 break;
             case 0:
                 //date1 is the same as date2.
-                // ACA NO HACE FALTA ACTUALIZAR DE LA BD Y SOLO CARGAMOS DESDE EL JSON GUARDADO
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION MUY RARO ESTO PERO PUEDE SER...
+                LoadGameCollectionFromJson();
                 break;
             case 1:
                 // If date1 is later than date2.
                 // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+                LoadGameCollectionFromFirebase(pUser);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private async void CheckLastUserCollectionUpdate(UserDB pUser)
+    {
+        long bdLastUserCollectionDownloadByUserJson = GetLastUserCollectionUpdateFromJsonLong();
+        long bdLastUserCollectionDownloadByUser = await cardCollectionFirebase.GetLastUserCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
+
+        Debug.Log("bdLastUserCollectionDownloadByUserJson " + bdLastUserCollectionDownloadByUserJson);
+        Debug.Log("bdLastUserCollectionDownloadByUser " + bdLastUserCollectionDownloadByUser);
+
+        DateTime dtJson = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUserJson);
+        DateTime dtBD = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUser);
+
+        Debug.Log("dtJson " + dtJson);
+        Debug.Log("dtBD " + dtBD);
+
+        int dtCompareUserCollection = DateTime.Compare(dtBD, dtJson);
+
+        switch (dtCompareUserCollection)
+        {
+            case -1:
+                //date1 is earlier than date2.
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION
+                LoadUserCollectionFromJson();
+                break;
+            case 0:
+                //date1 is the same as date2.
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION MUY RARO ESTO PERO PUEDE SER...
+                LoadUserCollectionFromJson();
+                break;
+            case 1:
+                // If date1 is later than date2.
+                // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+                LoadUserCollectionFromFirebase(pUser);
                 break;
             default:
                 break;
@@ -358,6 +444,70 @@ public class CardCollection : MonoBehaviour
         }
     }
 
+    public CardDataRT GetCardDataRTByID(string cardID)
+    {
+        if (cardCollectionLibraryFromBDOnline.ContainsKey(cardID))
+        {
+            return cardCollectionLibraryFromBDOnline[cardID];
+        }
+
+        return null;
+    }
+
+    public void SetLastUserCollectionUpdateToJson(long uctCreatedUnix)
+    {
+        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return;
+        }
+        else
+        {
+            path += "lastusercollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                return;
+            }
+        }
+    }
+
+    public long GetLastUserCollectionUpdateFromJsonLong()
+    {
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
+        {
+            return 0;
+        }
+        else
+        {
+            path += "lastusercollectionupdate.json";
+
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+
+                LastUpdateAuxiliar dateAux2 = new LastUpdateAuxiliar();
+
+                JsonUtility.FromJsonOverwrite(json, dateAux2);
+
+                return dateAux2.uctCreatedUnix;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+
 
     public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
     {
@@ -425,30 +575,6 @@ public class CardCollection : MonoBehaviour
         }
     }
 
-    public void SetLastUserCollectionUpdateToJson(long uctCreatedUnix)
-    {
-        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
-
-        string path = Path.Combine("Assets/", "Resources/");
-        if (!Directory.Exists(path))
-        {
-            return;
-        }
-        else
-        {
-            path += "lastusercollectionupdate.json";
-
-            if (File.Exists(path))
-            {
-                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
-                File.WriteAllText(path, jsonSave);
-            }
-            else
-            {
-                return;
-            }
-        }
-    }
 
 
     private void ConvertBiteArrayToSprite()

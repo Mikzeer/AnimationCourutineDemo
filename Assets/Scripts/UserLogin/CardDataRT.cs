@@ -22,9 +22,7 @@ public class CardDataRT
     public string[] Tags;
     public List<int> CardTargetType;
     public List<int> CardTargetFiltters;
-
-    public Image imag;
-
+    
     public CardDataRT()
     {
 

@@ -4,6 +4,12 @@ namespace PositionerDemo
 {
     public class UnitFoeInBattlefieldCardFiltter : CardFiltter
     {
+        private const int FILTTER_ID = 5;
+
+        public UnitFoeInBattlefieldCardFiltter() : base(FILTTER_ID)
+        {
+        }
+
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
             if (cardTarget.CardTargetType != CARDTARGETTYPE.UNIT)
@@ -39,5 +45,6 @@ namespace PositionerDemo
             return null;
         }
     }
-
 }
+
+

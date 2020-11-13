@@ -13,7 +13,7 @@ public class CardCollectionFirebase : MonoBehaviour
 
     public async Task<List<DefaultCollectionDataDB>> CreateNewUserCollection(UserDB user)
     {       
-        List<DefaultCollectionDataDB> allCardList = await GetAndSetDefaultCardCollection();
+        List<DefaultCollectionDataDB> allCardList = await GetDefaultCardCollection();
 
         if (allCardList != null && allCardList.Count > 0)
         {
@@ -104,8 +104,8 @@ public class CardCollectionFirebase : MonoBehaviour
         if (allCardList.Count > 0)
         {
             UpdateLastUserCardCollectionDownloadTimestamp(pUser);
-            //long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-            //CardCollection.Instance.SetLastGameCollectionUpdateToJson(lastUpdate);
+            long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
+            CardCollection.Instance.SetLastGameCollectionUpdateToJson(lastUpdate);
         }
 
         return allCardList;
@@ -130,6 +130,14 @@ public class CardCollectionFirebase : MonoBehaviour
 
         DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
             new Dictionary<string, object> { { "utcLastDownloadUserCollectionUnix", ServerValue.Timestamp } });
+    }
+
+    public void UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST()
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return;
+
+        DatosFirebaseRTHelper.Instance.reference.Child(GameCardCollectionLastUpdateTable).UpdateChildrenAsync(
+            new Dictionary<string, object> { { "uctCreatedUnix", ServerValue.Timestamp } });
     }
 
     public async Task<long> GetLastGameCardCollectionDownloadTimestampUser(string name)
@@ -220,7 +228,7 @@ public class CardCollectionFirebase : MonoBehaviour
         return dtSnapshot;
     }
 
-    public async Task<List<DefaultCollectionDataDB>> GetAndSetDefaultCardCollection()
+    public async Task<List<DefaultCollectionDataDB>> GetDefaultCardCollection()
     {
         if (DatosFirebaseRTHelper.Instance.isInit == false) return null;
 
