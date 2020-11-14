@@ -35,4 +35,9 @@ public class CardData
         cardTargetTypes = PositionerDemo.CardDatabase.GetListCardTargetTypeFromListInt(pCard.CardTargetType);
         cardTargetFiltters = PositionerDemo.CardDatabase.GetListCardFiltterFromListInt(pCard.CardTargetFiltters);
     }
+
+    public CardData(int ID)
+    {
+        this.ID = ID;
+    }
 }

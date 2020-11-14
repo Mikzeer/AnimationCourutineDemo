@@ -27,19 +27,8 @@ public class CardCollectionFirebase : MonoBehaviour
                 await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable).Child(user.Name.ToLower()).Child(dcData.ID).SetRawJsonValueAsync(json);
             }
             UpdateLastUserCardCollectionDownloadTimestamp(user);
-
-            //long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(user.Name.ToLower());
-            //CardCollection.Instance.SetLastUserCollectionUpdateToJson(lastUpdate);
         }
-        //long milliseconds;
-        //if (long.TryParse(user.utcLastDownloadGameCollectionUnix.ToString(), out milliseconds))
-        //{
-        //    long utcCreatedTimestamp = milliseconds;
-        //    DateTime createdDate = Helper.UnixTimeStampToDateTimeMiliseconds(utcCreatedTimestamp);
-        //}
-        //CardCollection.Instance.GetLastGameCollectionUpdateFromJsonDateTime();
 
-        //NO HACE FALTA CARGA LA USER CARD COLLECTION YA QUE ESTA FUNCION DEVUELVE LA CARD LIST QUE SE NECESITA PARA ESO
         return allCardList;
     }
 
@@ -70,8 +59,6 @@ public class CardCollectionFirebase : MonoBehaviour
         if (allCardList.Count > 0)
         {
             UpdateLastGameCardCollectionDownloadTimestamp(pUser);
-            //long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-            //CardCollection.Instance.SetLastGameCollectionUpdateToJson(lastUpdate);
         }
 
         return allCardList;
@@ -118,7 +105,6 @@ public class CardCollectionFirebase : MonoBehaviour
         DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
             new Dictionary<string, object> { { "utcLastDownloadGameCollectionUnix", ServerValue.Timestamp } });
 
-
         //string timestampAdd = @"timestamp"": {"".sv"" : ""timestamp""} } ";
         //reference.Child("Users").Child("new1").UpdateChildrenAsync(new Dictionary<string, object> { { "utcLastDownloadCollectionUnix", ServerValue.Timestamp } , { "utcLastDownloadOwnedCards", ServerValue.Timestamp } });
         //reference.Child("Users").Child("pepe").SetRawJsonValueAsync(timestampAdd);
@@ -130,6 +116,14 @@ public class CardCollectionFirebase : MonoBehaviour
 
         DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
             new Dictionary<string, object> { { "utcLastDownloadUserCollectionUnix", ServerValue.Timestamp } });
+    }
+
+    public void UpdateLastUserCardCollectionModifyUpdateTimestamp(UserDB userDB)
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return;
+
+        DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
+            new Dictionary<string, object> { { "utcLastUpdateUserCollectionUnix", ServerValue.Timestamp } });
     }
 
     public void UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST()
@@ -174,6 +168,26 @@ public class CardCollectionFirebase : MonoBehaviour
             {
                 UserDB user = JsonUtility.FromJson<UserDB>(userNameExist.GetRawJsonValue());
                 utcLastUCCDownload = user.utcLastDownloadUserCollectionUnix;
+            }
+        }
+
+        return utcLastUCCDownload;
+    }
+
+    public async Task<long> GetLastUserCardCollectioModificationTimestampUser(string name)
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return 0;
+
+        DataSnapshot userNameExist = await UserDataSnapshotExistByName(name.ToLower());
+
+        long utcLastUCCDownload = 0;
+
+        if (userNameExist != null)
+        {
+            if (userNameExist.Exists)
+            {
+                UserDB user = JsonUtility.FromJson<UserDB>(userNameExist.GetRawJsonValue());
+                utcLastUCCDownload = user.utcLastModificationUserCollectionUnix;
             }
         }
 
@@ -282,5 +296,48 @@ public class CardCollectionFirebase : MonoBehaviour
         return allCardList;
     }
 
+    public async void SetNewCardToUserCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return;
 
+        int cardAmount = await GetUserCardCollectionCardAmount(pCardData, pUserDB);
+        cardAmount++;
+        await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable)
+                                                      .Child(pUserDB.Name.ToLower())
+                                                      .Child(pCardData.ID)                                                      
+                                                      .UpdateChildrenAsync(new Dictionary<string, object> { { "Amount", cardAmount } });
+
+        UpdateLastUserCardCollectionModifyUpdateTimestamp(pUserDB);
+    }
+
+    public async Task<int> GetUserCardCollectionCardAmount(DefaultCollectionDataDB pCardData, UserDB pUserDB)
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return 0;
+
+        DataSnapshot dtSnapshot = null;
+        await FirebaseDatabase.DefaultInstance.GetReference(UsersCardCollectionTable)
+                                              .Child(pUserDB.Name.ToLower())
+                                              .Child(pCardData.ID).GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                //Debug.Log("NoChild");
+                // Handle the error...
+            }
+            else if (task.IsCompleted)
+            {
+                dtSnapshot = task.Result;
+            }
+        });
+        DefaultCollectionDataDB utcLastGCCDownload = new DefaultCollectionDataDB();
+        if (dtSnapshot != null)
+        {
+            if (dtSnapshot.Exists)
+            {
+                utcLastGCCDownload = JsonUtility.FromJson<DefaultCollectionDataDB>(dtSnapshot.GetRawJsonValue());
+            }
+        }
+
+        return utcLastGCCDownload.Amount;
+    }
 }

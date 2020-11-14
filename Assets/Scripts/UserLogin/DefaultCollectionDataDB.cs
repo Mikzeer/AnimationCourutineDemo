@@ -13,6 +13,11 @@ public class DefaultCollectionDataDB
         this.Amount = Amount;
     }
 
+    public DefaultCollectionDataDB()
+    {
+        Amount = 0;
+    }
+
     public Dictionary<string, System.Object> ToDictionary()
     {
         Dictionary<string, System.Object> result = new Dictionary<string, System.Object>();

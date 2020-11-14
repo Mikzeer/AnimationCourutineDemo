@@ -15,6 +15,7 @@ public class UserDB
 
     public long utcLastDownloadGameCollectionUnix;
     public long utcLastDownloadUserCollectionUnix;
+    public long utcLastModificationUserCollectionUnix;
 
     [NonSerialized]
     public DateTime utcDownloadCollection; // LAS CARD COLLECTION UPDATE

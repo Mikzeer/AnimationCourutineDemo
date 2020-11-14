@@ -88,6 +88,8 @@ public class CardCollection : MonoBehaviour
                 quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
         }
 
+        SetUserCollectionToJson(dfCollection);
+
         LoadGameCollectionFromFirebase(pUser);
     }
 
@@ -99,6 +101,10 @@ public class CardCollection : MonoBehaviour
             if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
                 cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
         }
+
+
+        SetGameCollectionToJson(cardData);
+
         Debug.Log("GAME CARD COLLECTION LOADED FROM DB ONLINE");
     }
 
@@ -239,6 +245,17 @@ public class CardCollection : MonoBehaviour
         Debug.Log("dtBD " + dtBD);
 
         int dtCompareUserCollection = DateTime.Compare(dtBD, dtJson);
+
+        // no solo tengo que verificar cuando fue la ultima vez que se la descargo, sino tambien , cuando fue la ultima vez que la lista se updateo
+
+        long bdLastUserCollectionModification = await cardCollectionFirebase.GetLastUserCardCollectioModificationTimestampUser(pUser.Name.ToLower());
+        DateTime dtLastMod = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionModification);
+        // ultima modificacion bd hoy
+        // ultima descarga  bd ayer
+        // ultima descarga json ayer
+
+        int dtCompareLastModification = DateTime.Compare(dtLastMod, dtBD);
+
 
         switch (dtCompareUserCollection)
         {
@@ -507,6 +524,14 @@ public class CardCollection : MonoBehaviour
         }
     }
 
+    public void AddNewCardToUserCollection(CardData pCardData, UserDB pUserDB)
+    {
+        string cardID = "CardID" + pCardData.ID;
+        DefaultCollectionDataDB dfColl = new DefaultCollectionDataDB(cardID, 1);
+        cardCollectionFirebase.SetNewCardToUserCardCollection(dfColl, pUserDB);
+    }
+
+
 
 
     public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
@@ -685,37 +710,5 @@ public class CardCollection : MonoBehaviour
         returnList.Sort();
 
         return returnList;
-    }
-}
-
-[Serializable]
-public class DefaultCollectionDataDBList
-{
-    public List<DefaultCollectionDataDB> dfCollection;
-
-    public DefaultCollectionDataDBList()
-    {
-        dfCollection = new List<DefaultCollectionDataDB>();
-    }
-
-    public DefaultCollectionDataDBList(List<DefaultCollectionDataDB> dfCollection)
-    {
-        this.dfCollection = dfCollection;
-    }
-}
-
-[Serializable]
-public class CardDataRTList
-{
-    public List<CardDataRT> cardDataList;
-
-    public CardDataRTList()
-    {
-        cardDataList = new List<CardDataRT>();
-    }
-
-    public CardDataRTList(List<CardDataRT> dfCollection)
-    {
-        this.cardDataList = dfCollection;
     }
 }
