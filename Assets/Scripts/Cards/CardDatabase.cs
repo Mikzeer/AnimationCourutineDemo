@@ -24,7 +24,12 @@ namespace PositionerDemo
             {CardRarity.RARE, 1} 
         };
 
+
         public static int limitOfCardsPerDeck { get { return 20;} private set {; } }
+
+        public static int maxAmountOfCardsPerDeck { get; private set; }
+        public static Dictionary<CardRarity, int> maxAmountPerRarityDictionary = new Dictionary<CardRarity, int>();
+
 
         public static AbilityModifier GetModifier(int modifierID)
         {
@@ -64,6 +69,16 @@ namespace PositionerDemo
         public static Dictionary<CardRarity, int> GetAmountPerCardPerLevelPerDeck()
         {
             return amountPerCardPerLevelPerDeck;
+        }
+
+        public static void SetCardDataLimits(CardDataLimit pcDataLimit)
+        {
+            maxAmountOfCardsPerDeck = pcDataLimit.MaxAmountPerDeck;
+            for (int i = 0; i < pcDataLimit.MaxAmountPerRarity.cardDataLimitRarityAmount.Count; i++)
+            {                
+                CardRarity rarity = GetCardRarityTypeFromInt(pcDataLimit.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID);
+                maxAmountPerRarityDictionary.Add(rarity, pcDataLimit.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
+            }
         }
 
         public static CardFiltter GetCardFilterFromID(int filtterID)

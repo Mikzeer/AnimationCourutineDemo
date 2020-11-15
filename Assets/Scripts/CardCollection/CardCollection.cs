@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using PositionerDemo;
 using System.Linq;
 using System.IO;
 using System;
-using System.Threading.Tasks;
 
 public class CardCollection : MonoBehaviour
 {
@@ -31,12 +29,11 @@ public class CardCollection : MonoBehaviour
     }
 
     #endregion
-
     private CardAsset[] allCardsArray; // ALL THE CARDS THAT EXIST IN THE GAME
     private Dictionary<string, CardAsset> AllCardsDictionary = new Dictionary<string, CardAsset>(); // ALL THE CARDS THAT EXIST IN THE GAME BUT IN A DICTIONARY TO FIND BY NAME
     public Dictionary<CardAsset, int> QuantityOfEachCard = new Dictionary<CardAsset, int>(); // HOW MUCH OF EACH CARD DOES THE PLAYER HAS IN HIS LIBRARY
 
-
+    [SerializeField] private CardLimitDataFirebase cardLimitDataFirebase;
     [SerializeField] private CardCollectionFirebase cardCollectionFirebase;
     private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // id // carddata
     public Dictionary<string, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<string, int>(); // id / amount
@@ -76,6 +73,44 @@ public class CardCollection : MonoBehaviour
         //cardCollectionFirebase.UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST();
 
         //CardDatabase.GetCardFiltterSubClassByReflection();
+
+        //UserDB user = new UserDB("mmm", "", "", "");
+        //cardLimitDataFirebase.UpdateLastUserCardLimitDataDownloadTimestamp(user);
+
+        //UserDB user = new UserDB("mmm", "", "", "");
+        //long lng = await cardLimitDataFirebase.GetLastUserCardLimitDataDownloadTimestampUser(user.Name);
+        //DateTime dt = Helper.UnixTimeStampToDateTimeMiliseconds(lng);
+        //Debug.Log("GetLastUserCardLimitDataDownloadTimestampUser " + dt);
+
+        //CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData();
+        //Debug.Log("MaxAmountPerDeck " + cardLimitData.MaxAmountPerDeck);
+        ////Debug.Log("MaxAmountPerRarity " + cardLimitData.MaxAmountPerRarity.Amount);
+        //for (int i = 0; i < cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount.Count; i++)
+        //{
+        //    Debug.Log("Rarity ID " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID + " Amount: " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
+        //}
+
+        //cardLimitDataFirebase.SetCardLimit();
+
+        //CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData();
+        //Debug.Log("MaxAmountPerDeck " + cardLimitData.MaxAmountPerDeck);
+        //Dictionary<CardRarity, int> cardsRarityPerDeck = new Dictionary<CardRarity, int>();
+        //for (int i = 0; i < cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount.Count; i++)
+        //{
+        //    //Debug.Log("Rarity ID " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID + " Amount: " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
+        //    CardRarity rarity = CardDatabase.GetCardRarityTypeFromInt(cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID);
+        //    cardsRarityPerDeck.Add(rarity, cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
+        //}
+
+        //foreach (KeyValuePair<CardRarity,int> rart in cardsRarityPerDeck)
+        //{
+        //    Debug.Log(rart.Key.ToString() + " , Amount: " + rart.Value);
+        //}
+
+        //cardLimitDataFirebase.UpdateLastCardLimitDataUpdateTOERASELATERJUSTTOTEST();
+
+        //UserDB user = new UserDB("mmm", "", "", "");
+        //CheckCardLimitDataUpdate(user);
     }
 
     public async void CreateNewUserCollections(UserDB pUser)
@@ -147,65 +182,14 @@ public class CardCollection : MonoBehaviour
     {
         CheckLastGameCollectionUpdate(pUser);
         CheckLastUserCollectionUpdate(pUser);
-
-        //// Local Time
-        //DateTime now = DateTime.Now;
-        //Debug.Log($"Local time {now:HH:mm:ss}");        
-        ////One global time helps to avoid confusion about time zones and daylight saving time. The UTC (Universal Coordinated time)
-        //DateTime utc = DateTime.UtcNow;
-        //Debug.Log($"UTC time {utc:HH:mm:ss}");
-
-        //// CHEQUEAR LA ULTIMA ACTUALIZACION DE LA BASE DE DATOS CONTRA LA ULTIMA ACTUALIZACION DEL JUGADOR
-        //long bdLastGameCollectionUpdate = await cardCollectionFirebase.GetLastGameCardCollectionUpdateTimestamp();
-        //long bdLastGameCollectionDownloadByUser = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-
-        //Debug.Log("bdLastGameCollectionUpdate " + bdLastGameCollectionUpdate);
-        //Debug.Log("bdLastGameCollectionDownloadByUser " + bdLastGameCollectionDownloadByUser);
-
-        //DateTime dtLGCU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionUpdate);
-        //DateTime dtLGCDBU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionDownloadByUser);
-
-        //Debug.Log("dtLGCU " + dtLGCU);
-        //Debug.Log("dtLGCDBU " + dtLGCDBU);
-
-        //int dtCompareGameCollection = DateTime.Compare(dtLGCU, dtLGCDBU);
-
-        //switch (dtCompareGameCollection)
-        //{
-        //    case -1:
-        //        //date1 is earlier than date2.
-        //        // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION
-        //        LoadGameCollectionFromJson();
-        //        break;
-        //    case 0:
-        //        //date1 is the same as date2.
-        //        // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION MUY RARO ESTO PERO PUEDE SER...
-        //        LoadGameCollectionFromJson();
-        //        break;
-        //    case 1:
-        //        // If date1 is later than date2.
-        //        // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
-        //        LoadGameCollectionFromFirebase(pUser);
-        //        break;
-        //    default:
-        //        break;
-        //}
     }
 
     private async void CheckLastGameCollectionUpdate(UserDB pUser)
     {
         long bdLastGameCollectionUpdate = await cardCollectionFirebase.GetLastGameCardCollectionUpdateTimestamp();
         long bdLastGameCollectionDownloadByUser = await cardCollectionFirebase.GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-
-        Debug.Log("bdLastGameCollectionUpdate " + bdLastGameCollectionUpdate);
-        Debug.Log("bdLastGameCollectionDownloadByUser " + bdLastGameCollectionDownloadByUser);
-
         DateTime dtLGCU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionUpdate);
         DateTime dtLGCDBU = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastGameCollectionDownloadByUser);
-
-        Debug.Log("dtLGCU " + dtLGCU);
-        Debug.Log("dtLGCDBU " + dtLGCDBU);
-
         int dtCompareGameCollection = DateTime.Compare(dtLGCU, dtLGCDBU);
 
         switch (dtCompareGameCollection)
@@ -234,28 +218,24 @@ public class CardCollection : MonoBehaviour
     {
         long bdLastUserCollectionDownloadByUserJson = GetLastUserCollectionUpdateFromJsonLong();
         long bdLastUserCollectionDownloadByUser = await cardCollectionFirebase.GetLastUserCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-
-        Debug.Log("bdLastUserCollectionDownloadByUserJson " + bdLastUserCollectionDownloadByUserJson);
-        Debug.Log("bdLastUserCollectionDownloadByUser " + bdLastUserCollectionDownloadByUser);
-
         DateTime dtJson = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUserJson);
         DateTime dtBD = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUser);
-
-        Debug.Log("dtJson " + dtJson);
-        Debug.Log("dtBD " + dtBD);
-
         int dtCompareUserCollection = DateTime.Compare(dtBD, dtJson);
-
-        // no solo tengo que verificar cuando fue la ultima vez que se la descargo, sino tambien , cuando fue la ultima vez que la lista se updateo
 
         long bdLastUserCollectionModification = await cardCollectionFirebase.GetLastUserCardCollectioModificationTimestampUser(pUser.Name.ToLower());
         DateTime dtLastMod = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionModification);
-        // ultima modificacion bd hoy
-        // ultima descarga  bd ayer
-        // ultima descarga json ayer
-
         int dtCompareLastModification = DateTime.Compare(dtLastMod, dtBD);
 
+        switch (dtCompareLastModification)
+        {
+            case 1:
+                // If date1 is later than date2.
+                // SE MODIFICO DESPUES DE LA ULTIMA DESCARGADA
+                LoadUserCollectionFromFirebase(pUser);
+                return;
+            default:
+                break;
+        }
 
         switch (dtCompareUserCollection)
         {
@@ -531,88 +511,147 @@ public class CardCollection : MonoBehaviour
         cardCollectionFirebase.SetNewCardToUserCardCollection(dfColl, pUserDB);
     }
 
-
-
-
-    public DateTime GetLastGameCollectionUpdateFromJsonDateTime()
+    public void RestCardAmountFromCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
     {
-        long lastUpdUnix = GetLastGameCollectionUpdateFromJsonLong();
-        DateTime dtLastUpdate = Helper.UnixTimeStampToDateTimeMiliseconds(lastUpdUnix);
-        return dtLastUpdate;
+        string cardID = "CardID" + pCardData.ID;
+        DefaultCollectionDataDB dfColl = new DefaultCollectionDataDB(cardID, 1);
+        cardCollectionFirebase.RestCardAmountFromCardCollection(dfColl, pUserDB);
     }
 
-    public long GetLastGameCollectionUpdateFromJsonLong()
+    private void LoadCardLimitData(UserDB pUser)
     {
+        CheckCardLimitDataUpdate(pUser);
+    }
+
+    private async void CheckCardLimitDataUpdate(UserDB pUser)
+    {
+        long bdLastCardDataLimitDownload = await cardLimitDataFirebase.GetLastUserCardLimitDataDownloadTimestampUser(pUser.Name.ToLower());
+        long bdLastCardLimitUpdate = await cardLimitDataFirebase.GetLastCardLimitDataUpdateTimestamp();
+        DateTime dtLastCLimitDownload = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastCardDataLimitDownload);
+        DateTime dtLastClimitUpdate = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastCardLimitUpdate);
+        int dtCompareUserCollection = DateTime.Compare(dtLastClimitUpdate, dtLastCLimitDownload);
+
+        switch (dtCompareUserCollection)
+        {
+            case -1:
+                //date1 is earlier than date2.
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION
+                LoadCardLimitDataFromJson();
+                break;
+            case 0:
+                //date1 is the same as date2.
+                // EL JUGADOR TIENE LA ULTIMA ACTUALIZACION DE LA CARD COLLECTION MUY RARO ESTO PERO PUEDE SER...
+                LoadCardLimitDataFromJson();
+                break;
+            case 1:
+                // If date1 is later than date2.
+                // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+                LoadCardLimitDataFromFirebase(pUser);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void LoadCardLimitDataFromJson()
+    {
+        CardDataLimit cardDataLimit = GetCardLimitDataFromJson();
+        CardDatabase.SetCardDataLimits(cardDataLimit);
+        Debug.Log("CARD LIMIT DATA LOADED FROM JSON");
+    }
+
+    private void SetCardLimitToJson(CardDataLimit cardDataLimit)
+    {      
         string path = Path.Combine("Assets/", "Resources/");
         if (!Directory.Exists(path))
         {
-            return 0;
-        }
-        else
-        {
-            path += "lastcollectionupdate.json";
+            Directory.CreateDirectory(path);
+
+            path += "CardLimitData.json";
 
             if (File.Exists(path))
             {
-                string json = File.ReadAllText(path);
-
-                LastUpdateAuxiliar dateAux2 = new LastUpdateAuxiliar();
-
-                JsonUtility.FromJsonOverwrite(json, dateAux2);
-
-                return dateAux2.uctCreatedUnix;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-
-    public void SetLastGameCollectionUpdateToJson(DateTime pLastUpdate)
-    {
-        long uctCreatedUnix = Helper.DateTimeToUnixTimeStampSeconds(pLastUpdate);
-        SetLastGameCollectionUpdateToJson(uctCreatedUnix);
-    }
-
-    public void SetLastGameCollectionUpdateToJson(long uctCreatedUnix)
-    {
-        LastUpdateAuxiliar dateAux = new LastUpdateAuxiliar(uctCreatedUnix);
-
-        string path = Path.Combine("Assets/", "Resources/");
-        if (!Directory.Exists(path))
-        {
-            return;
-        }
-        else
-        {
-            path += "lastcollectionupdate.json";
-
-            if (File.Exists(path))
-            {
-                string jsonSave = JsonUtility.ToJson(dateAux, true);//true for you can read the file
+                string jsonSave = JsonUtility.ToJson(cardDataLimit, true);//true for you can read the file
                 File.WriteAllText(path, jsonSave);
             }
             else
             {
-                return;
+                FileStream fileStream = new FileStream(@"CardLimitData.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(cardDataLimit, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
+            }
+        }
+        else
+        {
+            path += "CardLimitData.json";
+
+            if (File.Exists(path))
+            {
+                string jsonSave = JsonUtility.ToJson(cardDataLimit, true);//true for you can read the file
+                File.WriteAllText(path, jsonSave);
+            }
+            else
+            {
+                FileStream fileStream = new FileStream(@"CardLimitData.json",
+                                       FileMode.OpenOrCreate,
+                                       FileAccess.ReadWrite,
+                                       FileShare.None);
+
+                using (fileStream = File.Create(path))
+                {
+                    string jsonSave = JsonUtility.ToJson(cardDataLimit, true);//true for you can read the file
+                    File.WriteAllText(path, jsonSave);
+                }
             }
         }
     }
 
-
-
-    private void ConvertBiteArrayToSprite()
+    private CardDataLimit GetCardLimitDataFromJson()
     {
-        //Debug.Log(cardCollectionLibraryFromBDOnline.ToString());
-        foreach (KeyValuePair<string,CardDataRT> item in cardCollectionLibraryFromBDOnline)
+        CardDataLimit cardLimitData = new CardDataLimit();
+
+        string path = Path.Combine("Assets/", "Resources/");
+        if (!Directory.Exists(path))
         {
-            //Debug.Log(item.Value.frontImageBytes.ToString());
-            Sprite sp = Helper.GetSpriteFromByteArray(item.Value.frontImageBytes.ToArray());
-            //DatosFirebaseRTHelper.Instance.pruebaSprite.sprite = sp;
-            break;
-        }              
+            return cardLimitData;
+        }
+        else
+        {
+            path += "CardLimitData.json";
+
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+                JsonUtility.FromJsonOverwrite(json, cardLimitData);
+
+                return cardLimitData;
+            }
+            else
+            {
+                return cardLimitData;
+            }
+        }
     }
+
+    public async void LoadCardLimitDataFromFirebase(UserDB pUser)
+    {
+        CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData(pUser);
+        CardDatabase.SetCardDataLimits(cardLimitData);
+        SetCardLimitToJson(cardLimitData);
+        Debug.Log("CARD LIMIT DATA LOADED FROM DB ONLINE");
+    }
+
+
+
+
+
 
     private void LoadCardsArrays()
     {

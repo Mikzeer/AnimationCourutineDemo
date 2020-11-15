@@ -2,6 +2,7 @@
 using Firebase.Database;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 public class CardCollectionFirebase : MonoBehaviour
 {
@@ -92,7 +93,7 @@ public class CardCollectionFirebase : MonoBehaviour
         {
             UpdateLastUserCardCollectionDownloadTimestamp(pUser);
             long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-            CardCollection.Instance.SetLastGameCollectionUpdateToJson(lastUpdate);
+            CardCollection.Instance.SetLastUserCollectionUpdateToJson(lastUpdate);
         }
 
         return allCardList;
@@ -306,6 +307,29 @@ public class CardCollectionFirebase : MonoBehaviour
                                                       .Child(pUserDB.Name.ToLower())
                                                       .Child(pCardData.ID)                                                      
                                                       .UpdateChildrenAsync(new Dictionary<string, object> { { "Amount", cardAmount } });
+
+        UpdateLastUserCardCollectionModifyUpdateTimestamp(pUserDB);
+    }
+
+    public async void RestCardAmountFromCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
+    {
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return;
+
+        int cardAmount = await GetUserCardCollectionCardAmount(pCardData, pUserDB);
+        if (cardAmount <= 1)
+        {
+            await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable)
+                                                          .Child(pUserDB.Name.ToLower())
+                                                          .Child(pCardData.ID).SetValueAsync(null);
+        }
+        else
+        {
+            cardAmount--;
+            await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable)
+                                                          .Child(pUserDB.Name.ToLower())
+                                                          .Child(pCardData.ID)
+                                                          .UpdateChildrenAsync(new Dictionary<string, object> { { "Amount", cardAmount } });
+        }
 
         UpdateLastUserCardCollectionModifyUpdateTimestamp(pUserDB);
     }

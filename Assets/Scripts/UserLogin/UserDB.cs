@@ -16,12 +16,12 @@ public class UserDB
     public long utcLastDownloadGameCollectionUnix;
     public long utcLastDownloadUserCollectionUnix;
     public long utcLastModificationUserCollectionUnix;
+    public long utcLastDownloadCardLimitDataUnix;
 
-    [NonSerialized]
-    public DateTime utcDownloadCollection; // LAS CARD COLLECTION UPDATE
-
-    [NonSerialized]
-    public DateTime utcDownloadOwnedCards; // LAS CARD COLLECTION UPDATE
+    //[NonSerialized]
+    //public DateTime utcDownloadCollection; // LAS CARD COLLECTION UPDATE
+    //[NonSerialized]
+    //public DateTime utcDownloadOwnedCards; // LAS CARD COLLECTION UPDATE
 
     public UserDB()
     {
@@ -70,38 +70,38 @@ public class UserDB
         return result;
     }
 
-    public UserDB(Dictionary<string, object> fromFirebaseResult)
-    {
-        ID = fromFirebaseResult.ContainsKey("ID") ? fromFirebaseResult.First(x => x.Key == "ID").Value.ToString() : string.Empty;
-        Name = fromFirebaseResult.ContainsKey("Name") ? fromFirebaseResult.First(x => x.Key == "Name").Value.ToString() : string.Empty;
-        Macaddress = fromFirebaseResult.ContainsKey("Macaddress") ? fromFirebaseResult.First(x => x.Key == "Macaddress").Value.ToString() : string.Empty;
-        Salt = fromFirebaseResult.ContainsKey("Salt") ? fromFirebaseResult.First(x => x.Key == "Salt").Value.ToString() : string.Empty;
-        Password = fromFirebaseResult.ContainsKey("Password") ? fromFirebaseResult.First(x => x.Key == "Password").Value.ToString() : string.Empty;
+    //public UserDB(Dictionary<string, object> fromFirebaseResult)
+    //{
+    //    ID = fromFirebaseResult.ContainsKey("ID") ? fromFirebaseResult.First(x => x.Key == "ID").Value.ToString() : string.Empty;
+    //    Name = fromFirebaseResult.ContainsKey("Name") ? fromFirebaseResult.First(x => x.Key == "Name").Value.ToString() : string.Empty;
+    //    Macaddress = fromFirebaseResult.ContainsKey("Macaddress") ? fromFirebaseResult.First(x => x.Key == "Macaddress").Value.ToString() : string.Empty;
+    //    Salt = fromFirebaseResult.ContainsKey("Salt") ? fromFirebaseResult.First(x => x.Key == "Salt").Value.ToString() : string.Empty;
+    //    Password = fromFirebaseResult.ContainsKey("Password") ? fromFirebaseResult.First(x => x.Key == "Password").Value.ToString() : string.Empty;
 
-        if (fromFirebaseResult.ContainsKey("utcLastDownloadGameCollectionUnix"))
-        {
-            long milliseconds;
-            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadGameCollectionUnix").Value.ToString(), out milliseconds))
-            {
-                utcLastDownloadGameCollectionUnix = milliseconds;
+    //    if (fromFirebaseResult.ContainsKey("utcLastDownloadGameCollectionUnix"))
+    //    {
+    //        long milliseconds;
+    //        if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadGameCollectionUnix").Value.ToString(), out milliseconds))
+    //        {
+    //            utcLastDownloadGameCollectionUnix = milliseconds;
 
-                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    //            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-                utcDownloadCollection = epoch.AddMilliseconds(milliseconds);
-            }
-        }
+    //            utcDownloadCollection = epoch.AddMilliseconds(milliseconds);
+    //        }
+    //    }
 
-        if (fromFirebaseResult.ContainsKey("utcLastDownloadUserCollectionUnix"))
-        {
-            long milliseconds;
-            if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadUserCollectionUnix").Value.ToString(), out milliseconds))
-            {
-                utcLastDownloadUserCollectionUnix = milliseconds;
+    //    if (fromFirebaseResult.ContainsKey("utcLastDownloadUserCollectionUnix"))
+    //    {
+    //        long milliseconds;
+    //        if (long.TryParse(fromFirebaseResult.First(x => x.Key == "utcLastDownloadUserCollectionUnix").Value.ToString(), out milliseconds))
+    //        {
+    //            utcLastDownloadUserCollectionUnix = milliseconds;
 
-                DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    //            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-                utcDownloadOwnedCards = epoch.AddMilliseconds(milliseconds);
-            }
-        }
-    }
+    //            utcDownloadOwnedCards = epoch.AddMilliseconds(milliseconds);
+    //        }
+    //    }
+    //}
 }

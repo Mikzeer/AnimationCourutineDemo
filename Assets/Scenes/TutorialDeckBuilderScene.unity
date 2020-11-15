@@ -685,6 +685,7 @@ GameObject:
   - component: {fileID: 923104519}
   - component: {fileID: 923104518}
   - component: {fileID: 923104520}
+  - component: {fileID: 923104521}
   m_Layer: 0
   m_Name: CardCollection
   m_TagString: Untagged
@@ -705,6 +706,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroy: 0
+  cardLimitDataFirebase: {fileID: 923104521}
   cardCollectionFirebase: {fileID: 923104520}
 --- !u!4 &923104519
 Transform:
@@ -730,6 +732,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fe948b4c8f41d548b42ddf52d88ce3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &923104521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923104517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b75a8a3c805b641ac72764cfb8cad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1027025826 stripped
