@@ -27,13 +27,13 @@ public class CardData
         IsDarkCard = pCard.IsDarkCard;
         AmountPerDeck = pCard.AmountPerDeck;
         DarkPoints = pCard.DarkPoints;
-        CardRarity = PositionerDemo.CardDatabase.GetCardRarityTypeFromInt(pCard.IDCardRarity);
-        CardType = PositionerDemo.CardDatabase.GetCardTypeFromInt(pCard.IDCardType);
-        ActivationType = PositionerDemo.CardDatabase.GetActivationTypeFromInt(pCard.IDCardActivationType);
+        CardRarity = PositionerDemo.CardPropertiesDatabase.GetCardRarityTypeFromInt(pCard.IDCardRarity);
+        CardType = PositionerDemo.CardPropertiesDatabase.GetCardTypeFromInt(pCard.IDCardType);
+        ActivationType = PositionerDemo.CardPropertiesDatabase.GetActivationTypeFromInt(pCard.IDCardActivationType);
         Tags = pCard.Tags;
         CardImage = Helper.GetSpriteFromByteArray(pCard.frontImageBytes.ToArray());
-        cardTargetTypes = PositionerDemo.CardDatabase.GetListCardTargetTypeFromListInt(pCard.CardTargetType);
-        cardTargetFiltters = PositionerDemo.CardDatabase.GetListCardFiltterFromListInt(pCard.CardTargetFiltters);
+        cardTargetTypes = PositionerDemo.CardPropertiesDatabase.GetListCardTargetTypeFromListInt(pCard.CardTargetType);
+        cardTargetFiltters = PositionerDemo.CardPropertiesDatabase.GetListCardFiltterFromListInt(pCard.CardTargetFiltters);
     }
 
     public CardData(int ID)

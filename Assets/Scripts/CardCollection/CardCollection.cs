@@ -556,7 +556,7 @@ public class CardCollection : MonoBehaviour
     public void LoadCardLimitDataFromJson()
     {
         CardDataLimit cardDataLimit = GetCardLimitDataFromJson();
-        CardDatabase.SetCardDataLimits(cardDataLimit);
+        CardPropertiesDatabase.SetCardDataLimits(cardDataLimit);
         Debug.Log("CARD LIMIT DATA LOADED FROM JSON");
     }
 
@@ -643,7 +643,7 @@ public class CardCollection : MonoBehaviour
     public async void LoadCardLimitDataFromFirebase(UserDB pUser)
     {
         CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData(pUser);
-        CardDatabase.SetCardDataLimits(cardLimitData);
+        CardPropertiesDatabase.SetCardDataLimits(cardLimitData);
         SetCardLimitToJson(cardLimitData);
         Debug.Log("CARD LIMIT DATA LOADED FROM DB ONLINE");
     }

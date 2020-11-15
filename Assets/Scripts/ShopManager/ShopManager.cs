@@ -4,11 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ShopManager : MonoBehaviour
 {
+    #region VARIABLES
+
     [Header("Screen Reference")]
     [SerializeField] private GameObject ScreenContent;
 
@@ -41,6 +44,10 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+
+    [SerializeField] private Button btnBuy;
+    #endregion
+
     #region SINGLETON
 
     [SerializeField] protected bool dontDestroy;
@@ -65,6 +72,8 @@ public class ShopManager : MonoBehaviour
 
     #endregion
 
+    public UserResourcesFirebase userResourcesFirebase;
+
     void Awake()
     {
         if (instance == null)
@@ -79,12 +88,48 @@ public class ShopManager : MonoBehaviour
 
         HideScreen();
 
-        if (PlayerPrefs.HasKey("UnopenedPacks"))
+        UserDB user = new UserDB("mmm", "", "", "");
+        LoadUserResourcesFromFirebase(user);
+        LoadPriceDataFromFirebase(user);
+
+        //UserDB usersd = new UserDB("lll", "", "", "");
+        //CreateNewUserResources(usersd);
+    }
+
+    private void OnEnable()
+    {
+        btnBuy.onClick.AddListener(BuyPackDB);
+    }
+
+    private void OnDisable()
+    {
+        btnBuy.onClick.RemoveAllListeners();
+    }
+
+    public void CreateNewUserResources(UserDB pUser)
+    {
+        userResourcesFirebase.CreateNewUserResources(pUser);
+    }
+
+    public async void LoadUserResourcesFromFirebase(UserDB pUser)
+    {
+        UserResources userResources = await userResourcesFirebase.GetUserResources(pUser);
+        if (userResources != null)
         {
-            Debug.Log("UnopenedPacks: " + PlayerPrefs.GetInt("UnopenedPacks"));
-            StartCoroutine(GivePacks(PlayerPrefs.GetInt("UnopenedPacks"), true));
+            Money = userResources.Gold;
+            StartCoroutine(GivePacks(userResources.UnopendPacks, true));
         }
-        LoadMoneyFromPlayerPrefs();
+        Debug.Log("USER RESOURCES LOADED FROM DB ONLINE");
+    }
+
+    public async void LoadPriceDataFromFirebase(UserDB pUser)
+    {
+        GamePricesData priceData = await userResourcesFirebase.GetGamePricesData();
+        if (priceData != null)
+        {
+            PackPrice = priceData.NormalPackPrices;
+        }
+        Debug.Log("PRICE DATA LOADED FROM DB ONLINE");
     }
 
     public IEnumerator GivePacks(int NumberOfPacks, bool instant = false)
@@ -100,23 +145,17 @@ public class ShopManager : MonoBehaviour
 
             PosXRange -= halfCardWidht;
             PosYRange -= halfCardHeight;
-            //Debug.Log("PosXRange " + PosXRange);
-            //Debug.Log("PosYRange " + PosYRange);
-
 
             Vector3 localPositionForNewPack = new Vector3(Random.Range(-PosXRange, PosXRange), Random.Range(-PosYRange, PosYRange), 0);
-            //Debug.Log("localPositionForNewPack " + localPositionForNewPack);
             newPack.transform.localEulerAngles = new Vector3(0f, 0f, Random.Range(-RotationRange, RotationRange));
             PacksCreated++;
 
             // make this pack appear on top of all the previous packs using PacksCreated;
-            //newPack.GetComponentInChildren<Canvas>().sortingOrder = PacksCreated;
             newPack.GetComponent<CardPackUINEW>().SetCardPackOpeningArea(OpeningArea);
             if (instant)
-                newPack.transform.localPosition = PacksParent.position;//PacksParent // localPositionForNewPack
+                newPack.transform.localPosition = PacksParent.position;
             else
             {
-                //newPack.transform.position = InitialPackSpot.position;
                 newPack.transform.DOLocalMove(localPositionForNewPack, 0.5f);
                 yield return new WaitForSeconds(0.5f);
             }
@@ -124,64 +163,39 @@ public class ShopManager : MonoBehaviour
         yield break;
     }
 
-    public void LoadMoneyFromPlayerPrefs()
-    {
-        if (PlayerPrefs.HasKey("Money"))
-        {
-            PlayerPrefs.SetInt("Money", 1000);
-            Money = PlayerPrefs.GetInt("Money");
-        }           
-        else
-            Money = StartingAmountOfMoney;  // default value of dust to give to player
-    }
 
-    public void SaveMoneyToPlayerPrefs()
-    {
-        PlayerPrefs.SetInt("Money", money);
-    }
-
-    private void LoadWithBianaryFormatter()
-    {
-        if (File.Exists(Application.persistentDataPath + "/playerInfoMoney.dat"))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/playerInfoMoney.dat", FileMode.Open);
-
-            Money = (int)bf.Deserialize(file);
-        }
-        else
-        {
-            Money = StartingAmountOfMoney;
-        }
-    }
-
-    private void SaveWithBinaryFormatter()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/playerInfoMoney.dat");
-        bf.Serialize(file, Money);
-        file.Close();
-    }
-
-    void OnApplicationQuit()
-    {
-        SaveMoneyToPlayerPrefs();
-
-        PlayerPrefs.SetInt("UnopenedPacks", PacksCreated);
-    }
-
-    public void BuyPack()
+    public async void BuyPackDB()
     {
         RectTransform rect = PacksParent.GetComponent<RectTransform>();
-        
         PosXRange = rect.rect.size.x / 2;
         PosYRange = rect.rect.size.y / 2;
-        //Debug.Log("rect.rect.size " + rect.rect.size);
-        if (money >= PackPrice)
+
+        bool hasEnoughMoney = await CanUserBuyAPackANormalPack();
+
+        if (hasEnoughMoney == true)
         {
+            UserDB user = new UserDB("mmm", "", "", "");
+            userResourcesFirebase.BuyNewPack(user, CARDPACKTYPE.NORMAL);
             Money -= PackPrice;
             StartCoroutine(GivePacks(1));
         }
+        else
+        {
+            Debug.Log("NOT ENOUGH MONEy ");
+        }
+    }
+
+    private async Task<bool> CanUserBuyAPackANormalPack()
+    {
+        UserDB user = new UserDB("mmm", "", "", "");
+        bool canOpen = await userResourcesFirebase.IsUserAllowToBuyAPack(user, CARDPACKTYPE.NORMAL);
+
+        return canOpen;
+    }
+
+    private void RestOneOpenPackFromFirebase(UserDB pUser)
+    {
+        userResourcesFirebase.SetNewUnopenPackAmountToUser(pUser, -1);
     }
 
     public void ShowScreen()

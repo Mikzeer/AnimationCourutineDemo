@@ -15,7 +15,7 @@ public class DeckBuilderManager : MonoBehaviour
     [SerializeField] private Canvas canvas;
 
     Dictionary<int, int> maximumCardIDPerDeck; // int IDCard - int amount per deck of that card
-    Dictionary<int, int> maximumCardPerLevelPerDeck; // int CardLevel (1/2/3/4/5) - int amount per deck per level
+    Dictionary<CardRarity, int> maxAmountPerRarityDictionary;// Rarity (1/2/3/4/5) - int amount per deck per level
     CardSlotManager cardSlotManager;
     CardSlotPage currentPage;
 
@@ -35,7 +35,7 @@ public class DeckBuilderManager : MonoBehaviour
     {
         CreateInteractuableImages();
 
-        maximumCardPerLevelPerDeck = CardDatabase.GetMaximumCardPerLevelPerDeck();
+        maxAmountPerRarityDictionary = CardPropertiesDatabase.GetAmountPerCardPerLevelPerDeck();
         CreateDeckBuilderPageInterface(playerCardLibrary);
 
         chainToggle.onValueChanged.AddListener(OnIsChainableToggleChange);

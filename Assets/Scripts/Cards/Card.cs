@@ -335,7 +335,7 @@ namespace PositionerDemo
             // Y el Modifier lo puedo tener en una lista static en el CardDataBase
             List<AbilityModifier> mods = new List<AbilityModifier>();
 
-            mods.Add(CardDatabase.GetModifier(0));
+            mods.Add(CardPropertiesDatabase.GetCardAbilityModifierFromID(0));
 
         }
     }

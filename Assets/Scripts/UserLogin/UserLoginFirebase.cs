@@ -54,6 +54,7 @@ public class UserLoginFirebase : MonoBehaviour
                     if (user.IsFirstTime == true)
                     {
                         CardCollection.Instance.CreateNewUserCollections(user);
+                        ShopManager.Instance.CreateNewUserResources(user);
                     }
                 }
                 else

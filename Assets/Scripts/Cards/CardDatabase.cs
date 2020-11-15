@@ -6,70 +6,14 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public static class CardDatabase
+    public static class CardPropertiesDatabase
     {
-
+        private static bool isAbilityModifierListGenerate = false;
         private static bool isFiltterListGenerate = false;
-
-        private static List<CardFiltter> cardsFiltter;
-
-        private static Dictionary<int, CardFiltter> cardsFiltterDictionary = new Dictionary<int, CardFiltter>();
-
-        public static Dictionary<CardRarity, int> amountPerCardPerLevelPerDeck = new Dictionary<CardRarity, int>
-        {
-            {CardRarity.BASIC, 5} ,
-            {CardRarity.COMMON, 4} ,
-            {CardRarity.EPIC, 3} ,
-            {CardRarity.LEGENDARY, 2} ,
-            {CardRarity.RARE, 1} 
-        };
-
-
-        public static int limitOfCardsPerDeck { get { return 20;} private set {; } }
-
         public static int maxAmountOfCardsPerDeck { get; private set; }
         public static Dictionary<CardRarity, int> maxAmountPerRarityDictionary = new Dictionary<CardRarity, int>();
-
-
-        public static AbilityModifier GetModifier(int modifierID)
-        {
-            AbilityModifier abMod = null;
-
-            switch (modifierID)
-            {
-                case 0:
-                    abMod = new DefendAbilityModifier();
-                    break;
-                case 1:
-                    abMod = new ShieldAbilityModifier();
-                    break;
-                case 2:
-                    abMod = new ChangeUnitClassAbilityModifier();
-                    break;
-                default:
-                    break;
-            }
-
-            return abMod;
-        }
-
-        public static Dictionary<int,int> GetMaximumCardPerLevelPerDeck()
-        {
-            Dictionary<int, int> maximumCardPerLevelPerDeck = new Dictionary<int, int>();
-
-            maximumCardPerLevelPerDeck.Add(1, 5); // LEVEL 1 / MAX AMOUNT 5
-            maximumCardPerLevelPerDeck.Add(2, 4);
-            maximumCardPerLevelPerDeck.Add(3, 3);
-            maximumCardPerLevelPerDeck.Add(4, 2);
-            maximumCardPerLevelPerDeck.Add(5, 1); // LEVEL 5 / MAX AMOUNT 1
-
-            return maximumCardPerLevelPerDeck;
-        }
-
-        public static Dictionary<CardRarity, int> GetAmountPerCardPerLevelPerDeck()
-        {
-            return amountPerCardPerLevelPerDeck;
-        }
+        private static Dictionary<int, CardFiltter> cardsFiltterDictionary = new Dictionary<int, CardFiltter>();
+        private static Dictionary<int, AbilityModifier> cardsAbilityModifierDictionary = new Dictionary<int, AbilityModifier>();
 
         public static void SetCardDataLimits(CardDataLimit pcDataLimit)
         {
@@ -81,6 +25,11 @@ namespace PositionerDemo
             }
         }
 
+        public static Dictionary<CardRarity, int> GetAmountPerCardPerLevelPerDeck()
+        {
+            return maxAmountPerRarityDictionary;
+        }
+
         public static CardFiltter GetCardFilterFromID(int filtterID)
         {
             if (isFiltterListGenerate == false)
@@ -88,7 +37,7 @@ namespace PositionerDemo
                 GetCardFiltterSubClassByReflection();
             }
 
-            CardFiltter cFiltter = cardsFiltter.Where(c => c.ID == filtterID).FirstOrDefault();
+            CardFiltter cFiltter = null;
 
             if (cardsFiltterDictionary.ContainsKey(filtterID))
             {
@@ -96,6 +45,23 @@ namespace PositionerDemo
             }
 
             return cFiltter;
+        }
+
+        public static AbilityModifier GetCardAbilityModifierFromID(int abilityModifierID)
+        {
+            if (isAbilityModifierListGenerate == false)
+            {
+                GetAbilityModifierSubClassByReflection();
+            }
+
+            AbilityModifier abilityModifier = null;
+
+            if (cardsAbilityModifierDictionary.ContainsKey(abilityModifierID))
+            {
+                abilityModifier = cardsAbilityModifierDictionary[abilityModifierID];
+            }
+
+            return abilityModifier;
         }
 
         public static ACTIVATIONTYPE GetActivationTypeFromInt(int pIDActType)
@@ -177,9 +143,8 @@ namespace PositionerDemo
             return cardFiltters;
         }
 
-        public static void GetCardFiltterSubClassByReflection()
+        private static void GetCardFiltterSubClassByReflection()
         {
-            cardsFiltter = new List<CardFiltter>();
             cardsFiltterDictionary = new Dictionary<int, CardFiltter>();
 
             var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
@@ -189,13 +154,27 @@ namespace PositionerDemo
             //System.Type[] possible = (from System.Type type in types where type.IsSubclassOf(typeof(BaseClass)) select type).ToArray();
             foreach (var instance in instances)
             {
-                //instance.CheckTarget(null); // where Foo is a method of ISomething
-                //Debug.Log("CARD FILTTER ID " + instance.ID);
-                cardsFiltter.Add(instance);
                 cardsFiltterDictionary.Add(instance.ID, instance);
             }
 
             isFiltterListGenerate = true;
+        }
+
+        private static void GetAbilityModifierSubClassByReflection()
+        {
+            cardsAbilityModifierDictionary = new Dictionary<int, AbilityModifier>();
+
+            var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
+                            where t.IsSubclassOf(typeof(AbilityModifier)) && t.GetConstructor(Type.EmptyTypes) != null
+                            select Activator.CreateInstance(t) as AbilityModifier;
+            //System.Type[] types = System.Reflection.Assembly.GetExecutingAssembly().GetTypes();
+            //System.Type[] possible = (from System.Type type in types where type.IsSubclassOf(typeof(BaseClass)) select type).ToArray();
+            foreach (var instance in instances)
+            {
+                cardsAbilityModifierDictionary.Add(instance.ID, instance);
+            }
+
+            isAbilityModifierListGenerate = true;
         }
 
         public static CardData ConvertCardDBToCardDataInGame(CardDataRT pcardDataRT)
@@ -204,15 +183,5 @@ namespace PositionerDemo
 
             return cData;
         }
-
-        //// Add this method to the CharacterStat class
-        //private int CompareModifierOrder(StatModifier a, StatModifier b)
-        //{
-        //    if (a.Order < b.Order)
-        //        return -1;
-        //    else if (a.Order > b.Order)
-        //        return 1;
-        //    return 0; // if (a.Order == b.Order)
-        //}
     }
 }
