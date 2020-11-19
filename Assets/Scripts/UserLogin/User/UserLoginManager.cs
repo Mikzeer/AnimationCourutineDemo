@@ -28,6 +28,8 @@ public class UserLoginManager : MonoBehaviour
         if (IsLoginDataComplete() == true)
         {
             UserDB logedUser = await userLoginFirebase.UserLoginMultipleInterface(txtUserNameLogin.text, txtPassLogin.text, txtEmail.text);
+
+            UserManager.Instance.SetUser(logedUser);
         }
     }
 

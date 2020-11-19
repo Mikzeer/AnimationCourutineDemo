@@ -2935,10 +2935,7 @@
             ],
             "CardTargetFiltters": [
                 3
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 2,
@@ -5870,10 +5867,7 @@
             ],
             "CardTargetFiltters": [
                 3
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 3,
@@ -9176,10 +9170,7 @@
             "CardTargetFiltters": [
                 4,
                 3
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 4,
@@ -11873,10 +11864,7 @@
             "CardTargetFiltters": [
                 4,
                 3
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 5,
@@ -14680,10 +14668,7 @@
             ],
             "CardTargetFiltters": [
                 5
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 6,
@@ -17601,10 +17586,7 @@
             "CardTargetFiltters": [
                 4,
                 3
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         },
         {
             "ID": 7,
@@ -20390,10 +20372,7 @@
             ],
             "CardTargetFiltters": [
                 7
-            ],
-            "imag": {
-                "instanceID": 0
-            }
+            ]
         }
     ]
 }

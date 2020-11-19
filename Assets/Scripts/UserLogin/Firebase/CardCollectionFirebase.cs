@@ -92,8 +92,8 @@ public class CardCollectionFirebase : MonoBehaviour
         if (allCardList.Count > 0)
         {
             UpdateLastUserCardCollectionDownloadTimestamp(pUser);
-            long lastUpdate = await GetLastGameCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
-            CardCollection.Instance.SetLastUserCollectionUpdateToJson(lastUpdate);
+            //long lastUpdate = await GetLastUserCardCollectionDownloadTimestampUser(pUser.Name.ToLower());
+            //Debug.Log("LONG " + lastUpdate);            
         }
 
         return allCardList;
@@ -105,26 +105,26 @@ public class CardCollectionFirebase : MonoBehaviour
 
         DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
             new Dictionary<string, object> { { "utcLastDownloadGameCollectionUnix", ServerValue.Timestamp } });
-
-        //string timestampAdd = @"timestamp"": {"".sv"" : ""timestamp""} } ";
-        //reference.Child("Users").Child("new1").UpdateChildrenAsync(new Dictionary<string, object> { { "utcLastDownloadCollectionUnix", ServerValue.Timestamp } , { "utcLastDownloadOwnedCards", ServerValue.Timestamp } });
-        //reference.Child("Users").Child("pepe").SetRawJsonValueAsync(timestampAdd);
     }
 
-    public void UpdateLastUserCardCollectionDownloadTimestamp(UserDB userDB)
+    public async void UpdateLastUserCardCollectionDownloadTimestamp(UserDB userDB)
     {
         if (DatosFirebaseRTHelper.Instance.isInit == false) return;
 
-        DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
+        await DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
             new Dictionary<string, object> { { "utcLastDownloadUserCollectionUnix", ServerValue.Timestamp } });
+
+        long lastUpdate = await GetLastUserCardCollectionDownloadTimestampUser(userDB.Name.ToLower());
+        //Debug.Log("LONG inside " + lastUpdate);
+        CardCollection.Instance.SetLastUserCollectionUpdateToJson(lastUpdate);
     }
 
-    public void UpdateLastUserCardCollectionModifyUpdateTimestamp(UserDB userDB)
+    public async void UpdateLastUserCardCollectionModifyUpdateTimestamp(UserDB userDB)
     {
         if (DatosFirebaseRTHelper.Instance.isInit == false) return;
 
-        DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
-            new Dictionary<string, object> { { "utcLastUpdateUserCollectionUnix", ServerValue.Timestamp } });
+        await DatosFirebaseRTHelper.Instance.reference.Child("Users").Child(userDB.Name.ToLower()).UpdateChildrenAsync(
+            new Dictionary<string, object> { { "utcLastModificationUserCollectionUnix", ServerValue.Timestamp } });
     }
 
     public void UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST()
@@ -177,7 +177,13 @@ public class CardCollectionFirebase : MonoBehaviour
 
     public async Task<long> GetLastUserCardCollectioModificationTimestampUser(string name)
     {
-        if (DatosFirebaseRTHelper.Instance.isInit == false) return 0;
+        if (DatosFirebaseRTHelper.Instance.isInit == false)
+        {
+            //Debug.Log("FIREBASE NOT INITIALIZE");
+            return 0;
+        }
+
+        FirebaseDatabase.DefaultInstance.GetReference("Users").Child(name).KeepSynced(true);
 
         DataSnapshot userNameExist = await UserDataSnapshotExistByName(name.ToLower());
 
@@ -189,18 +195,27 @@ public class CardCollectionFirebase : MonoBehaviour
             {
                 UserDB user = JsonUtility.FromJson<UserDB>(userNameExist.GetRawJsonValue());
                 utcLastUCCDownload = user.utcLastModificationUserCollectionUnix;
+                //Debug.Log("user.MAcc " + user.Salt);
             }
         }
 
         return utcLastUCCDownload;
     }
 
+
+    // ESTE ES EL METODO QUE SI FUNCIONO SIN TENER QUE ESCRIBIR UN CHOTO..
+    // CREO QUE FirebaseDatabase.DefaultInstance A VECES TE PUEDE TRAER UNA COPIA VIEJA DE LOS DATOS
+    // QUE NO TENGO NI LAS MAS PUTA IDEA DE DONDE PUEDEN ESTAR GUARDADOS
     public async Task<long> GetLastGameCardCollectionUpdateTimestamp()
     {
         if (DatosFirebaseRTHelper.Instance.isInit == false) return 0;
 
+        //DatosFirebaseRTHelper.Instance.reference.Child(GameCardCollectionLastUpdateTable)
+        //FirebaseDatabase.DefaultInstance.GetReference(GameCardCollectionLastUpdateTable)
+        //FirebaseDatabase.DefaultInstance.GetReference(GameCardCollectionLastUpdateTable).KeepSynced(true);
+
         DataSnapshot dtSnapshot = null;
-        await FirebaseDatabase.DefaultInstance.GetReference(GameCardCollectionLastUpdateTable).GetValueAsync().ContinueWith(task =>
+        await DatosFirebaseRTHelper.Instance.reference.Child(GameCardCollectionLastUpdateTable).GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
             {
@@ -218,6 +233,7 @@ public class CardCollectionFirebase : MonoBehaviour
             if (dtSnapshot.Exists)
             {
                 utcLastGCCDownload = JsonUtility.FromJson<LastUpdateAuxiliar>(dtSnapshot.GetRawJsonValue());
+                Debug.Log("LAST GAME UPDATE " + utcLastGCCDownload.uctCreatedUnix);
             }
         }      
 
@@ -227,6 +243,9 @@ public class CardCollectionFirebase : MonoBehaviour
     private async Task<DataSnapshot> UserDataSnapshotExistByName(string name)
     {
         DataSnapshot dtSnapshot = null;
+
+        
+
         await FirebaseDatabase.DefaultInstance.GetReference("Users").Child(name).GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
@@ -297,18 +316,36 @@ public class CardCollectionFirebase : MonoBehaviour
         return allCardList;
     }
 
-    public async void SetNewCardToUserCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
+    public async Task<bool> SetNewCardToUserCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
     {
-        if (DatosFirebaseRTHelper.Instance.isInit == false) return;
+        if (DatosFirebaseRTHelper.Instance.isInit == false) return false;
 
         int cardAmount = await GetUserCardCollectionCardAmount(pCardData, pUserDB);
+        //Debug.Log("CARD AMOUNT INITIAL CARD ID " + pCardData.ID + " Amount: " + cardAmount);
         cardAmount++;
+        //Debug.Log("CARD AMOUNT TO SET CARD ID " + pCardData.ID + " Amount: " + cardAmount);
+
         await DatosFirebaseRTHelper.Instance.reference.Child(UsersCardCollectionTable)
                                                       .Child(pUserDB.Name.ToLower())
                                                       .Child(pCardData.ID)                                                      
                                                       .UpdateChildrenAsync(new Dictionary<string, object> { { "Amount", cardAmount } });
 
-        UpdateLastUserCardCollectionModifyUpdateTimestamp(pUserDB);
+        int newCardAmount = await GetUserCardCollectionCardAmount(pCardData, pUserDB);
+
+        //Debug.Log("NEW CARD AMOUNT SETED ON DB CARD ID " + pCardData.ID + " Amount: " + cardAmount);
+
+        if (cardAmount == newCardAmount)
+        {
+            //Debug.Log("IS THE SAME AMOUNT TRUE");
+            UpdateLastUserCardCollectionModifyUpdateTimestamp(pUserDB);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+        
     }
 
     public async void RestCardAmountFromCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)

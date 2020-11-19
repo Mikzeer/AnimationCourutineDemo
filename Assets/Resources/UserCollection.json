@@ -2,11 +2,11 @@
     "dfCollection": [
         {
             "ID": "CardID1",
-            "Amount": 4
+            "Amount": 13
         },
         {
             "ID": "CardID2",
-            "Amount": 1
+            "Amount": 15
         },
         {
             "ID": "CardID3",

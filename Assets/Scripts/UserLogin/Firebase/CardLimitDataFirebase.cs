@@ -164,30 +164,3 @@ public class CardLimitDataFirebase : MonoBehaviour
     }
 }
 
-public class UserManager
-{
-    //  HAY UN SOLO USER POR APLICACION
-    private UserDB pUserDB;
-    private UserResources userResources;
-
-    public void SetUser(UserDB pUser)
-    {
-        pUserDB = pUser;
-    }
-
-    public UserDB GetUser()
-    {
-        return pUserDB;
-    }
-
-    public void SetUserResources(UserResources userResources)
-    {
-        this.userResources = userResources;
-    }
-
-    public UserResources GetUserResources()
-    {
-        return userResources;
-    }
-}
-

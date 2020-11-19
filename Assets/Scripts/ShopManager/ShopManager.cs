@@ -46,6 +46,8 @@ public class ShopManager : MonoBehaviour
 
 
     [SerializeField] private Button btnBuy;
+    public UserResourcesFirebase userResourcesFirebase;
+    
     #endregion
 
     #region SINGLETON
@@ -72,8 +74,6 @@ public class ShopManager : MonoBehaviour
 
     #endregion
 
-    public UserResourcesFirebase userResourcesFirebase;
-
     void Awake()
     {
         if (instance == null)
@@ -87,10 +87,6 @@ public class ShopManager : MonoBehaviour
         }
 
         HideScreen();
-
-        UserDB user = new UserDB("mmm", "", "", "");
-        LoadUserResourcesFromFirebase(user);
-        LoadPriceDataFromFirebase(user);
 
         //UserDB usersd = new UserDB("lll", "", "", "");
         //CreateNewUserResources(usersd);
@@ -117,9 +113,12 @@ public class ShopManager : MonoBehaviour
         if (userResources != null)
         {
             Money = userResources.Gold;
+            //Debug.Log("userResources.UnopendPacks " + userResources.UnopendPacks);
             StartCoroutine(GivePacks(userResources.UnopendPacks, true));
-        }
-        Debug.Log("USER RESOURCES LOADED FROM DB ONLINE");
+            Debug.Log("USER RESOURCES LOADED FROM DB ONLINE");
+        }        
+
+        
     }
 
     public async void LoadPriceDataFromFirebase(UserDB pUser)
@@ -128,8 +127,11 @@ public class ShopManager : MonoBehaviour
         if (priceData != null)
         {
             PackPrice = priceData.NormalPackPrices;
+            //Debug.Log("PACK PRICE " + PackPrice);
+            Debug.Log("PRICE DATA LOADED FROM DB ONLINE");
         }
-        Debug.Log("PRICE DATA LOADED FROM DB ONLINE");
+
+
     }
 
     public IEnumerator GivePacks(int NumberOfPacks, bool instant = false)
@@ -174,26 +176,24 @@ public class ShopManager : MonoBehaviour
 
         if (hasEnoughMoney == true)
         {
-            UserDB user = new UserDB("mmm", "", "", "");
-            userResourcesFirebase.BuyNewPack(user, CARDPACKTYPE.NORMAL);
+            userResourcesFirebase.BuyNewPack(UserManager.Instance.GetUser(), CARDPACKTYPE.NORMAL);
             Money -= PackPrice;
             StartCoroutine(GivePacks(1));
         }
         else
         {
-            Debug.Log("NOT ENOUGH MONEy ");
+            Debug.Log("NOT ENOUGH MONEY ");
         }
     }
 
     private async Task<bool> CanUserBuyAPackANormalPack()
     {
-        UserDB user = new UserDB("mmm", "", "", "");
-        bool canOpen = await userResourcesFirebase.IsUserAllowToBuyAPack(user, CARDPACKTYPE.NORMAL);
+        bool canOpen = await userResourcesFirebase.IsUserAllowToBuyAPack(UserManager.Instance.GetUser(), CARDPACKTYPE.NORMAL);
 
         return canOpen;
     }
 
-    private void RestOneOpenPackFromFirebase(UserDB pUser)
+    public void RestOneOpenPackFromFirebase(UserDB pUser)
     {
         userResourcesFirebase.SetNewUnopenPackAmountToUser(pUser, -1);
     }

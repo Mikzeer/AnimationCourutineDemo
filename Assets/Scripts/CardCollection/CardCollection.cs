@@ -4,6 +4,7 @@ using PositionerDemo;
 using System.Linq;
 using System.IO;
 using System;
+using System.Threading.Tasks;
 
 public class CardCollection : MonoBehaviour
 {
@@ -33,8 +34,11 @@ public class CardCollection : MonoBehaviour
     private Dictionary<string, CardAsset> AllCardsDictionary = new Dictionary<string, CardAsset>(); // ALL THE CARDS THAT EXIST IN THE GAME BUT IN A DICTIONARY TO FIND BY NAME
     public Dictionary<CardAsset, int> QuantityOfEachCard = new Dictionary<CardAsset, int>(); // HOW MUCH OF EACH CARD DOES THE PLAYER HAS IN HIS LIBRARY
 
+
+
     [SerializeField] private CardLimitDataFirebase cardLimitDataFirebase;
     [SerializeField] private CardCollectionFirebase cardCollectionFirebase;
+    private CardData[] allCardsDataArray; // ALL THE CARDS THAT EXIST IN THE GAME
     private Dictionary<string, CardDataRT> cardCollectionLibraryFromBDOnline = new Dictionary<string, CardDataRT>(); // id // carddata
     public Dictionary<string, int> quantityOfCardsUserHaveFromBDOnline = new Dictionary<string, int>(); // id / amount
 
@@ -49,68 +53,6 @@ public class CardCollection : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        LoadCardsArrays();
-    }
-
-    private void Start()
-    {
-        //List<DefaultCollectionDataDB> cd = await cardCollectionFirebase.GetAndSetDefaultCardCollection();
-        //SetUserCollectionToJson(cd);
-
-        //List<CardDataRT> cdata = await cardCollectionFirebase.GetGameCardCollection();
-        //SetGameCollectionToJson(cdata);
-
-        //List<DefaultCollectionDataDB> cd = GetUserCollectionFromJson();
-        //Debug.Log("PEPE");
-
-        //List<CardDataRT> cdata = GetGameCollectionFromJson();
-        //Debug.Log("PEPE");
-
-        //UserDB user = new UserDB("mmm", "", "", "");
-        //LoadUserCollectionFromFirebase(user);
-        //Debug.Log("PEPE");
-
-        //cardCollectionFirebase.UpdateLastGameCardCollectionUpdateTOERASELATERJUSTTOTEST();
-
-        //CardDatabase.GetCardFiltterSubClassByReflection();
-
-        //UserDB user = new UserDB("mmm", "", "", "");
-        //cardLimitDataFirebase.UpdateLastUserCardLimitDataDownloadTimestamp(user);
-
-        //UserDB user = new UserDB("mmm", "", "", "");
-        //long lng = await cardLimitDataFirebase.GetLastUserCardLimitDataDownloadTimestampUser(user.Name);
-        //DateTime dt = Helper.UnixTimeStampToDateTimeMiliseconds(lng);
-        //Debug.Log("GetLastUserCardLimitDataDownloadTimestampUser " + dt);
-
-        //CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData();
-        //Debug.Log("MaxAmountPerDeck " + cardLimitData.MaxAmountPerDeck);
-        ////Debug.Log("MaxAmountPerRarity " + cardLimitData.MaxAmountPerRarity.Amount);
-        //for (int i = 0; i < cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount.Count; i++)
-        //{
-        //    Debug.Log("Rarity ID " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID + " Amount: " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
-        //}
-
-        //cardLimitDataFirebase.SetCardLimit();
-
-        //CardDataLimit cardLimitData = await cardLimitDataFirebase.GetCardsLimitData();
-        //Debug.Log("MaxAmountPerDeck " + cardLimitData.MaxAmountPerDeck);
-        //Dictionary<CardRarity, int> cardsRarityPerDeck = new Dictionary<CardRarity, int>();
-        //for (int i = 0; i < cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount.Count; i++)
-        //{
-        //    //Debug.Log("Rarity ID " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID + " Amount: " + cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
-        //    CardRarity rarity = CardDatabase.GetCardRarityTypeFromInt(cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].ID);
-        //    cardsRarityPerDeck.Add(rarity, cardLimitData.MaxAmountPerRarity.cardDataLimitRarityAmount[i].Amount);
-        //}
-
-        //foreach (KeyValuePair<CardRarity,int> rart in cardsRarityPerDeck)
-        //{
-        //    Debug.Log(rart.Key.ToString() + " , Amount: " + rart.Value);
-        //}
-
-        //cardLimitDataFirebase.UpdateLastCardLimitDataUpdateTOERASELATERJUSTTOTEST();
-
-        //UserDB user = new UserDB("mmm", "", "", "");
-        //CheckCardLimitDataUpdate(user);
     }
 
     public async void CreateNewUserCollections(UserDB pUser)
@@ -131,12 +73,17 @@ public class CardCollection : MonoBehaviour
     public async void LoadGameCollectionFromFirebase(UserDB pUser)
     {
         List<CardDataRT> cardData = await cardCollectionFirebase.GetGameCardCollection(pUser);
+        List<CardData> cDat = new List<CardData>();
         foreach (CardDataRT ca in cardData)
         {
             if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
                 cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+
+            CardData cAux = new CardData(ca);
+            cDat.Add(cAux);
         }
 
+        allCardsDataArray = cDat.ToArray();
 
         SetGameCollectionToJson(cardData);
 
@@ -146,11 +93,18 @@ public class CardCollection : MonoBehaviour
     public void LoadGameCollectionFromJson()
     {
         List<CardDataRT> cardData = GetGameCollectionFromJson();
+        List<CardData> cDat = new List<CardData>();
         foreach (CardDataRT ca in cardData)
         {
             if (!cardCollectionLibraryFromBDOnline.ContainsKey(ca.CardName))
                 cardCollectionLibraryFromBDOnline.Add(ca.CardName, ca);
+
+            CardData cAux = new CardData(ca);
+            cDat.Add(cAux);
         }
+
+        allCardsDataArray = cDat.ToArray();
+
         Debug.Log("GAME CARD COLLECTION LOADED FROM JSON");
     }
 
@@ -163,6 +117,8 @@ public class CardCollection : MonoBehaviour
             if (!quantityOfCardsUserHaveFromBDOnline.ContainsKey(ca.ID))
                 quantityOfCardsUserHaveFromBDOnline.Add(ca.ID, ca.Amount);
         }
+
+        SetUserCollectionToJson(dfCollection);
         Debug.Log("USER CARD COLLECTION LOADED FROM DB ONLINE");
     }
 
@@ -178,7 +134,7 @@ public class CardCollection : MonoBehaviour
         Debug.Log("USER CARD COLLECTION LOADED FROM JSON");
     }
 
-    private void LoadCollections(UserDB pUser)
+    public void LoadCollections(UserDB pUser)
     {
         CheckLastGameCollectionUpdate(pUser);
         CheckLastUserCollectionUpdate(pUser);
@@ -221,11 +177,14 @@ public class CardCollection : MonoBehaviour
         DateTime dtJson = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUserJson);
         DateTime dtBD = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionDownloadByUser);
         int dtCompareUserCollection = DateTime.Compare(dtBD, dtJson);
+        //Debug.Log("DTJSON " + bdLastUserCollectionDownloadByUserJson + "// " + dtJson);
+        //Debug.Log("DTBD " + bdLastUserCollectionDownloadByUser + "// " + dtBD);
+
 
         long bdLastUserCollectionModification = await cardCollectionFirebase.GetLastUserCardCollectioModificationTimestampUser(pUser.Name.ToLower());
         DateTime dtLastMod = Helper.UnixTimeStampToDateTimeMiliseconds(bdLastUserCollectionModification);
         int dtCompareLastModification = DateTime.Compare(dtLastMod, dtBD);
-
+        //Debug.Log("dtLastMod " + bdLastUserCollectionModification + "// " + dtLastMod);
         switch (dtCompareLastModification)
         {
             case 1:
@@ -252,6 +211,7 @@ public class CardCollection : MonoBehaviour
             case 1:
                 // If date1 is later than date2.
                 // ACA HAY UNA ACTUALIZACION Y ENTONCES TENEMOS QUE CARGARLO DESDE LA BD ONLINE
+                //Debug.Log("ENTRA POR ACA");
                 LoadUserCollectionFromFirebase(pUser);
                 break;
             default:
@@ -462,7 +422,7 @@ public class CardCollection : MonoBehaviour
         }
         else
         {
-            path += "lastusercollectionupdate.json";
+            path += "lastcollectionupdate.json";
 
             if (File.Exists(path))
             {
@@ -485,7 +445,7 @@ public class CardCollection : MonoBehaviour
         }
         else
         {
-            path += "lastusercollectionupdate.json";
+            path += "lastcollectionupdate.json";
 
             if (File.Exists(path))
             {
@@ -504,11 +464,13 @@ public class CardCollection : MonoBehaviour
         }
     }
 
-    public void AddNewCardToUserCollection(CardData pCardData, UserDB pUserDB)
+    public async Task<bool> AddNewCardToUserCollection(CardData pCardData, UserDB pUserDB)
     {
         string cardID = "CardID" + pCardData.ID;
         DefaultCollectionDataDB dfColl = new DefaultCollectionDataDB(cardID, 1);
-        cardCollectionFirebase.SetNewCardToUserCardCollection(dfColl, pUserDB);
+        bool isLoaded = await cardCollectionFirebase.SetNewCardToUserCardCollection(dfColl, pUserDB);
+
+        return isLoaded;
     }
 
     public void RestCardAmountFromCardCollection(DefaultCollectionDataDB pCardData, UserDB pUserDB)
@@ -518,7 +480,7 @@ public class CardCollection : MonoBehaviour
         cardCollectionFirebase.RestCardAmountFromCardCollection(dfColl, pUserDB);
     }
 
-    private void LoadCardLimitData(UserDB pUser)
+    public void LoadCardLimitData(UserDB pUser)
     {
         CheckCardLimitDataUpdate(pUser);
     }
@@ -648,6 +610,48 @@ public class CardCollection : MonoBehaviour
         Debug.Log("CARD LIMIT DATA LOADED FROM DB ONLINE");
     }
 
+    public List<CardData> GetCardsData(bool showingCardsPlayerDoesNotOwn = false, bool includeAllRarities = true, bool includeAllCardTypes = true, bool includeAllActivationType = true,
+                                bool isChainable = false, bool isDarkCard = false, int darkPoints = -1,
+                                CardRarity rarity = CardRarity.BASIC, CARDTYPE cardType = CARDTYPE.NEUTRAL, ACTIVATIONTYPE activationType = ACTIVATIONTYPE.HAND, string keyword = "")
+    {
+        // initially select all cards
+        var cards = from card in allCardsDataArray select card;
+
+        if (!showingCardsPlayerDoesNotOwn)
+            cards = cards.Where(card => quantityOfCardsUserHaveFromBDOnline["CardID"+ card.ID] > 0);
+
+        if (!includeAllRarities)
+            cards = cards.Where(card => card.CardRarity == rarity);
+
+        if (!includeAllCardTypes)
+            cards = cards.Where(card => card.CardType == cardType);
+
+        if (!includeAllActivationType)
+            cards = cards.Where(card => card.ActivationType == activationType);
+
+        if (isChainable)
+            cards = cards.Where(card => card.IsChainable == isChainable);
+
+        if (isDarkCard)
+            cards = cards.Where(card => card.IsDarkCard == isDarkCard);
+
+        if (keyword != null && keyword != "" && keyword != string.Empty)
+            cards = cards.Where(card => card.Tags.Contains(keyword.ToLower()));
+
+        if (darkPoints != -1)
+            cards = cards.Where(card => card.DarkPoints == darkPoints);
+
+        var returnList = cards.ToList();
+
+        return returnList;
+    }
+
+    public List<CardData> GetCardsDataWithCardRarity(CardRarity rarity)
+    {
+        return GetCardsData(true, false, true, true, false, false, -1, rarity);
+    }
+
+
 
 
 
@@ -686,7 +690,7 @@ public class CardCollection : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        SaveQuantityOfCardsIntoPlayerPrefs();
+        //SaveQuantityOfCardsIntoPlayerPrefs();
     }
 
     public CardAsset GetCardAssetByName(string name)

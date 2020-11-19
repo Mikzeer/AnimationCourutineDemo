@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using PositionerDemo;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 public class PackOpeningArea : MonoBehaviour
 {
@@ -59,23 +60,24 @@ public class PackOpeningArea : MonoBehaviour
         GlowColorsByRarity.Add(CardRarity.LEGENDARY, LegendaryColor);
     }
 
-    private GameObject CardFromPack(CardRarity rarity, Transform cardParent)
+    private async Task<GameObject> CardFromPack(CardRarity rarity, Transform cardParent)
     {
-        List<CardAsset> CardsOfThisRarity = CardCollection.Instance.GetCardsWithCardRarity(rarity);
-        CardAsset cardAssetAux = CardsOfThisRarity[Random.Range(0, CardsOfThisRarity.Count)];
+        List<CardData> CardsDataOfThisRarity = CardCollection.Instance.GetCardsDataWithCardRarity(rarity);
+        CardData cardDataAux = CardsDataOfThisRarity[Random.Range(0, CardsDataOfThisRarity.Count)];
 
         // add this card to your collection. 
-        CardCollection.Instance.QuantityOfEachCard[cardAssetAux]++;
+        CardCollection.Instance.quantityOfCardsUserHaveFromBDOnline["CardID" + cardDataAux.ID]++;
+        bool isLoaded = await CardCollection.Instance.AddNewCardToUserCollection(cardDataAux, UserManager.Instance.GetUser());
 
         GameObject card = Instantiate(cardPrefab, cardParent);
         card.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
         MikzeerGame.CardDisplay cardDisplay = card.GetComponent<MikzeerGame.CardDisplay>();
-        cardDisplay.SetDisplay(cardAssetAux);
+        cardDisplay.SetDisplay(cardDataAux);
         return card;
     }
 
-    public void ShowPackOpening(Vector3 cardsInitialPosition)
+    public async void ShowPackOpening(Vector3 cardsInitialPosition)
     {
         // Allow To Drag Another Pack Only After DoneButton Is pressed
 
@@ -112,13 +114,14 @@ public class PackOpeningArea : MonoBehaviour
 
         for (int i = 0; i < rarities.Length; i++)
         {
-            GameObject card = CardFromPack(rarities[i], SlotsForCards[i]);
+            GameObject card = await CardFromPack(rarities[i], SlotsForCards[i]);
             card.GetComponentInChildren<SimpleCardFromPackUINEW>().SetSimpleCardFromPackUI(GlowColorsByRarity[rarities[i]], this);
             CardsFromPackCreated.Add(card);
-            //card.transform.SetParent(SlotsForCards[i]);
             card.transform.localPosition = cardsInitialPosition;
             card.transform.DOLocalMove(SlotsForCards[i].position, 0.5f);
         }
+
+        CardCollection.Instance.LoadUserCollectionFromFirebase(UserManager.Instance.GetUser());
     }
 
     public void Done()
@@ -137,10 +140,6 @@ public class PackOpeningArea : MonoBehaviour
 
     public void OnCardPackOpen(RectTransform cardPackRect)
     {
-        //AllowedToDragAPack = false;
-        //// Disable back button so that player can not exit the pack opening screen while he has not opened a pack
-        //BackButton.interactable = false;
-
         cardPackRect.SetParent(packOpeningParent);
 
         // Start a dotween sequence
@@ -151,13 +150,12 @@ public class PackOpeningArea : MonoBehaviour
 
         tweenSequence.OnComplete(() =>
         {
-            // 2) add glow, particle system
-            // 3): 
-            //Debug.Log("ONCOMPLETE SEQUENCE");
-            //ShowPackOpening(cardPackRect.localPosition);
             ShowPackOpening(cardPackRect.position);
             if (ShopManager.Instance.PacksCreated > 0)
+            {
+                ShopManager.Instance.RestOneOpenPackFromFirebase(UserManager.Instance.GetUser());
                 ShopManager.Instance.PacksCreated--;
+            }                
             // 4) destroy this pack in the end of the sequence
             Destroy(cardPackRect.gameObject);
         });

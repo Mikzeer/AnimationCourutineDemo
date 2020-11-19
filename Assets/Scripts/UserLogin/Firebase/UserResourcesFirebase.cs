@@ -22,22 +22,38 @@ public class UserResourcesFirebase : MonoBehaviour
         }
     }
 
+
+    // ESTA ES LA PUTA POLLA, ACA FUNCIONA A LA PERFECCION EL UPDATE
     public async Task<UserResources> GetUserResources(UserDB pUser)
     {
         if (DatosFirebaseRTHelper.Instance.isInit == false) return null;
         UserResources userResources = new UserResources();
-        await FirebaseDatabase.DefaultInstance.GetReference(UsersResourcesTable).Child(pUser.Name.ToLower()).Child("Resources").GetValueAsync().ContinueWith(task =>
+
+        DatosFirebaseRTHelper.Instance.reference.Child(UsersResourcesTable).Child(pUser.Name.ToLower()).KeepSynced(true);
+        await DatosFirebaseRTHelper.Instance.reference.Child(UsersResourcesTable).Child(pUser.Name.ToLower()).Child("Resources").GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
             {
                 //Debug.Log("NoChild");
                 // Handle the error...
+                userResources = null;
             }
             else if (task.IsCompleted)
             {
                 DataSnapshot snapshot = task.Result;
 
                 userResources = JsonUtility.FromJson<UserResources>(snapshot.GetRawJsonValue());
+
+                if (userResources == null)
+                {
+                    Debug.Log("USER RESOURCES ES NULL");
+
+                }
+                else
+                {
+                    Debug.Log("USER RESOURCES GOLD " + userResources.Gold);
+                    Debug.Log("USER RESOURCES UNOPENPACKS " + userResources.UnopendPacks);
+                }
             }
         });
         return userResources;
