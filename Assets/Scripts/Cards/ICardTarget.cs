@@ -5,6 +5,7 @@ namespace PositionerDemo
     public interface ICardTarget
     {
         CARDTARGETTYPE CardTargetType { get; }
+        IOcuppy GetOcuppy();
     }
    
 }

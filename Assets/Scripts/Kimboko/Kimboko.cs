@@ -95,6 +95,11 @@ namespace PositionerDemo
                 Stats[4].ApplyModifications();
             }
         }
+
+        public IOcuppy GetOcuppy()
+        {
+            return this;
+        }
     }
 
 }

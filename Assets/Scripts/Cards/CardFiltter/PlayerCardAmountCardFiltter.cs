@@ -2,8 +2,6 @@
 {
     public class PlayerCardAmountCardFiltter : CardFiltter
     {
-        // CHEQUEAR QUE EL RIVAL/JUGADOR TENGA CARTAS TARGETTYPE BASENEXUS 
-        // CheckCardAmount => PLAYER
         protected int amountToFind = 2;
 
         private const int FILTTER_ID = 6;

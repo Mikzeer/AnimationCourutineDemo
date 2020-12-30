@@ -9,8 +9,10 @@
 
         public ABILITYMODIFICATIONSTATUS status;
         public ABILITYMODIFIEREXECUTIONTIME executionTime; // EARLY/END
+        // SI ES UN MODIFIER QUE SE EJECUTA AL INICIO ENTONCES ES UN EARLYMODIFICATION, SU APLICACION SE HACE ANTES DE REALIZAR LA ABILITYACTION
+        // SI ES UN MODIFIER QUE SE EJECUTA AL FINAL ENTONCES ES UN ENDMODIFICATION, SU APLICACION SE HACE DESPUES DE REALIZAR LA ABILITYACTION
         public bool executeOnShot; // SE EJECUTA UNA VEZ Y NADA MAS
-
+        
         // Esto es para saber en que Orden se tiene que ejecutar el Modifier
         // Si un Modifer Cancela una habilidad, entonces lo mejor es ponerlo primero, ya que si al ser CANCEL el status de la habilidad
         // los demas modificadores ni siquiera van a entrar a aplicarse.

@@ -2,19 +2,75 @@
     "dfCollection": [
         {
             "ID": "CardID1",
-            "Amount": 13
+            "Amount": 8
         },
         {
-            "ID": "CardID2",
-            "Amount": 15
+            "ID": "CardID10",
+            "Amount": 3
         },
         {
-            "ID": "CardID3",
+            "ID": "CardID11",
+            "Amount": 2
+        },
+        {
+            "ID": "CardID18",
             "Amount": 1
         },
         {
-            "ID": "CardID4",
+            "ID": "CardID19",
+            "Amount": 5
+        },
+        {
+            "ID": "CardID2",
             "Amount": 2
+        },
+        {
+            "ID": "CardID20",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID23",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID27",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID28",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID3",
+            "Amount": 9
+        },
+        {
+            "ID": "CardID30",
+            "Amount": 2
+        },
+        {
+            "ID": "CardID33",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID34",
+            "Amount": 8
+        },
+        {
+            "ID": "CardID35",
+            "Amount": 1
+        },
+        {
+            "ID": "CardID39",
+            "Amount": 5
+        },
+        {
+            "ID": "CardID4",
+            "Amount": 4
+        },
+        {
+            "ID": "CardID47",
+            "Amount": 1
         },
         {
             "ID": "CardID5",
@@ -22,11 +78,19 @@
         },
         {
             "ID": "CardID6",
-            "Amount": 1
+            "Amount": 2
         },
         {
             "ID": "CardID7",
             "Amount": 3
+        },
+        {
+            "ID": "CardID8",
+            "Amount": 25
+        },
+        {
+            "ID": "CardID9",
+            "Amount": 2
         }
     ]
 }

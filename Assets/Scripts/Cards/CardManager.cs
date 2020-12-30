@@ -8,22 +8,34 @@ namespace PositionerDemo
     public class CardManager
     {
         Dictionary<int, Card> allCards = new Dictionary<int, Card>();
+        int cardIndex = 0;
+
         MotionController motionControllerCardSpawn = new MotionController();
-        private int cardIndex = 0;
+        InGameCardCollectionManager inGameCardCollectionManager;
 
-        public void CreateDeck(Player player, List<CardScriptableObject> cardSOList)
+        public CardManager(InGameCardCollectionManager cardCollectionManager)
         {
-            //Sprite[] miniatureSprite = Resources.LoadAll<Sprite>("CardMiniatureSprite");
+            this.inGameCardCollectionManager = cardCollectionManager;
+        }
+
+        public void LoadDeckFromConfigurationData(Player player, ConfigurationData cnfDat)
+        {
+            // TENEMOS QUE CARGAR AL CARD COLLECTION MANAGER DESDE ALGUN LUGAR
+            Deck userDeck = cnfDat.selectedDeck;
+            List<DefaultCollectionDataDB> dfColl = userDeck.userDeckJson;
             List<Card> cardsOnDeck = new List<Card>();
-
-            for (int i = 0; i < cardSOList.Count; i++)
+            for (int i = 0; i < dfColl.Count; i++)
             {
-                //Card card = new Card(cardSOList[i].ID, player, cardSOList[i]);
-                Card card = new Card(cardIndex, player, cardSOList[i]);
-                cardIndex++;
-                cardsOnDeck.Add(card);
-            }
+                for (int x = 0; x < dfColl[i].Amount; x++)
+                {
+                    CardData cardData = inGameCardCollectionManager.GetCardDataByCardID(dfColl[i].ID);
+                    Card card = new Card(cardIndex, player, cardData);
+                    cardIndex++;
+                    cardsOnDeck.Add(card);
+                }
 
+            }
+            // ACA DEBERIAMOS CHEQUEAR QUE NUESTRO MAZO SEA VALIDO 
             Shuffle(cardsOnDeck);
             player.Deck = new Stack<Card>(cardsOnDeck);
         }
@@ -57,11 +69,8 @@ namespace PositionerDemo
             if (AreThereCardAvailables(player) == false) return null;
 
             Card card = player.Deck.Pop();
-            //allCards.Add(allCardIndex, card);
-            allCards.Add(card.ID, card);
-            //allCardIndex++;
+            allCards.Add(card.IDInGame, card);
             return card;
-            //return player.Deck.Pop();
         }
 
         public void MoveCardFromHandToGraveyard(Card card, Player player)
@@ -143,15 +152,6 @@ namespace PositionerDemo
 
         public void AddCard(Player player)
         {
-            // CUANDO LEVANTAMOS UNA CARTA CHEQUEAR
-            // SI ES AUTOMATICA HAY QUE JUGARLA INMEDIATAMANETE, NO VA A IR A LA MANO
-            // SI NO TIENE NINGUN TARGET POSIBLE VA AL CEMENTERIO
-            // DE TENER TARGET:
-            // SI RequireSelectTarget ES FALSO SE APLICA EL EFECTO INMEDIATAMENTE SIN SELECCIONAR AL/LOS TARGET/S
-            // SI RequireSelectTarget ES VERDADERO ENTONCES HAY QUE ESPERAR A QUE SELECCIONE UNO O VARIOS TARGETS
-            // SI ES AUTOMATICA Y TIENE TARGETS VAMOS A ESTAR OBLIGADOS A SELECCIONARLOS
-            // SI ES AUTOMATICA Y NO TIENE TARGETS ENTONCES VAMOS A USARLA AUTOMATICAMENTE
-
             if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
             {
                 // instanciar el prefab de la card y ponerle como parent el canvas
@@ -166,7 +166,7 @@ namespace PositionerDemo
                 player.PlayersHands.Add(newCard);
                 MikzeerGame.CardDisplay cardDisplay = createdCardGameObject.GetComponent<MikzeerGame.CardDisplay>();
 
-                createdCardGameObject.name = "CARD N " + newCard.ID;
+                createdCardGameObject.name = "CARD N " + newCard.IDInGame;
 
                 if (cardDisplay != null)
                 {
@@ -184,7 +184,7 @@ namespace PositionerDemo
                         cardUI.SetPlayerHandTransform(GameCreator.Instance.cardHolderP2, FireCardUITest, GameCreator.Instance.infoPanel.SetText, SetActiveInfoCard);
                     }
 
-                    cardUI.SetRealCardDrop(newCard.OnDropCard, newCard.ID);
+                    cardUI.SetRealCardDrop(newCard.OnDropCard, newCard.IDInGame);
 
                     // generar una action que se active cuando dropeas la carta en la zona DropeableArea
                     // la Action<CardUI> es la que vamos a disparar desde el AnimotionHandler
@@ -250,13 +250,6 @@ namespace PositionerDemo
         public void FireCardUITest(MikzeerGame.CardUI cardUI)
         {
             Debug.Log("Se disparo el ON CARD USE");
-
-            // CUANDO USAMOS UNA CARD SI NO TIENE TARGET 
-            // DE TENER TARGET:
-            // SI RequireSelectTarget ES FALSO SE APLICA EL EFECTO INMEDIATAMENTE SIN SELECCIONAR AL/LOS TARGET/S
-            // SI RequireSelectTarget ES VERDADERO ENTONCES HAY QUE ESPERAR A QUE SELECCIONE UNO O VARIOS TARGETS
-            // SI ES AUTOMATICA Y TIENE TARGETS VAMOS A ESTAR OBLIGADOS A SELECCIONARLOS
-            // SI ES AUTOMATICA Y NO TIENE TARGETS ENTONCES VAMOS A USARLA AUTOMATICAMENTE
             if (allCards.ContainsKey(cardUI.ID))
             {
                 allCards[cardUI.ID].CheckPosibleTargets();
@@ -265,9 +258,6 @@ namespace PositionerDemo
             {
                 Debug.Log("No esta en el dictionary");
             }
-
-
-
 
             //if (allCards.ContainsKey(cardUI.ID))
             //{

@@ -79,6 +79,10 @@ namespace PositionerDemo
             return tileAnimator;
         }
 
+        public IOcuppy GetOcuppy()
+        {
+            return GetOccupier();
+        }
     }
 
 }

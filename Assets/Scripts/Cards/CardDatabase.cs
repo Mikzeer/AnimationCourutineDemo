@@ -68,14 +68,14 @@ namespace PositionerDemo
         {
             //var myEnumMemberCount = Enum.GetNames(typeof(MyEnum)).Length;
             //YourEnum foo = (YourEnum)yourInt;
-            int acTypeTotalCount = Enum.GetNames(typeof(PositionerDemo.ACTIVATIONTYPE)).Length;
+            int acTypeTotalCount = Enum.GetNames(typeof(ACTIVATIONTYPE)).Length;
 
-            if (pIDActType >= acTypeTotalCount)
+            if (pIDActType -1 >= acTypeTotalCount || pIDActType - 1 < 0)
             {
                 return ACTIVATIONTYPE.NONE;
             }
 
-            ACTIVATIONTYPE acType = (ACTIVATIONTYPE)pIDActType;
+            ACTIVATIONTYPE acType = (ACTIVATIONTYPE)pIDActType-1;
             return acType;
         }
 
@@ -100,12 +100,12 @@ namespace PositionerDemo
             //YourEnum foo = (YourEnum)yourInt;
             int typeTotalCount = Enum.GetNames(typeof(CARDTYPE)).Length;
 
-            if (pIDType >= typeTotalCount)
+            if (pIDType-1 >= typeTotalCount || pIDType-1 < 0)
             {
                 return CARDTYPE.NONE;
             }
 
-            CARDTYPE type = (CARDTYPE)pIDType;
+            CARDTYPE type = (CARDTYPE)pIDType-1;
             return type;
         }
 
@@ -177,11 +177,5 @@ namespace PositionerDemo
             isAbilityModifierListGenerate = true;
         }
 
-        public static CardData ConvertCardDBToCardDataInGame(CardDataRT pcardDataRT)
-        {
-            CardData cData = new CardData(pcardDataRT);
-
-            return cData;
-        }
     }
 }

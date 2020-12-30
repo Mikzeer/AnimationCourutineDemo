@@ -3,12 +3,12 @@ using UnityEngine.EventSystems;
 
 public class CardRarityInteractuableImage : InteractuableImage
 {
-    private DeckBuilderManager deckBuildManager;
+    private CardCollectionSearchManager cardColelctionSearchManager;
     public CardRarity rarity;
 
-    public void SetCardRarityInteractuableImage(DeckBuilderManager deckBuildManager, CardRarity rarity, string text)
+    public void SetCardRarityInteractuableImage(CardCollectionSearchManager cardColelctionSearchManager, CardRarity rarity, string text)
     {
-        this.deckBuildManager = deckBuildManager;
+        this.cardColelctionSearchManager = cardColelctionSearchManager;
         this.rarity = rarity;
         this.text.text = text;
     }
@@ -19,11 +19,11 @@ public class CardRarityInteractuableImage : InteractuableImage
 
         if (IsPressed)
         {
-            deckBuildManager.OnFiltterByRaraityButtonPress(rarity);
+            cardColelctionSearchManager.OnFiltterByRaraityButtonPress(rarity);
         }
         else
         {
-            deckBuildManager.OnFiltterByRaraityButtonPress(CardRarity.NONE);
+            cardColelctionSearchManager.OnFiltterByRaraityButtonPress(CardRarity.NONE);
         }
     }
 }

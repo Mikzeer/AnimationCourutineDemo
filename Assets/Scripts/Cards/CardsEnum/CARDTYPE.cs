@@ -4,7 +4,7 @@
     {
         NONE,
         BUFF,
-        NERF,
-        NEUTRAL
+        NEUTRAL,
+        NERF
     }
 }

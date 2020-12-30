@@ -103,9 +103,7 @@ public class AnimotionHandler : MonoBehaviour
     public InfoPanel infoPanel;
     public KimbokoInfoPanel kimbokoInfoPanel;
 
-    CardManager cardManager = new CardManager();
-    public List<CardScriptableObject> playerOneCards;
-    public List<CardScriptableObject> playerTwoCards;
+    CardManager cardManager;
     MotionController motionControllerCardSpawn = new MotionController();
     public GameObject cardUIPrefab;
     public RectTransform canvasRootTransform;
@@ -275,8 +273,8 @@ public class AnimotionHandler : MonoBehaviour
 
     private void CreateDeck()
     {
-        cardManager.CreateDeck(players[0], playerOneCards);
-        cardManager.CreateDeck(players[1], playerTwoCards);
+        //cardManager.CreateDeck(players[0], playerOneCards);
+        //cardManager.CreateDeck(players[1], playerTwoCards);
     }
 
     private void CreateNewBoard()

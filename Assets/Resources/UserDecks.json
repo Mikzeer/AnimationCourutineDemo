@@ -1,0 +1,192 @@
+{
+    "userDecksStr": [
+        {
+            "ID": 82,
+            "userDeck": {
+                "ID": 82,
+                "name": "Chipo Pipolatti",
+                "totalCards": 12,
+                "userDeckJson": [
+                    {
+                        "ID": "CardID2",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID3",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID8",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID11",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID5",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID10",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID9",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID23",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID35",
+                        "Amount": 1
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 83,
+            "userDeck": {
+                "ID": 83,
+                "name": "Ternitas House",
+                "totalCards": 20,
+                "userDeckJson": [
+                    {
+                        "ID": "CardID2",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID3",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID8",
+                        "Amount": 3
+                    },
+                    {
+                        "ID": "CardID1",
+                        "Amount": 5
+                    },
+                    {
+                        "ID": "CardID11",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID5",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID10",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID9",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID23",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID6",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID39",
+                        "Amount": 1
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 84,
+            "userDeck": {
+                "ID": 84,
+                "name": "Leli",
+                "totalCards": 10,
+                "userDeckJson": [
+                    {
+                        "ID": "CardID1",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID8",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID3",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID2",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID23",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID19",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID27",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID30",
+                        "Amount": 1
+                    }
+                ]
+            }
+        },
+        {
+            "ID": 85,
+            "userDeck": {
+                "ID": 85,
+                "name": "El Tonjon",
+                "totalCards": 17,
+                "userDeckJson": [
+                    {
+                        "ID": "CardID8",
+                        "Amount": 5
+                    },
+                    {
+                        "ID": "CardID3",
+                        "Amount": 2
+                    },
+                    {
+                        "ID": "CardID2",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID11",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID27",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID4",
+                        "Amount": 4
+                    },
+                    {
+                        "ID": "CardID23",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID28",
+                        "Amount": 1
+                    },
+                    {
+                        "ID": "CardID47",
+                        "Amount": 1
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -44,15 +44,3 @@ public class GameStateMachine : MonoBehaviour
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

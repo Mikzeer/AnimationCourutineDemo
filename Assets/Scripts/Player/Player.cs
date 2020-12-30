@@ -68,6 +68,40 @@ namespace PositionerDemo
             TurnManager.OnPlayerResetActionPoints += ResetActionPoints;
         }
 
+        public Player(int PlayerID, PLAYERTYPE playerType)
+        {
+            this.PlayerID = PlayerID;
+            this.playerType = playerType;
+            OccupierType = OCUPPIERTYPE.PLAYER;
+            CardTargetType = CARDTARGETTYPE.BASENEXO;
+            PlayersHands = new List<Card>();
+            Graveyard = new List<Card>();
+
+            Abilities = new Dictionary<int, AbilityAction>();
+            SpawnAbility spawnAbility = new SpawnAbility(this);
+            TakeCardAbility takeCardAbility = new TakeCardAbility(this);
+            Abilities.Add(spawnAbility.ID, spawnAbility);
+            Abilities.Add(takeCardAbility.ID, takeCardAbility);
+
+            AttackPowerStat attackPow = new AttackPowerStat(2, 2);
+            AttackRangeStat attackRan = new AttackRangeStat(1, 3);
+            HealthStat healthStat = new HealthStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+
+            Stats = new Dictionary<int, Stat>();
+            Stats.Add(attackPow.id, attackPow);
+            Stats.Add(attackRan.id, attackRan);
+            Stats.Add(healthStat.id, healthStat);
+            Stats.Add(actionPStat.id, actionPStat);
+
+            TurnManager.OnPlayerResetActionPoints += ResetActionPoints;
+        }
+
+        public void SetDeck(Stack<Card> Deck)
+        {
+            this.Deck = Deck;
+        }
+
         public void OnSelect(bool isSelected, int playerID)
         {
             Debug.Log("PLAYER SELECTED");
@@ -123,5 +157,9 @@ namespace PositionerDemo
             }
         }
 
+        public IOcuppy GetOcuppy()
+        {
+            return this;
+        }
     }        
 }

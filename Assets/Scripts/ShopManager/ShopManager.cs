@@ -11,13 +11,10 @@ using UnityEngine.UI;
 public class ShopManager : MonoBehaviour
 {
     #region VARIABLES
-
     [Header("Screen Reference")]
     [SerializeField] private GameObject ScreenContent;
-
     [Header("Pack Prefab")]
     [SerializeField] private GameObject PackPrefab;
-
     [Header("Rect Placement")]
     [SerializeField] private Transform PacksParent;
     [SerializeField] private Transform InitialPackSpot;
@@ -26,7 +23,6 @@ public class ShopManager : MonoBehaviour
     private float packPlacementOffset = -0.01f;
     private float PosXRange = 4f;
     private float PosYRange = 8f;
-
     [Header("Money And Price")]
     [SerializeField] private Text MoneyText;
     [SerializeField] private GameObject MoneyHUD;
@@ -43,53 +39,16 @@ public class ShopManager : MonoBehaviour
             MoneyText.text = money.ToString();
         }
     }
-
+    [Header("Manager")]
+    [SerializeField] private GameMenuManager gameMenuManager;
 
     [SerializeField] private Button btnBuy;
-    public UserResourcesFirebase userResourcesFirebase;
-    
+    private bool debugOn = false;
     #endregion
 
-    #region SINGLETON
-
-    [SerializeField] protected bool dontDestroy;
-
-    private static ShopManager instance;
-    public static ShopManager Instance
+    private void Start()
     {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<ShopManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    instance = obj.AddComponent<ShopManager>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    #endregion
-
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this as ShopManager;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         HideScreen();
-
-        //UserDB usersd = new UserDB("lll", "", "", "");
-        //CreateNewUserResources(usersd);
     }
 
     private void OnEnable()
@@ -102,36 +61,23 @@ public class ShopManager : MonoBehaviour
         btnBuy.onClick.RemoveAllListeners();
     }
 
-    public void CreateNewUserResources(UserDB pUser)
+    public void LoadUserResourcesFromFirebase(UserResources userResources)
     {
-        userResourcesFirebase.CreateNewUserResources(pUser);
-    }
-
-    public async void LoadUserResourcesFromFirebase(UserDB pUser)
-    {
-        UserResources userResources = await userResourcesFirebase.GetUserResources(pUser);
         if (userResources != null)
         {
             Money = userResources.Gold;
-            //Debug.Log("userResources.UnopendPacks " + userResources.UnopendPacks);
             StartCoroutine(GivePacks(userResources.UnopendPacks, true));
-            Debug.Log("USER RESOURCES LOADED FROM DB ONLINE");
-        }        
-
-        
+            if (debugOn) Debug.Log("USER RESOURCES LOADED FROM DB ONLINE");
+        }               
     }
 
-    public async void LoadPriceDataFromFirebase(UserDB pUser)
+    public void LoadPriceDataFromFirebase(GamePricesData priceData)
     {
-        GamePricesData priceData = await userResourcesFirebase.GetGamePricesData();
         if (priceData != null)
         {
             PackPrice = priceData.NormalPackPrices;
-            //Debug.Log("PACK PRICE " + PackPrice);
-            Debug.Log("PRICE DATA LOADED FROM DB ONLINE");
+            if(debugOn) Debug.Log("PRICE DATA LOADED FROM DB ONLINE");
         }
-
-
     }
 
     public IEnumerator GivePacks(int NumberOfPacks, bool instant = false)
@@ -165,18 +111,18 @@ public class ShopManager : MonoBehaviour
         yield break;
     }
 
-
     public async void BuyPackDB()
     {
         RectTransform rect = PacksParent.GetComponent<RectTransform>();
         PosXRange = rect.rect.size.x / 2;
         PosYRange = rect.rect.size.y / 2;
 
-        bool hasEnoughMoney = await CanUserBuyAPackANormalPack();
+        UserResourcesManager userResourcesManager = new UserResourcesManager();
+        bool hasEnoughMoney = await userResourcesManager.CanUserBuyAPackANormalPack(gameMenuManager.GetUser());
 
         if (hasEnoughMoney == true)
         {
-            userResourcesFirebase.BuyNewPack(UserManager.Instance.GetUser(), CARDPACKTYPE.NORMAL);
+            userResourcesManager.BuyPackDB(gameMenuManager.GetUser());
             Money -= PackPrice;
             StartCoroutine(GivePacks(1));
         }
@@ -184,18 +130,6 @@ public class ShopManager : MonoBehaviour
         {
             Debug.Log("NOT ENOUGH MONEY ");
         }
-    }
-
-    private async Task<bool> CanUserBuyAPackANormalPack()
-    {
-        bool canOpen = await userResourcesFirebase.IsUserAllowToBuyAPack(UserManager.Instance.GetUser(), CARDPACKTYPE.NORMAL);
-
-        return canOpen;
-    }
-
-    public void RestOneOpenPackFromFirebase(UserDB pUser)
-    {
-        userResourcesFirebase.SetNewUnopenPackAmountToUser(pUser, -1);
     }
 
     public void ShowScreen()

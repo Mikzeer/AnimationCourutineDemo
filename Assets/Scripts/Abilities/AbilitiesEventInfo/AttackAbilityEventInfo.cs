@@ -14,6 +14,5 @@
             this.attackType = attackType;
             this.damageAmountDeal = damageAmountDeal;
         }
-
     }
 }

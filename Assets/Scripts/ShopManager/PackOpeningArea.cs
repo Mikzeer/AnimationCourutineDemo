@@ -4,9 +4,12 @@ using UnityEngine.UI;
 using PositionerDemo;
 using DG.Tweening;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class PackOpeningArea : MonoBehaviour
 {
+    #region VARIABLES
+
     public bool AllowedToDragAPack { get; set; }
     public Transform packOpeningParent;
     public GameObject cardPrefab;
@@ -49,6 +52,9 @@ public class PackOpeningArea : MonoBehaviour
             }
         }
     }
+    [SerializeField] private ShopManager shopManager;
+    [SerializeField] private GameMenuManager gameMenuManager;
+    #endregion
 
     private void Awake()
     {
@@ -62,16 +68,32 @@ public class PackOpeningArea : MonoBehaviour
 
     private async Task<GameObject> CardFromPack(CardRarity rarity, Transform cardParent)
     {
-        List<CardData> CardsDataOfThisRarity = CardCollection.Instance.GetCardsDataWithCardRarity(rarity);
+
+        CardCollectionSearchFiltter cardCollectionSearchFiltter = new CardCollectionSearchFiltter();
+        List<CardData> cDat = gameMenuManager.GetAllCardDataArray().ToList();
+        List<CardData> CardsDataOfThisRarity = cardCollectionSearchFiltter.GetCardsDataWithCardRarity(cDat, rarity);
+
+        if (CardsDataOfThisRarity.Count == 0)
+        {
+            //Debug.Log("NOT FOUND OF RARITY " + rarity);
+            cDat = gameMenuManager.GetAllCardDataArray().ToList();
+            CardsDataOfThisRarity = cardCollectionSearchFiltter.GetCardsDataWithCardRarity(cDat, CardRarity.COMMON);
+            rarity = CardRarity.COMMON;
+        }
+        else
+        {
+            //Debug.Log("FOUND OF RARITY " + rarity);
+        }
+
         CardData cardDataAux = CardsDataOfThisRarity[Random.Range(0, CardsDataOfThisRarity.Count)];
 
-        // add this card to your collection. 
-        CardCollection.Instance.quantityOfCardsUserHaveFromBDOnline["CardID" + cardDataAux.ID]++;
-        bool isLoaded = await CardCollection.Instance.AddNewCardToUserCollection(cardDataAux, UserManager.Instance.GetUser());
+        gameMenuManager.AddCardToGameCollectionDictionary(cardDataAux);
+
+        bool isLoaded = await gameMenuManager.AddNewCardToUserCollection(cardDataAux);
 
         GameObject card = Instantiate(cardPrefab, cardParent);
         card.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-
+        card.GetComponentInChildren<SimpleCardFromPackUINEW>().SetSimpleCardFromPackUI(GlowColorsByRarity[rarity], this);
         MikzeerGame.CardDisplay cardDisplay = card.GetComponent<MikzeerGame.CardDisplay>();
         cardDisplay.SetDisplay(cardDataAux);
         return card;
@@ -115,13 +137,13 @@ public class PackOpeningArea : MonoBehaviour
         for (int i = 0; i < rarities.Length; i++)
         {
             GameObject card = await CardFromPack(rarities[i], SlotsForCards[i]);
-            card.GetComponentInChildren<SimpleCardFromPackUINEW>().SetSimpleCardFromPackUI(GlowColorsByRarity[rarities[i]], this);
+            //card.GetComponentInChildren<SimpleCardFromPackUINEW>().SetSimpleCardFromPackUI(GlowColorsByRarity[rarities[i]], this);
             CardsFromPackCreated.Add(card);
             card.transform.localPosition = cardsInitialPosition;
             card.transform.DOLocalMove(SlotsForCards[i].position, 0.5f);
         }
 
-        CardCollection.Instance.LoadUserCollectionFromFirebase(UserManager.Instance.GetUser());
+        gameMenuManager.LoadUserCollectionFromFirebase();
     }
 
     public void Done()
@@ -151,11 +173,13 @@ public class PackOpeningArea : MonoBehaviour
         tweenSequence.OnComplete(() =>
         {
             ShowPackOpening(cardPackRect.position);
-            if (ShopManager.Instance.PacksCreated > 0)
+
+            if (shopManager.PacksCreated > 0)
             {
-                ShopManager.Instance.RestOneOpenPackFromFirebase(UserManager.Instance.GetUser());
-                ShopManager.Instance.PacksCreated--;
-            }                
+                gameMenuManager.RestOneOpenPackFromFirebase();
+                shopManager.PacksCreated--;
+            }               
+            
             // 4) destroy this pack in the end of the sequence
             Destroy(cardPackRect.gameObject);
         });

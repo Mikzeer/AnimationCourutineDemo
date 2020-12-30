@@ -1,0 +1,70 @@
+{
+    "autoLogin": true,
+    "cardVisibles": false,
+    "user": {
+        "ID": "-MLizdEc0UWa73xlHXlE",
+        "Name": "mmm",
+        "Macaddress": "0023AEE75BA8",
+        "Salt": "RSfL9i7VO9evl0m/Gwy9RfcgL4c86RCVQgXWw7pqYws=",
+        "Password": "6phUn9JgVp1u9thf7prRbauylHwJT9ZZ+HeEeGh6SWFFJ8v2LtU716+XSb8bDL1F9yAvhzzpEJVCBdbDumpjCw==",
+        "LocalIP": "",
+        "IsFirstTime": false,
+        "utcLastDownloadGameCollectionUnix": 1606599997906,
+        "utcLastDownloadUserCollectionUnix": 1608841063362,
+        "utcLastModificationUserCollectionUnix": 1607130528474,
+        "utcLastDownloadCardLimitDataUnix": 1605398323050
+    },
+    "email": "mmm@mmm.com",
+    "password": "m123456",
+    "selectedDeck": {
+        "ID": 83,
+        "name": "Ternitas House",
+        "totalCards": 20,
+        "userDeckJson": [
+            {
+                "ID": "CardID2",
+                "Amount": 1
+            },
+            {
+                "ID": "CardID3",
+                "Amount": 2
+            },
+            {
+                "ID": "CardID8",
+                "Amount": 3
+            },
+            {
+                "ID": "CardID1",
+                "Amount": 5
+            },
+            {
+                "ID": "CardID11",
+                "Amount": 2
+            },
+            {
+                "ID": "CardID5",
+                "Amount": 1
+            },
+            {
+                "ID": "CardID10",
+                "Amount": 1
+            },
+            {
+                "ID": "CardID9",
+                "Amount": 2
+            },
+            {
+                "ID": "CardID23",
+                "Amount": 1
+            },
+            {
+                "ID": "CardID6",
+                "Amount": 1
+            },
+            {
+                "ID": "CardID39",
+                "Amount": 1
+            }
+        ]
+    }
+}

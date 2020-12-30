@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using UnityEngine.UI;
+using UnityEngine.Events;
 
 public static class Helper
 {
@@ -236,5 +238,32 @@ public static class Helper
             Dictionary<CardDataRT, int> QuantityOfEachCard = (Dictionary<CardDataRT, int>)bf.Deserialize(file);
         }
     }
+
+    public static Vector3 KeepRectInsideScreen(RectTransform rect, Vector3 newPos, CanvasScaler canvasScaler)
+    {
+        float minX = (rect.rect.size.x / 2);
+        float maxX = (canvasScaler.referenceResolution.x - (rect.rect.size.x / 2));
+        float minY = (rect.rect.size.y / 2);
+        float maxY = (canvasScaler.referenceResolution.y - (rect.rect.size.y * 0.5f));
+        newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
+
+        return newPos;
+    }
+
+    public static bool IsEmptyString(string stringToCheck)
+    {
+        if (stringToCheck == "" || stringToCheck == string.Empty || stringToCheck == null) return true;
+        return false;
+    }
 }
 
+public static class HelperUI
+{
+    public static InputFiledDisplay CreateInputTextDisplay(GameObject inputPrefab, RectTransform parent)
+    {
+        GameObject inputAux = GameObject.Instantiate(inputPrefab, parent);
+        InputFiledDisplay inputFiledDisplay = inputAux.GetComponent<InputFiledDisplay>();
+        return inputFiledDisplay;
+    }
+}

@@ -35,30 +35,28 @@ public class GameCreator : GameStateMachine
 
     #region VARIABLES
 
-    public SpawnController spawnCotroller = new SpawnController();
     public TurnManager turnManager { get; set; }
-    public CardManager cardManager = new CardManager();
-
     public Player[] players;
-    public List<CardScriptableObject> playerOneCards;
-    public List<CardScriptableObject> playerTwoCards;
+    public Camera cam;
+
+    public SpawnController spawnCotroller = new SpawnController();
     public GameObject Crane;
     public Transform CraneEnd;
     public GameObject kimbokoPrefab;
-    public Board2D board2D;
-    int rows = 5;//5
-    int columns = 7;//7
+
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
-    public Camera cam;
 
-    public GameObject tileSelectionPrefab;
-    public HighLightTile highLightTile;
+    public CardManager cardManager;
     public GameObject cardUIPrefab;
-    public RectTransform canvasRootTransform;
-    public InfoPanel infoPanel;
     public RectTransform cardHolderP1;
     public RectTransform cardHolderP2;
+
+    public Board2D board2D;
+    public GameObject tileSelectionPrefab;
+    public HighLightTile highLightTile;
+    public RectTransform canvasRootTransform;
+    public InfoPanel infoPanel;
 
     public static event Action OnTimeStart;
     public static event Action<bool> OnTakeCardAvailable;
@@ -86,23 +84,14 @@ public class GameCreator : GameStateMachine
         }
     }
 
-
-
     void Start()
     {
-        CrearEstadoInicial();
         highLightTile = new HighLightTile(tileSelectionPrefab);
     }
 
     #endregion
 
     #region METHODS
-
-    public void CrearEstadoInicial()
-    {
-        CreationState creationState = new CreationState();
-        Initialize(creationState);
-    }
 
     private void AddCard()
     {

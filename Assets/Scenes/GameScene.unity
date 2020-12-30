@@ -121,6 +121,49 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &204004800
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 204004802}
+  - component: {fileID: 204004801}
+  m_Layer: 0
+  m_Name: GameInitializationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &204004801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204004800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3b48c864279d647930bae4e65d881c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &204004802
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204004800}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &241727413 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1555970602, guid: c0e07f58170b8084d91dd54529d9bd6d,
@@ -500,20 +543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dontDestroy: 0
-  playerOneCards:
-  - {fileID: 11400000, guid: 4f2664746211faa47af2a6c32036c8c4, type: 2}
-  - {fileID: 11400000, guid: 066e248afd545ff4c85b0a654ffa7715, type: 2}
-  - {fileID: 11400000, guid: 6537a895301c1904b85ab056dafb1108, type: 2}
-  - {fileID: 11400000, guid: df99421245523fd4ca1f84713c9dffa1, type: 2}
-  - {fileID: 11400000, guid: 27225101ecdf0434ea57978f9eb38a4c, type: 2}
-  - {fileID: 11400000, guid: 968d3cf3bf9e9f94c9eb301025f7b24b, type: 2}
-  playerTwoCards:
-  - {fileID: 11400000, guid: 4f2664746211faa47af2a6c32036c8c4, type: 2}
-  - {fileID: 11400000, guid: 066e248afd545ff4c85b0a654ffa7715, type: 2}
-  - {fileID: 11400000, guid: 6537a895301c1904b85ab056dafb1108, type: 2}
-  - {fileID: 11400000, guid: df99421245523fd4ca1f84713c9dffa1, type: 2}
-  - {fileID: 11400000, guid: 27225101ecdf0434ea57978f9eb38a4c, type: 2}
-  - {fileID: 11400000, guid: 968d3cf3bf9e9f94c9eb301025f7b24b, type: 2}
+  cam: {fileID: 1003088923}
   Crane: {fileID: 267723931}
   CraneEnd: {fileID: 267723932}
   kimbokoPrefab: {fileID: 6915248913354744671, guid: 9e57a4c293d210f43ba55032630f4172,
@@ -525,15 +555,14 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 1259e8899055a3f458f49d8a0c949e3d, type: 3}
   - {fileID: 8300000, guid: da629f28cd244f146b208f8c19cb112c, type: 3}
   - {fileID: 8300000, guid: 462f9ae490476184c9c78dd8f7be5b7e, type: 3}
-  cam: {fileID: 1003088923}
-  tileSelectionPrefab: {fileID: 5836110536383749284, guid: 4ab0b37cfe4368249af1aa46e416463c,
-    type: 3}
   cardUIPrefab: {fileID: 1486206258194675363, guid: ec5090a7e8c980b46b17023ef03bac30,
+    type: 3}
+  cardHolderP1: {fileID: 1865795649}
+  cardHolderP2: {fileID: 1865795648}
+  tileSelectionPrefab: {fileID: 5836110536383749284, guid: 4ab0b37cfe4368249af1aa46e416463c,
     type: 3}
   canvasRootTransform: {fileID: 1865795646}
   infoPanel: {fileID: 1865795647}
-  cardHolderP1: {fileID: 1865795649}
-  cardHolderP2: {fileID: 1865795648}
 --- !u!4 &1361581311
 Transform:
   m_ObjectHideFlags: 0
@@ -778,3 +807,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2417124ddd53ec4a974425bedfee57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &1929123032
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497520, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497534, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_Name
+      value: FirebaseDB
+      objectReference: {fileID: 0}
+    - target: {fileID: 5457708242270497534, guid: f53238d9b2aec7e40b4ffcee59da8a72,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f53238d9b2aec7e40b4ffcee59da8a72, type: 3}

@@ -3,12 +3,12 @@ using UnityEngine.EventSystems;
 
 public class CardTypeInteractuableImage : InteractuableImage
 {
-    private DeckBuilderManager deckBuildManager;
+    private CardCollectionSearchManager cardColelctionSearchManager;
     public CARDTYPE cardType;
 
-    public void SetCardTypeInteractuableImage(DeckBuilderManager deckBuildManager, CARDTYPE cardType, string text)
+    public void SetCardTypeInteractuableImage(CardCollectionSearchManager cardColelctionSearchManager, CARDTYPE cardType, string text)
     {
-        this.deckBuildManager = deckBuildManager;
+        this.cardColelctionSearchManager = cardColelctionSearchManager;
         this.cardType = cardType;
         this.text.text = text;
     }
@@ -19,11 +19,11 @@ public class CardTypeInteractuableImage : InteractuableImage
 
         if (IsPressed)
         {
-            deckBuildManager.OnFiltterByTypeButtonPress(cardType);
+            cardColelctionSearchManager.OnFiltterByTypeButtonPress(cardType);
         }
         else
         {
-            deckBuildManager.OnFiltterByTypeButtonPress(CARDTYPE.NONE);
+            cardColelctionSearchManager.OnFiltterByTypeButtonPress(CARDTYPE.NONE);
         }
     }
 }

@@ -10,6 +10,11 @@
 
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
+            if (cardTarget.CardTargetType != CARDTARGETTYPE.UNIT)
+            {
+                return null;
+            }
+
             Kimboko kimboko = (Kimboko)cardTarget;
 
             if (kimboko != null)
