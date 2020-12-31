@@ -6,13 +6,11 @@ namespace PositionerDemo
     public class DecombineAbilityEventInfo : AbilityEventInfo
     {
         public Kimboko decombiner; // QUIEN ES EL QUE DESCOMBINA
-        public List<Kimboko> kimbokoToDecombine; // A QUIENES VA A DESCOMBINAR
-        public List<Vector2> tilesToDecombine; // EN QUE TILES VA A DESCOMBINARLOS
-        public DecombineAbilityEventInfo(Kimboko decombiner, List<Kimboko> kimbokoToDecombine, List<Vector2> tilesToDecombine)
+        Dictionary<Kimboko, Vector2> kimbokoToDecombineAndPositions;// QUIENES Y EN DONDE VAN A DESCOMBINAR
+        public DecombineAbilityEventInfo(Kimboko decombiner, Dictionary<Kimboko, Vector2> kimbokoToDecombineAndPositions)
         {
             this.decombiner = decombiner;
-            this.kimbokoToDecombine = kimbokoToDecombine;
-            this.tilesToDecombine = tilesToDecombine;
+            this.kimbokoToDecombineAndPositions = kimbokoToDecombineAndPositions;
         }
     }
 }
