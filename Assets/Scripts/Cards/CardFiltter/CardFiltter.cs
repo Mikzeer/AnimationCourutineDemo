@@ -20,6 +20,84 @@ namespace PositionerDemo
         }
     }
 
+    public enum COMPARATIONTYPE
+    {
+        LESS,
+        LESSOREQUAL,
+        EQUEAL,
+        GREATER,
+        GREATEROREQUAL,
+        DIFFERENT
+    }
+    public class ResultData
+    {
+        public int amount { get; set; }
+
+        public ResultData(int amount)
+        {
+            this.amount = amount;
+        }
+    }
+    public interface IResultData
+    {
+        ResultData GetResultData();
+    }
+    public class ComparatorFiltter
+    {
+        COMPARATIONTYPE filtter;
+        public ComparatorFiltter(COMPARATIONTYPE filtter)
+        {
+            this.filtter = filtter;
+        }
+        public bool IsValidComparation(IResultData Idata, IResultData IdataToChekAgainst)
+        {
+            bool isValid = false;
+            ResultData data = Idata.GetResultData();
+            ResultData dataToChekAgainst = IdataToChekAgainst.GetResultData();
+            switch (filtter)
+            {
+                case COMPARATIONTYPE.LESS:
+                    if (data.amount < dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.LESSOREQUAL:
+                    if (data.amount <= dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.EQUEAL:
+                    if (data.amount == dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.GREATER:
+                    if (data.amount > dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.GREATEROREQUAL:
+                    if (data.amount >= dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.DIFFERENT:
+                    if (data.amount != dataToChekAgainst.amount) isValid = true;
+                    break;
+                default:
+                    break;
+            }
+            return isValid;
+        }
+    }
+    public class ResultDataValidator
+    {
+        IResultData rdToCheck;
+        IResultData rdToCheckAgainst;
+        ComparatorFiltter comparatorFiltter;
+
+        public ResultDataValidator(IResultData rdToCheck, IResultData rdToCheckAgainst, COMPARATIONTYPE filtter)
+        {
+            this.rdToCheck = rdToCheck;
+            this.rdToCheckAgainst = rdToCheckAgainst;
+            comparatorFiltter = new ComparatorFiltter(filtter);
+        }
+
+        public bool IsValid()
+        {
+            return comparatorFiltter.IsValidComparation(rdToCheck, rdToCheckAgainst);
+        }
+    }
 }
 
 namespace MikzeerGame
@@ -214,43 +292,16 @@ namespace MikzeerGame
 
 namespace MikzeerGameNotas
 {
-    public enum COMPARATIONTYPE
-    {
-        LESS,
-        LESSOREQUAL,
-        EQUEAL,
-        GREATER,
-        GREATEROREQUAL,
-        DIFFERENT
-    }
-    public enum STATAMOUNTTYPE
-    {
-        ACTUAL,
-        MAX
-    }
-    public enum SPECIALOPERATION
-    {
-        SIMPLE, // EL VALOR TAL CUAL ES
-        ADITION, // EL VALOR SUMADO OTRO NUMERO
-        SUBSTRACTION, // EL VALOR RESTADO OTRO NUMERO
-        DIVISION, // EL VALOR DIVIDIDO POR UN NUMERO
-        MULTIPLICATION, // EL VALOR MULTIPLICADO POR UN NUMERO
-        PERCENT // UN PORCENTAJE DEL VALOR
-    }
-    public class StatComparisonIDFiltter
-    {
-        int statID;
-        public StatComparisonIDFiltter(int statID)
-        {
-            this.statID = statID;
-        }
-        public bool IsValidStat(IOcuppy ocuppy)
-        {
-            return ocuppy.Stats.ContainsKey(statID);
-        }
-    }
     public class Comparator
     {
+        COMPARATIONTYPE filtter;
+        public Comparator()
+        {
+        }
+        public Comparator(COMPARATIONTYPE filtter)
+        {
+            this.filtter = filtter;
+        }
         public bool IsValidComparation(COMPARATIONTYPE filtter, ResultData data, ResultData dataToChekAgainst)
         {
             bool isValid = false;
@@ -279,298 +330,43 @@ namespace MikzeerGameNotas
             }
             return isValid;
         }
-        public bool IsValidComparation(COMPARATIONTYPE filtter, ResultData data, List<ResultData> dataToChekAgainst)
+        public bool IsValidComparation(ResultData data, ResultData dataToChekAgainst)
         {
-            bool isValid = true;
-            for (int i = 0; i < dataToChekAgainst.Count; i++)
+            bool isValid = false;
+            switch (filtter)
             {
-                bool hasPass = false;
-                switch (filtter)
-                {
-                    case COMPARATIONTYPE.LESS:
-                        if (data.amount < dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.LESSOREQUAL:
-                        if (data.amount <= dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.EQUEAL:
-                        if (data.amount == dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.GREATER:
-                        if (data.amount > dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.GREATEROREQUAL:
-                        if (data.amount >= dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.DIFFERENT:
-                        if (data.amount != dataToChekAgainst[i].amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                if (hasPass == false)
-                {
-                    isValid = hasPass;
+                case COMPARATIONTYPE.LESS:
+                    if (data.amount < dataToChekAgainst.amount) isValid = true;
                     break;
-                }
-            }
-            return isValid;
-        }
-        public bool IsValidComparation(COMPARATIONTYPE filtter, List<ResultData> data, ResultData dataToChekAgainst)
-        {
-            bool isValid = true;
-            for (int i = 0; i < data.Count; i++)
-            {
-                bool hasPass = false;
-                switch (filtter)
-                {
-                    case COMPARATIONTYPE.LESS:
-                        if (data[i].amount < dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.LESSOREQUAL:
-                        if (data[i].amount <= dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.EQUEAL:
-                        if (data[i].amount == dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.GREATER:
-                        if (data[i].amount > dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.GREATEROREQUAL:
-                        if (data[i].amount >= dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    case COMPARATIONTYPE.DIFFERENT:
-                        if (data[i].amount != dataToChekAgainst.amount)
-                        {
-                            hasPass = true;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                if (hasPass == false)
-                {
-                    isValid = hasPass;
+                case COMPARATIONTYPE.LESSOREQUAL:
+                    if (data.amount <= dataToChekAgainst.amount) isValid = true;
                     break;
-                }
-            }
-            return isValid;
-        }
-        public bool IsValidComparation(COMPARATIONTYPE filtter, List<ResultData> data, List<ResultData> dataToChekAgainst)
-        {
-            bool isValid = true;
-            for (int i = 0; i < data.Count; i++)
-            {
-                for (int j = 0; j < dataToChekAgainst.Count; j++)
-                {
-                    bool hasPass = false;
-                    switch (filtter)
-                    {
-                        case COMPARATIONTYPE.LESS:
-                            if (data[i].amount < dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        case COMPARATIONTYPE.LESSOREQUAL:
-                            if (data[i].amount <= dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        case COMPARATIONTYPE.EQUEAL:
-                            if (data[i].amount == dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        case COMPARATIONTYPE.GREATER:
-                            if (data[i].amount > dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        case COMPARATIONTYPE.GREATEROREQUAL:
-                            if (data[i].amount >= dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        case COMPARATIONTYPE.DIFFERENT:
-                            if (data[i].amount != dataToChekAgainst[j].amount)
-                            {
-                                hasPass = true;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (hasPass == false)
-                    {
-                        isValid = hasPass;
-                        return isValid;
-                    }
-                }
-            }
-            return isValid;
-        }
-    }
-    public class ResultData
-    {
-        public int amount { get; set; }
-
-        public ResultData(int amount)
-        {
-            this.amount = amount;
-        }
-    }
-    public class SpecialOperation
-    {
-        SPECIALOPERATION operationType;
-        int soAmount;
-        public SpecialOperation(SPECIALOPERATION operationType, int soAmount)
-        {
-            this.operationType = operationType;
-            this.soAmount = soAmount;
-        }
-
-        public ResultData GetResultDataFiltter(ResultData resultData)
-        {
-            int finalAmount = 0;
-            switch (operationType)
-            {
-                case SPECIALOPERATION.SIMPLE:
-                    finalAmount = resultData.amount;
+                case COMPARATIONTYPE.EQUEAL:
+                    if (data.amount == dataToChekAgainst.amount) isValid = true;
                     break;
-                case SPECIALOPERATION.ADITION:
-                    finalAmount = resultData.amount + soAmount;
+                case COMPARATIONTYPE.GREATER:
+                    if (data.amount > dataToChekAgainst.amount) isValid = true;
                     break;
-                case SPECIALOPERATION.SUBSTRACTION:
-                    finalAmount = resultData.amount - soAmount;
+                case COMPARATIONTYPE.GREATEROREQUAL:
+                    if (data.amount >= dataToChekAgainst.amount) isValid = true;
                     break;
-                case SPECIALOPERATION.DIVISION:
-                    if (resultData.amount == 0 || soAmount == 0)
-                    {
-                        finalAmount = 0;
-                        break;
-                    }
-                    finalAmount = resultData.amount / soAmount;
-                    break;
-                case SPECIALOPERATION.MULTIPLICATION:
-                    finalAmount = resultData.amount * soAmount;
-                    break;
-                case SPECIALOPERATION.PERCENT:
-                    finalAmount = soAmount * resultData.amount / 100;
+                case COMPARATIONTYPE.DIFFERENT:
+                    if (data.amount != dataToChekAgainst.amount) isValid = true;
                     break;
                 default:
                     break;
             }
-            resultData.amount = finalAmount;
-            return resultData;
+            return isValid;
         }
     }
-
-    public interface ICompareData
+    public class SpecialStatComparisonData : IResultData
     {
-        ResultData GetResultData();
-    }
-    public class ComparisonData : ICompareData
-    {
-        protected ResultData resultData;
-
-        public ComparisonData(int amount)
-        {
-            resultData = new ResultData(amount);
-        }
-
-        public ResultData GetResultData()
-        {
-            return resultData;
-        }
-    }
-    public class StatComparisonData : ICompareData
-    {
-        int statID;
-        STATAMOUNTTYPE statAmountType;
-        IOcuppy ocuppy;
-        public StatComparisonData(int statID, STATAMOUNTTYPE statAmountType, IOcuppy ocuppy)
-        {
-            this.statID = statID;
-            this.statAmountType = statAmountType;
-            this.ocuppy = ocuppy;
-        }
-
-        public StatComparisonData(int statID, STATAMOUNTTYPE statAmountType)
-        {
-            this.statID = statID;
-            this.statAmountType = statAmountType;
-        }
-
-        public void SetOcuppier(IOcuppy ocuppy)
-        {
-            this.ocuppy = ocuppy;
-        }
-
-        public ResultData GetResultData()
-        {
-            if (ocuppy == null) return null;
-
-            ResultData resultData = new ResultData(0);
-            switch (statAmountType)
-            {
-                case STATAMOUNTTYPE.ACTUAL:
-                    resultData.amount = ocuppy.Stats[statID].ActualStatValue;
-                    break;
-                case STATAMOUNTTYPE.MAX:
-                    resultData.amount = ocuppy.Stats[statID].MaxStatValue;
-                    break;
-            }
-            return resultData;
-        }
-    }
-    public class SpecialStatComparisonData : ICompareData
-    {
-        SpecialOperation specialOperation; //  QUE OPERACION QUIERO EFECTUAR
-        StatComparisonData statComparisonData; // EN QUE TIPO DE STAT
+        public RESULTDATATYPE resultDataType { get; set; }
+        ResultDataOperationFiltter specialOperation; //  QUE OPERACION QUIERO EFECTUAR
+        StatIResultData statComparisonData; // EN QUE TIPO DE STAT
         List<IOcuppy> occupiers;
 
-        public SpecialStatComparisonData(List<IOcuppy> occupiers, SpecialOperation specialOperation, StatComparisonData statComparisonData)
+        public SpecialStatComparisonData(List<IOcuppy> occupiers, ResultDataOperationFiltter specialOperation, StatIResultData statComparisonData)
         {
             this.occupiers = occupiers;
             this.specialOperation = specialOperation;
@@ -599,24 +395,124 @@ namespace MikzeerGameNotas
 
 
     }
-
-    public class SpecialStatConditionalComparisonData
+    public class ComparisonDataManager : IResultData
     {
-        Comparator comparator;
-        StatComparisonData statComparisonDt;
-
-        public SpecialStatConditionalComparisonData()
+        public RESULTDATATYPE resultDataType { get; set; }
+        public ResultData GetResultData()
         {
-            comparator = new Comparator();
+            // EFFECTO ID 8 
+            /*
+             * SIMPLECOMPARISONDATA 
+             *                      => int Amount
+             *
+             * SIMPLEOCUPPIERDATA // PODEMOS COMPARAR UN STAT, CANTIDAD DE USOS DE UNA HABILIDAD, CUANTOS TURNOS PASARON
+             *                    // 
+             *                    
+             *                   => STATRESULTDATA => ResultData devuelve la cantidad de ese StatID
+             *                   => SPECIALRESULTDATA => ResultData devuleve
+             *                                           CANTIDAD DE TURNOS
+             *                                           DANO RECIBIDO TOTAL UNIDADES ALIADAS/ENEMIGAS // DANO RECIBIDO TOTAL UNA UNIDAD
+             *                                           ATAQUE REALIZAD TOTAL A UNIDADES ALIADAS/ENEMIGAS // ATAQUE REALIZAD TOTAL DE UNA UNIDAD
+             *                                           CANTIDAD UNIDADES ALIADAS/ENEMIGAS QUE COMBINARON // CUANTAS VECES COMBINO UNA UNIDAD
+             *                                           CANTIDAD UNIDADES QUE SE DESCOMBINARON // CUANTAS VECES SE DESCOMBINO UNA UNIDAD
+             *                                           CANTIDAD UNIDADES QUE SE FUSIONARON // 
+             *                                           CANTIDAD UNIDADES QUE EVOLUCIONARON // 
+             *                                           CANTIDAD UNIDADES QUE SPAWNEO UN JUGADOR
+             *                                           CANTIDAD UNIDADES QUE SE MURIERON TOTAL // CANTIDAD DE UNIDADES QUE SE MURIERON A UN PLAYER
+             *                                           CANTIDAD DE PASOS DADOS TOTALES POR TODAS LAS UNIDADES / ALIADOS / ENEMIGOS / UNA UNIDAD
+             *                                           CANTIDAD DE CARTAS LEVANTADAS / USADAS / DESCARTADAS
+             *                                               
+             *                   => ABILITYRESULTDATA => ResultData devuelve
+             *                                           CANTIDAD DE MODIFIERS
+             *                                           USO CON EXITO
+             *                                           USO FALLIDO
+             *                                               
+             *                   
+             * 
+             * 
+             * 
+             */
+
+
+            // 1 - CREAMOS O SETEAMOS LOS TARGETS/OCUPPIER PARA GENERAR LAS REVISIONES
+
+            // SIMPLE COMPARISON DATA =>  SOLO UN NUMERO
+            // SIMPLE OCUPPIER DATA => SOLO UN OCCUPIER
+            // MULTIPLE OCCUPIER DATA => VARIOS OCCUPPIER
+            // TILE DATA => UNA TILE EN EL CAMPO DE BATALLA O EL SPAWN
+
+
+
+
+
+            // PODEMOS TENER DATA PRECARGADA, COMO UN RESULT DATA PRECARGADO DE UNA COMPARACION. EJ: SI ES >= 5(CINCO) 
+
+            throw new System.NotImplementedException();
+            // TODAS LAS CLASES VAN A TERMINAR CON UN COMPARATOR SIEMPRE
+            // Y EL COMPARATIONTYPE VA A SER ESPECIFICA Y UNICA EL FILTRO QUE ESTEMOS APLICANDO
+            // EJ >= = ETC
+
+            // SI TENEMOS UN COMPARATOR ENTONCES VAMOS A NECESITAR SI O SI DOS RESULT DATA
+            // RESULTA DATA A COMPARAR
+            // RESULTA DATA CONTRA QUE COMPARAR
+
+            // CHECK UNIDAD CON STAT HP ACTUAL MAYOR O IGUAL A 5
+
+            // 1A- A QUIEN/ES VAMOS A COMPRAR
+            // 2 - CHEQUEAMOS SI TIENE LA STAT REQUERIDA PARA BUSCAR 
+            // 3 - OBTENEMOS LA RESULT DATA DE LA UNIDAD
+
+            // 4 - OBTENEMOS LA RESULT DATA DEL COMPARE DATA SENCILLO
+            // ACA NO TENEMSO QUE CHEQUEAR NINGUN ID YA QUE ES DE TIPO SENCILLO
+
+            // 5- COMPARAMOS LOS RESULTADOS FINALES
+
+
+            // CHECK HP ACTUAL DEL OCUPPIER ES MAYOR O IGUAL AL HP MAXIMO DE OTRO OCCUPIER
+
+            // 1A- A QUIEN/ES VAMOS A COMPRAR
+            // 2 - CHEQUEAMOS SI TIENE LA STAT REQUERIDA PARA BUSCAR 
+            // 3 - OBTENEMOS LA RESULT DATA DE LA UNIDAD
+            // 3b - CHEQUEAMOS SI EL PLAYER TIENE LA STAT REQUERIDA PARA BUSCAR 
+            // 3C- OBTENEMOS LA RESULT DATA DEL PLAYER
+            // 4- COMPARAMOS LOS RESULTADOS FINALES
+
+
+            // CHECK HP ACTUAL DEL OCUPPIER ES MAYOR O IGUAL AL 90% DE LA SUMA DE TODO EL HP MAXIMO DE LAS UNIDADES ENEMIGAS
+
+
+            // 1A - A QUIEN/ES VAMOS A COMPRAR 
+            // 2B - CONTRA QUIEN/ES VAMOS A COMPRAR
+            // 2 - CHEQUEAMOS SI TIENE LA STAT REQUERIDA PARA BUSCAR 
+            // 2b - OBTENEMOS LA RESULT DATA DE LA UNIDAD
+            // 3 - CHEQUEAMOS SI LOS ENEMIGOS TIENEN LA STAT REQUERIDA PARA BUSCAR 
+            // 3b - OBTENEMOS EL RESULT DATA DE EL 90% DE LA SUMA DE LA VIDA MAXIMA DE LAS UNIDADES ENEMIGAS
+            // 4- COMPARAMOS LOS RESULTADOS FINALES
+
+            // CHECK SI
+            // 10% DE LA SUMA DE TODO EL ATK POW ACTUAL STAT DE LAS UNIDADES ALIADAS
+            // + MAS
+            // 2 * LA SUMA DE TODO EL HP ACTUAL DE TODAS LAS UNIDADES ALIADAS
+            // <= ES MENOS O IGUAL
+            // 90% DE LA SUMA DE TODO EL HP ACTUAL STAT DE LAS UNIDADES ENEMIGAS
+            //     CON ATK POW ACTUAL STAT
+            //     >= MAYOR O IGUAL
+            //     5
+
+
+            // 2B - CONTRA QUIEN/ES VAMOS A COMPRAR
+            // 3 - CHEQUEAMOS SI LOS ALIADOS TIENE LA ATK POW STAT
+            // 3b - OBTENEMOS EL RESULT DATA DE EL RESULTADO DE LA SUMA DEL 10 DEL ATK POW DE LOS ALIADOS
+            // 3 - CHEQUEAMOS SI LOS ALIADOS TIENE LA HP STAT
+            // 3b - OBTENEMOS EL RESULT DATA DE LA MULTIPLICACION POR 2 DE LA VIDA ACUTUAL DE LOS ALIADOS
+            // 4  - APLICAMOS LA OPERACION DE SUMAR 
+            // 10% DE LA SUMA DE TODO EL ATK POW ACTUAL STAT DE LAS UNIDADES ALIADAS
+            // + MAS
+            // 2 * LA SUMA DE TODO EL HP ACTUAL DE TODAS LAS UNIDADES ALIADAS
         }
     }
-
     public class Test
     {
-        public Test()
-        {
-
-        }
         public void TestOne()
         {
             // CHECK UNIDAD CON STAT HP ACTUAL MAYOR O IGUAL A 5
@@ -635,12 +531,12 @@ namespace MikzeerGameNotas
                 return;
             }
             // 3 - OBTENEMOS LA RESULT DATA DE LA UNIDAD
-            ICompareData unit = new StatComparisonData(0, STATAMOUNTTYPE.ACTUAL, kimb);
+            IResultData unit = new StatIResultData(0, STATAMOUNTTYPE.ACTUAL, kimb);
             ResultData unitResultData = unit.GetResultData();
 
             // 4 - OBTENEMOS LA RESULT DATA DEL COMPARE DATA SENCILLO
             // ACA NO TENEMSO QUE CHEQUEAR NINGUN ID YA QUE ES DE TIPO SENCILLO
-            ICompareData data = new ComparisonData(1);
+            IResultData data = new SimpleIResultData(1);
             ResultData simpleResultData = data.GetResultData();
 
             // 4- COMPARAMOS LOS RESULTADOS FINALES
@@ -675,7 +571,7 @@ namespace MikzeerGameNotas
                 return;
             }
             // 3 - OBTENEMOS LA RESULT DATA DE LA UNIDAD
-            ICompareData unit = new StatComparisonData(0, STATAMOUNTTYPE.ACTUAL, kimb);
+            IResultData unit = new StatIResultData(0, STATAMOUNTTYPE.ACTUAL, kimb);
             ResultData unitResultData = unit.GetResultData();
 
 
@@ -686,7 +582,7 @@ namespace MikzeerGameNotas
                 Debug.Log("NO SE ENCUENTRA ESTA ID/KEY DE STAT EN EL OCCUPIER");
                 return;
             }
-            ICompareData data = new StatComparisonData(0, STATAMOUNTTYPE.MAX, player);
+            IResultData data = new StatIResultData(0, STATAMOUNTTYPE.MAX, player);
             ResultData playerResultData = data.GetResultData();
 
             // 4- COMPARAMOS LOS RESULTADOS FINALES
@@ -726,7 +622,7 @@ namespace MikzeerGameNotas
             if (statIDFiltter.IsValidStat(kimb) == false) return;
 
             // 2b - OBTENEMOS LA RESULT DATA DE LA UNIDAD
-            ICompareData unit = new StatComparisonData(0, STATAMOUNTTYPE.ACTUAL, kimb); // hp actual de la unidad
+            IResultData unit = new StatIResultData(0, STATAMOUNTTYPE.ACTUAL, kimb); // hp actual de la unidad
             ResultData unitResultData = unit.GetResultData();
 
 
@@ -745,9 +641,9 @@ namespace MikzeerGameNotas
 
 
             // 3b - OBTENEMOS EL RESULT DATA DE EL 90% DE LA SUMA DE LA VIDA MAXIMA DE LAS UNIDADES ENEMIGAS
-            SpecialOperation specialOperation = new SpecialOperation(SPECIALOPERATION.PERCENT, 90);
-            StatComparisonData statComparisonData = new StatComparisonData(0, STATAMOUNTTYPE.MAX);
-            ICompareData specialStatComparisonData = new SpecialStatComparisonData(ocuppiers, specialOperation, statComparisonData);
+            ResultDataOperationFiltter specialOperation = new ResultDataOperationFiltter(OPERATIONTYPE.PERCENT, 90);
+            StatIResultData statComparisonData = new StatIResultData(0, STATAMOUNTTYPE.MAX);
+            IResultData specialStatComparisonData = new SpecialStatComparisonData(ocuppiers, specialOperation, statComparisonData);
             ResultData enemiesResultData = specialStatComparisonData.GetResultData();
 
             // 4- COMPARAMOS LOS RESULTADOS FINALES
@@ -807,10 +703,10 @@ namespace MikzeerGameNotas
                 return;
             }
 
-            // 3b - OBTENEMOS EL RESULT DATA DE 
-            SpecialOperation specialOperation = new SpecialOperation(SPECIALOPERATION.PERCENT, soAmount);
-            StatComparisonData statComparisonData = new StatComparisonData(targetStatID, STATAMOUNTTYPE.ACTUAL);
-            ICompareData specialStatComparisonData = new SpecialStatComparisonData(ocpyAux, specialOperation, statComparisonData);
+            // 3b - OBTENEMOS EL RESULT DATA DE EL RESULTADO DE LA SUMA DEL 10 DEL ATK POW DE LOS ALIADOS
+            ResultDataOperationFiltter specialOperation = new ResultDataOperationFiltter(OPERATIONTYPE.PERCENT, soAmount);
+            StatIResultData statComparisonData = new StatIResultData(targetStatID, STATAMOUNTTYPE.ACTUAL);
+            IResultData specialStatComparisonData = new SpecialStatComparisonData(ocpyAux, specialOperation, statComparisonData);
             ResultData alliesAtkPowResultData = specialStatComparisonData.GetResultData();
 
 
@@ -832,10 +728,10 @@ namespace MikzeerGameNotas
                 return;
             }
 
-            // 3b - OBTENEMOS EL RESULT DATA DE 
-            SpecialOperation specialOperationhp = new SpecialOperation(SPECIALOPERATION.MULTIPLICATION, soAmounthp);
-            StatComparisonData statComparisonDataHP = new StatComparisonData(HPtargetStatID, STATAMOUNTTYPE.ACTUAL);
-            ICompareData specialStatComparisonDataHP = new SpecialStatComparisonData(ocpyhPAux, specialOperationhp, statComparisonDataHP);
+            // 3b - OBTENEMOS EL RESULT DATA DE LA MULTIPLICACION POR 2 DE LA VIDA ACUTUAL DE LOS ALIADOS
+            ResultDataOperationFiltter specialOperationhp = new ResultDataOperationFiltter(OPERATIONTYPE.MULTIPLICATION, soAmounthp);
+            StatIResultData statComparisonDataHP = new StatIResultData(HPtargetStatID, STATAMOUNTTYPE.ACTUAL);
+            IResultData specialStatComparisonDataHP = new SpecialStatComparisonData(ocpyhPAux, specialOperationhp, statComparisonDataHP);
             ResultData alliesHpResultData = specialStatComparisonDataHP.GetResultData();
 
 
@@ -843,9 +739,351 @@ namespace MikzeerGameNotas
             // 10% DE LA SUMA DE TODO EL ATK POW ACTUAL STAT DE LAS UNIDADES ALIADAS
             // + MAS
             // 2 * LA SUMA DE TODO EL HP ACTUAL DE TODAS LAS UNIDADES ALIADAS
-            SpecialOperation additionSpecOp = new SpecialOperation(SPECIALOPERATION.ADITION, alliesAtkPowResultData.amount);
+            ResultDataOperationFiltter additionSpecOp = new ResultDataOperationFiltter(OPERATIONTYPE.ADITION, alliesAtkPowResultData.amount);
             ResultData allAliesResultData = additionSpecOp.GetResultDataFiltter(alliesHpResultData);
 
+        }
+    }
+
+
+    public enum STATAMOUNTTYPE
+    {
+        ACTUAL,
+        MAX
+    }
+    public enum OPERATIONTYPE
+    {
+        SIMPLE, // EL VALOR TAL CUAL ES
+        ADITION, // EL VALOR SUMADO OTRO NUMERO
+        SUBSTRACTION, // EL VALOR RESTADO OTRO NUMERO
+        DIVISION, // EL VALOR DIVIDIDO POR UN NUMERO
+        MULTIPLICATION, // EL VALOR MULTIPLICADO POR UN NUMERO
+        PERCENT // UN PORCENTAJE DEL VALOR
+    }
+    public enum COMPARATIONTYPE
+    {
+        LESS,
+        LESSOREQUAL,
+        EQUEAL,
+        GREATER,
+        GREATEROREQUAL,
+        DIFFERENT
+    }
+    public class ResultData
+    {
+        public int amount { get; set; }
+
+        public ResultData(int amount)
+        {
+            this.amount = amount;
+        }
+    }
+    public class ComparatorFiltter
+    {
+        COMPARATIONTYPE filtter;
+        public ComparatorFiltter(COMPARATIONTYPE filtter)
+        {
+            this.filtter = filtter;
+        }
+        public bool IsValidComparation(IResultData Idata, IResultData IdataToChekAgainst)
+        {
+            bool isValid = false;
+            ResultData data = Idata.GetResultData();
+            ResultData dataToChekAgainst = IdataToChekAgainst.GetResultData();
+            switch (filtter)
+            {
+                case COMPARATIONTYPE.LESS:
+                    if (data.amount < dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.LESSOREQUAL:
+                    if (data.amount <= dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.EQUEAL:
+                    if (data.amount == dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.GREATER:
+                    if (data.amount > dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.GREATEROREQUAL:
+                    if (data.amount >= dataToChekAgainst.amount) isValid = true;
+                    break;
+                case COMPARATIONTYPE.DIFFERENT:
+                    if (data.amount != dataToChekAgainst.amount) isValid = true;
+                    break;
+                default:
+                    break;
+            }
+            return isValid;
+        }
+    }
+    public enum RESULTDATATYPE
+    {
+        SIMPLE,
+        STAT,
+        SPECIALOPERATION,
+        MULTIPLEOCCUPIER,
+        VALIDATOR
+    }
+    public interface IResultData
+    {
+        RESULTDATATYPE resultDataType { get; }
+        ResultData GetResultData();
+    }
+    public interface IResultDataOperationFillter : IResultData
+    {
+        ResultDataOperationFiltter resultDataOperationFiltter { get; }
+        void SetOperationFiltter(ResultDataOperationFiltter rdoFiltter);
+    }
+    public interface IResultDataOccupier : IResultDataOperationFillter
+    {
+        void SetOcuppier(IOcuppy ocuppier);
+    }
+    public class SimpleIResultData : IResultData
+    {
+        protected ResultData resultData;
+        public RESULTDATATYPE resultDataType { get; set; }
+        public SimpleIResultData(int amount)
+        {
+            resultData = new ResultData(amount);
+            resultDataType = RESULTDATATYPE.SIMPLE;
+        }
+
+        public ResultData GetResultData()
+        {
+            return resultData;
+        }
+    }
+    public class StatComparisonIDFiltter
+    {
+        int statID;
+        public StatComparisonIDFiltter(int statID)
+        {
+            this.statID = statID;
+        }
+        public bool IsValidStat(IOcuppy ocuppy)
+        {
+            return ocuppy.Stats.ContainsKey(statID);
+        }
+    }
+    public class StatIResultData : IResultDataOccupier
+    {
+        public RESULTDATATYPE resultDataType { get; set; }
+        public ResultDataOperationFiltter resultDataOperationFiltter { get; set; }
+
+        int statID;
+        STATAMOUNTTYPE statAmountType;
+        IOcuppy ocuppy;
+        public StatIResultData(int statID, STATAMOUNTTYPE statAmountType, IOcuppy ocuppy)
+        {
+            this.statID = statID;
+            this.statAmountType = statAmountType;
+            this.ocuppy = ocuppy;
+            resultDataType = RESULTDATATYPE.STAT;
+        }
+        public StatIResultData(int statID, STATAMOUNTTYPE statAmountType)
+        {
+            this.statID = statID;
+            this.statAmountType = statAmountType;
+            resultDataType = RESULTDATATYPE.STAT;
+        }
+        public void SetOcuppier(IOcuppy ocuppy)
+        {
+            this.ocuppy = ocuppy;
+        }
+        public void SetOperationFiltter(ResultDataOperationFiltter rdoFiltter)
+        {
+            resultDataOperationFiltter = rdoFiltter;
+        }
+        public ResultData GetResultData()
+        {
+            // 1 - CHEQUEAMOS QUE TENGAMSO UN OCCUPIER
+            if (ocuppy == null) return null;
+
+            // 2 - CHEQUEAMOS SI TIENE LA STAT REQUERIDA PARA BUSCAR 
+            // ESTO DEBE ESTAR ACA YA QUE ACA VAMOS A USAR EN SI AL STAT
+            StatComparisonIDFiltter statIDFiltter = new StatComparisonIDFiltter(statID);
+            if (statIDFiltter.IsValidStat(ocuppy) == false)
+            {
+                Debug.Log("NO SE ENCUENTRA ESTA ID/KEY DE STAT EN EL OCCUPIER");
+                return null;
+            }
+
+            // GENERAMOS Y OBTENEMOS LA RESULT DATA
+            ResultData resultData = new ResultData(0);
+            switch (statAmountType)
+            {
+                case STATAMOUNTTYPE.ACTUAL:
+                    resultData.amount = ocuppy.Stats[statID].ActualStatValue;
+                    break;
+                case STATAMOUNTTYPE.MAX:
+                    resultData.amount = ocuppy.Stats[statID].MaxStatValue;
+                    break;
+            }
+
+            if (resultDataOperationFiltter != null)
+            {
+                resultData = resultDataOperationFiltter.GetResultDataFiltter(resultData);
+            }
+            return resultData;
+        }
+
+
+    }
+    public class SpecialOperationIResultData : IResultDataOperationFillter
+    {
+        public RESULTDATATYPE resultDataType { get; set; }
+        public ResultDataOperationFiltter resultDataOperationFiltter { get; set; }
+        IResultData firsResultData;
+        IResultData secondResultData;
+        OPERATIONTYPE operationType;
+
+        public SpecialOperationIResultData(OPERATIONTYPE operationType, IResultData firsResultData, IResultData secondResultData)
+        {
+            this.operationType = operationType;
+            this.firsResultData = firsResultData;
+            this.secondResultData = secondResultData;
+            resultDataType = RESULTDATATYPE.SPECIALOPERATION;
+        }
+        public void SetOperationFiltter(ResultDataOperationFiltter rdoFiltter)
+        {
+            resultDataOperationFiltter = rdoFiltter;
+        }
+        public ResultData GetResultData()
+        {
+            int firstAmount = firsResultData.GetResultData().amount;
+            int secondAmount = secondResultData.GetResultData().amount;
+            int finalAmount = 0;
+            ResultData data;
+            switch (operationType)
+            {
+                case OPERATIONTYPE.ADITION:
+                    finalAmount = firstAmount + secondAmount;
+                    break;
+                case OPERATIONTYPE.SUBSTRACTION:
+                    finalAmount = firstAmount - secondAmount;
+                    break;
+                case OPERATIONTYPE.DIVISION:
+
+                    finalAmount = firstAmount / secondAmount;
+                    break;
+                case OPERATIONTYPE.MULTIPLICATION:
+                    finalAmount = firstAmount * secondAmount;
+                    break;
+                default:
+                    return null;
+            }
+            data = new ResultData(finalAmount);
+
+            if (resultDataOperationFiltter != null)
+            {
+                data = resultDataOperationFiltter.GetResultDataFiltter(data);
+            }
+
+            return data;
+        }
+    }
+    public class MultipleOcuppierIResultData : IResultDataOperationFillter
+    {
+        public RESULTDATATYPE resultDataType { get; set; }
+        public ResultDataOperationFiltter resultDataOperationFiltter { get; set; }
+        IResultDataOccupier resultDataOccupier;
+        List<IOcuppy> occupiers;
+
+        public MultipleOcuppierIResultData(IResultDataOccupier resultDataOccupier)
+        {
+            this.resultDataOccupier = resultDataOccupier;
+            resultDataType = RESULTDATATYPE.MULTIPLEOCCUPIER; 
+        }
+
+        public void SetOperationFiltter(ResultDataOperationFiltter rdoFiltter)
+        {
+            resultDataOperationFiltter = rdoFiltter;
+        }
+
+        public void SetOcuppiers(List<IOcuppy> occupiers)
+        {
+            this.occupiers = occupiers;
+        }
+
+        public ResultData GetResultData()
+        {
+            ResultData data = new ResultData(0);
+            // RECORREMOS TODA LA LISTA DE OCCUPIER A EFECTUAR LA OPERACION ESPECIAL
+            for (int i = 0; i < occupiers.Count; i++)
+            {
+                resultDataOccupier.SetOcuppier(occupiers[i]);
+                ResultData occupierResultData = resultDataOccupier.GetResultData();
+                data.amount += occupierResultData.amount;
+            }
+            if (resultDataOperationFiltter != null)
+            {
+                data = resultDataOperationFiltter.GetResultDataFiltter(data);
+            }
+            return data;
+        }
+
+    }
+    public class ResultDataOperationFiltter
+    {
+        OPERATIONTYPE operationType;
+        int soAmount;
+        public ResultDataOperationFiltter(OPERATIONTYPE operationType, int soAmount)
+        {
+            this.operationType = operationType;
+            this.soAmount = soAmount;
+        }
+
+        public ResultData GetResultDataFiltter(ResultData resultData)
+        {
+            int finalAmount = 0;
+            switch (operationType)
+            {
+                case OPERATIONTYPE.SIMPLE:
+                    finalAmount = resultData.amount;
+                    break;
+                case OPERATIONTYPE.ADITION:
+                    finalAmount = resultData.amount + soAmount;
+                    break;
+                case OPERATIONTYPE.SUBSTRACTION:
+                    finalAmount = resultData.amount - soAmount;
+                    break;
+                case OPERATIONTYPE.DIVISION:
+                    if (resultData.amount == 0 || soAmount == 0)
+                    {
+                        finalAmount = 0;
+                        break;
+                    }
+                    finalAmount = resultData.amount / soAmount;
+                    break;
+                case OPERATIONTYPE.MULTIPLICATION:
+                    finalAmount = resultData.amount * soAmount;
+                    break;
+                case OPERATIONTYPE.PERCENT:
+                    finalAmount = soAmount * resultData.amount / 100;
+                    break;
+                default:
+                    break;
+            }
+            resultData.amount = finalAmount;
+            return resultData;
+        }
+    }
+    public class ResultDataValidator
+    {
+        ComparatorFiltter comparatorFiltter;
+        IResultData rdToCheck;
+        IResultData rdToCheckAgainst;
+
+        public ResultDataValidator(COMPARATIONTYPE filtter, IResultData rdToCheck, IResultData rdToCheckAgainst)
+        {
+            this.rdToCheck = rdToCheck;
+            this.rdToCheckAgainst = rdToCheckAgainst;
+            comparatorFiltter = new ComparatorFiltter(filtter);
+        }
+
+        public bool IsValid()
+        {
+            return comparatorFiltter.IsValidComparation(rdToCheck, rdToCheckAgainst);
         }
     }
 }
