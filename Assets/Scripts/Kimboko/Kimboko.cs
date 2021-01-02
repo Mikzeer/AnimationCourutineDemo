@@ -16,6 +16,9 @@ namespace PositionerDemo
         protected Animator kimbokoAnimator;
         protected Transform kimbokoTransform;
 
+        bool isAlly;
+        public bool IsAlly { get => isAlly; protected set => isAlly = value; }
+
         Dictionary<int, Stat> stats;
         public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
         Dictionary<int, AbilityAction> abilities;

@@ -11,7 +11,7 @@
         public static int ModificationID;
         public int actualModificationID; // ESTA ES LA ID DE ESTA UNIT STAT MODIFICATION, SIRVE PARA ENCONTRARLA MAS FACILMENTE POR ID
 
-        STATMODIFIERTYPE statModifierType;
+        public STATMODIFIERTYPE statModifierType { get; private set; }
         int amountToModify;
 
         public StatModification(PositionerDemo.IOcuppy unitToModify, Stat statToModify, int statIDToSearchToModify, int amountToModify, STATMODIFIERTYPE statModifierType)

@@ -13,6 +13,9 @@ namespace PositionerDemo
         private int _playerID;
         public int PlayerID { get => _playerID; private set => _playerID = value; }
 
+        bool isAlly;
+        public bool IsAlly { get => isAlly; protected set => isAlly = value; }
+
         Dictionary<int, Stat> stats;
         public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
 

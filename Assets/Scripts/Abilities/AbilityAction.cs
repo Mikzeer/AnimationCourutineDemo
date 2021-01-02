@@ -110,5 +110,17 @@ namespace PositionerDemo
             abilityModifier.Remove(modifier);
         }
 
+        public bool IsModifierApply(int modifierID)
+        {
+            if (abilityModifier.Count == 0) return false;
+            for (int i = 0; i < abilityModifier.Count; i++)
+            {
+                if (abilityModifier[i].ID == modifierID)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

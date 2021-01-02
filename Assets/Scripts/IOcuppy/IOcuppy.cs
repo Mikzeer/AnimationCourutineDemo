@@ -10,6 +10,7 @@ namespace PositionerDemo
         void OnSelect(bool isSelected, int playerID); 
         Dictionary<int,Stat> Stats { get; }
         Dictionary<int, AbilityAction> Abilities { get; }
+        bool IsAlly { get; }
 
         int GetCurrentActionPoints();
         void ResetActionPoints(int playerID, int amount);

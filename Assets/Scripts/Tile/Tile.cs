@@ -69,6 +69,11 @@ namespace PositionerDemo
             return grid.GetGridObjectRealWorldPositionByArrayPosition(PosX, PosY);
         }
 
+        public Vector2 GetGridPosition()
+        {
+            return new Vector2(PosX, PosY);
+        }
+
         public Transform GetTransform()
         {
             return tileTransform;

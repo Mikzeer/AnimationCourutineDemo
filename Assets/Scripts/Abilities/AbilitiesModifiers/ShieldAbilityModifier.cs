@@ -6,7 +6,7 @@ namespace PositionerDemo
     {
         private const int SHIELDABILITYMODIFIFERID = 1;
         private const int MODIFEREXECUTIIONORDER = 0;
-        private int takeDamageAbilityID = 4;
+        private int takeDamageAbilityID = 6;
 
         public ShieldAbilityModifier(IOcuppy performerIOcuppy) : base(SHIELDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {

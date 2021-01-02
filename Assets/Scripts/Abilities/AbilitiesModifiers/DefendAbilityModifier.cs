@@ -7,7 +7,7 @@ namespace PositionerDemo
     {
         private const int DEFENDABILITYMODIFIFERID = 0;
         private const int MODIFEREXECUTIIONORDER = 0;
-        private int takeDamageAbilityID = 4;
+        private int takeDamageAbilityID = 6;
         int duration = 2;
 
         public DefendAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)

@@ -21,8 +21,8 @@ namespace PositionerDemo
         public int id { get { return ID; } protected set { ID = value; } }
         private STATTYPE statType;
         public STATTYPE StatType { get { return statType; } protected set { statType = value; } }
-
         private List<StatModification> unitsModifiersList;
+        public List<StatModification> UnitsModifiersList { get { return unitsModifiersList; } set { unitsModifiersList = value; } }
 
         public Stat(int actualStatValue, int maxStatValue, int ID, STATTYPE statType)
         {
@@ -71,6 +71,11 @@ namespace PositionerDemo
         public void RevertModificationByID(int modificationID)
         {
             RevertModifications(unitsModifiersList.FirstOrDefault(x => x.actualModificationID == modificationID));
+        }
+
+        public void RevertModificationByStatType(STATMODIFIERTYPE statModifierType)
+        {
+            RevertModifications(unitsModifiersList.FirstOrDefault(x => x.statModifierType == statModifierType));
         }
 
     }
