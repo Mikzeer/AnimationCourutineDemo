@@ -2,15 +2,19 @@
     "dfCollection": [
         {
             "ID": "CardID1",
-            "Amount": 8
+            "Amount": 12
         },
         {
             "ID": "CardID10",
-            "Amount": 3
+            "Amount": 4
         },
         {
             "ID": "CardID11",
             "Amount": 2
+        },
+        {
+            "ID": "CardID12",
+            "Amount": 1
         },
         {
             "ID": "CardID18",
@@ -22,7 +26,7 @@
         },
         {
             "ID": "CardID2",
-            "Amount": 2
+            "Amount": 3
         },
         {
             "ID": "CardID20",
@@ -30,7 +34,7 @@
         },
         {
             "ID": "CardID23",
-            "Amount": 1
+            "Amount": 2
         },
         {
             "ID": "CardID27",
@@ -42,11 +46,11 @@
         },
         {
             "ID": "CardID3",
-            "Amount": 9
+            "Amount": 10
         },
         {
             "ID": "CardID30",
-            "Amount": 2
+            "Amount": 3
         },
         {
             "ID": "CardID33",
@@ -58,7 +62,7 @@
         },
         {
             "ID": "CardID35",
-            "Amount": 1
+            "Amount": 2
         },
         {
             "ID": "CardID39",
@@ -70,7 +74,7 @@
         },
         {
             "ID": "CardID47",
-            "Amount": 1
+            "Amount": 2
         },
         {
             "ID": "CardID5",

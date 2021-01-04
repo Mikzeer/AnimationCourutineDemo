@@ -84,7 +84,7 @@ namespace PositionerDemo
 
             if (performerIOcuppy.Stats.ContainsKey(ACTIONPOINTSTATID))
             {
-                StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[ACTIONPOINTSTATID], ACTIONPOINTSTATID, -actionPointsRequired, STATMODIFIERTYPE.NERF);
+                StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[ACTIONPOINTSTATID], -actionPointsRequired, STATMODIFIERTYPE.NERF);
                 performerIOcuppy.Stats[ACTIONPOINTSTATID].AddStatModifier(statModification);
                 performerIOcuppy.Stats[ACTIONPOINTSTATID].ApplyModifications();
 

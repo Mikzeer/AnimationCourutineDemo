@@ -171,7 +171,10 @@ namespace PositionerDemo
             //System.Type[] possible = (from System.Type type in types where type.IsSubclassOf(typeof(BaseClass)) select type).ToArray();
             foreach (var instance in instances)
             {
-                cardsAbilityModifierDictionary.Add(instance.ID, instance);
+                if (cardsAbilityModifierDictionary.ContainsKey(instance.ID) == false)
+                {
+                    cardsAbilityModifierDictionary.Add(instance.ID, instance);
+                }                
             }
 
             isAbilityModifierListGenerate = true;

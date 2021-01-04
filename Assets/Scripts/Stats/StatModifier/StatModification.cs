@@ -4,21 +4,19 @@
     public class StatModification : IStatModification
     {
         // Estos son los MODIFICADORES de ACTUAL VALUE / MAX VALUE  de los stats
-        PositionerDemo.IOcuppy OcuppyToModify; // ESTA ES LA UNIDAD A LA CUAL LE VAMOS A MODIFICAR EL STAT
+        IOcuppy OcuppyToModify; // ESTA ES LA UNIDAD A LA CUAL LE VAMOS A MODIFICAR EL STAT
         Stat statToModify; // ESTE ES EL STAT EN SI A MODIFICAR 
         public STATMODIFICATIONSTATUS status { get; set; } = STATMODIFICATIONSTATUS.Queued;
-        int statIDToSearchToModify; // ESTA ES EL ID DE LA STAT A BUSCAR, EJ: HEALTHUNITSTAT SIEMPRE VA A TENER ID 1
         public static int ModificationID;
         public int actualModificationID; // ESTA ES LA ID DE ESTA UNIT STAT MODIFICATION, SIRVE PARA ENCONTRARLA MAS FACILMENTE POR ID
 
         public STATMODIFIERTYPE statModifierType { get; private set; }
         int amountToModify;
 
-        public StatModification(PositionerDemo.IOcuppy unitToModify, Stat statToModify, int statIDToSearchToModify, int amountToModify, STATMODIFIERTYPE statModifierType)
+        public StatModification(IOcuppy unitToModify, Stat statToModify, int amountToModify, STATMODIFIERTYPE statModifierType)
         {
             this.OcuppyToModify = unitToModify;
             this.statToModify = statToModify;
-            this.statIDToSearchToModify = statIDToSearchToModify;
             this.statModifierType = statModifierType;
             if (statModifierType == STATMODIFIERTYPE.CHANGE)
             {

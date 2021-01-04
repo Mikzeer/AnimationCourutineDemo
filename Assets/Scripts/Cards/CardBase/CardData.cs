@@ -18,6 +18,7 @@ public class CardData
     public Sprite CardImage;
     public List<PositionerDemo.CARDTARGETTYPE> cardTargetTypes;
     public List<PositionerDemo.CardFiltter> cardTargetFiltters;
+    public List<PositionerDemo.CardEffect> cardEffects;
 
     public CardData(CardDataRT pCard)
     {

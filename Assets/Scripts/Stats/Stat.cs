@@ -78,5 +78,9 @@ namespace PositionerDemo
             RevertModifications(unitsModifiersList.FirstOrDefault(x => x.statModifierType == statModifierType));
         }
 
+        public void ChangeMaxStatValue(int MaxStatValue)
+        {
+            this.MaxStatValue = MaxStatValue;
+        }
     }
 }

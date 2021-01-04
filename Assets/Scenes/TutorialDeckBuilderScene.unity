@@ -1291,7 +1291,7 @@ MonoBehaviour:
   MoneyHUD: {fileID: 1936366627}
   PackPrice: 100
   StartingAmountOfMoney: 1000
-  gameMenuManager: {fileID: 0}
+  gameMenuManager: {fileID: 337226111}
   btnBuy: {fileID: 327936670}
 --- !u!4 &1085914168
 Transform:

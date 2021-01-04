@@ -154,7 +154,7 @@ namespace PositionerDemo
 
             if (Stats.ContainsKey(4))
             {
-                StatModification statModification = new StatModification(this, Stats[4], 4, amount, STATMODIFIERTYPE.CHANGE);
+                StatModification statModification = new StatModification(this, Stats[4], amount, STATMODIFIERTYPE.CHANGE);
                 Stats[4].AddStatModifier(statModification);
                 Stats[4].ApplyModifications();
             }
