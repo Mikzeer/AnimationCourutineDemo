@@ -71,7 +71,7 @@ namespace PositionerDemo
                 HeatMapGridObject heatMapGridObject = grid.GetGridObject(GetMouseWorldPosition());
                 if (heatMapGridObject != null)
                 {                 
-                    if (motControl != null && motControl.isPerforming == false)
+                    if (motControl != null && motControl.IsPerforming == false)
                     {
                         finalPositions = movePositioner.GetPositions(heatMapGridObject.GetRealWorldLocation(), movePositioner.GetPositionType(enemeyTransforms.Count));
 

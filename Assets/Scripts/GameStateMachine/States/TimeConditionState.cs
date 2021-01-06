@@ -41,7 +41,7 @@ public class TimeConditionState : State
         OnStateChange?.Invoke(actualStateName);
     }
 
-    public virtual bool CheckCondition()
+    public virtual bool MeetCondition()
     {
         return false;
     }

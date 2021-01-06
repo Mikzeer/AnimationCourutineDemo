@@ -23,10 +23,19 @@ namespace PositionerDemo
         private Board2D grid;
         private Animator tileAnimator;
         private Transform tileTransform;
-
+        Vector3 realWorldLocation;
         public Tile(Board2D grid, int PosX, int PosY)
         {
             this.grid = grid;
+            this.PosX = PosX;
+            this.PosY = PosY;
+            NeighborsTiles = new List<Tile>();
+            NeighborsTilesMatrix = new Tile[3, 3];
+        }
+
+        public Tile(Vector3 realWorldLocation, int PosX, int PosY)
+        {
+            this.realWorldLocation = realWorldLocation;
             this.PosX = PosX;
             this.PosY = PosY;
             NeighborsTiles = new List<Tile>();
@@ -66,6 +75,7 @@ namespace PositionerDemo
 
         public Vector3 GetRealWorldLocation()
         {
+            if (grid == null) return realWorldLocation;
             return grid.GetGridObjectRealWorldPositionByArrayPosition(PosX, PosY);
         }
 

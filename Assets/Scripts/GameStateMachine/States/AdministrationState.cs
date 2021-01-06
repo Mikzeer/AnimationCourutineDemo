@@ -14,7 +14,7 @@ public class AdministrationState : TimeConditionState
     public override void Enter()
     {
         base.Enter();
-        GameCreator.Instance.TakeCardAvailable(true);
+        gameCreator.TakeCardAvailable(true);
         // ACA TENGO QUE PRENDER EL BOTON DE CARD
         //Debug.Log("Enter Administration State Player " + GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID);
     }
@@ -22,13 +22,13 @@ public class AdministrationState : TimeConditionState
     public override void Exit()
     {
         // ACA TENGO QUE APAGAR EL BOTON DE CARD
-        GameCreator.Instance.TakeCardAvailable(false);
+        gameCreator.TakeCardAvailable(false);
         base.Exit();
     }
 
-    public override bool CheckCondition()
+    public override bool MeetCondition()
     {
-        if (GameCreator.Instance.turnManager.GetActualPlayerTurn().GetCurrentActionPoints() <= 0)
+        if (gameCreator.turnManager.GetActualPlayerTurn().GetCurrentActionPoints() <= 0)
         {
             return true;
         }
@@ -50,16 +50,16 @@ public class AdministrationState : TimeConditionState
     public override State Update()
     {
         base.Update();
-        Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
+        Tile TileObject = gameCreator.board2D.GetGridObject(Helper.GetMouseWorldPosition(gameCreator.cam));
         if (Helper.IsMouseOverUIWithIgnores() == false)
         {            
             if (Input.GetMouseButtonDown(0))
             {
                 if (TileObject != null)
                 {
-                    if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
                     {
-                        GameCreator.Instance.spawnCotroller.OnTrySpawn(TileObject, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+                        gameCreator.spawnCotroller.OnTrySpawn(TileObject, gameCreator.turnManager.GetActualPlayerTurn());
                     }
                     else
                     {
@@ -69,13 +69,13 @@ public class AdministrationState : TimeConditionState
             }
         }
 
-        GameCreator.Instance.highLightTile.OnTileSelection(TileObject, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+        gameCreator.highLightTile.OnTileSelection(TileObject, gameCreator.turnManager.GetActualPlayerTurn());
 
-        if (CheckCondition())
+        if (MeetCondition())
         {
-            State nextState = new AdministrationState(15, GameCreator.Instance, 2);
-            GameCreator.Instance.highLightTile.OnTileSelection(null, GameCreator.Instance.turnManager.GetActualPlayerTurn());
-            return GameCreator.Instance.turnManager.ChangeTurnState(managmentPoints, nextState);
+            State nextState = new AdministrationState(15, gameCreator, 2);
+            gameCreator.highLightTile.OnTileSelection(null, gameCreator.turnManager.GetActualPlayerTurn());
+            return gameCreator.turnManager.ChangeTurnState(managmentPoints, nextState);
             //return nextState;
         }
         else

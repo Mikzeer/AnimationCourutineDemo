@@ -462,7 +462,7 @@ public class AnimotionHandler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (motionControllerAttack != null && motionControllerAttack.isPerforming == false)
+            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
             {
                 List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
                 PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
@@ -485,7 +485,7 @@ public class AnimotionHandler : MonoBehaviour
                 motionControllerAttack.TryReproduceMotion();
             }
 
-            if (motionControllerSimpleMove != null && motionControllerSimpleMove.isPerforming == false)
+            if (motionControllerSimpleMove != null && motionControllerSimpleMove.IsPerforming == false)
             {
                 startPosition = movingEnemy.transform.position;
 
@@ -543,7 +543,7 @@ public class AnimotionHandler : MonoBehaviour
             HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
             if (heatMapGridObject != null)
             {
-                if (motionControllerCombineMove != null && motionControllerCombineMove.isPerforming == false)
+                if (motionControllerCombineMove != null && motionControllerCombineMove.IsPerforming == false)
                 {
                     Vector3 actualPosition = grid.GetGridObject(enemeyTransforms[0].position).GetRealWorldLocation();
                     Dictionary<Enemy, Vector3[]> enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies.ToArray(), movePositioner.GetPositionType(enemies.Count), heatMapGridObject.GetRealWorldLocation(), actualPosition);
@@ -603,7 +603,7 @@ public class AnimotionHandler : MonoBehaviour
             HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
             if (heatMapGridObject != null)
             {
-                if (motionControllerSpawn != null && motionControllerSpawn.isPerforming == false)
+                if (motionControllerSpawn != null && motionControllerSpawn.IsPerforming == false)
                 {
                     List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
                     List<Configurable> configureAnimotion = new List<Configurable>();
@@ -688,7 +688,7 @@ public class AnimotionHandler : MonoBehaviour
                     Debug.Log("FULL OF ENEMIES");
                     return;
                 }
-                if (motionControllerCombineSpawn != null && motionControllerCombineSpawn.isPerforming == false)
+                if (motionControllerCombineSpawn != null && motionControllerCombineSpawn.IsPerforming == false)
                 {
                     List<PositionerDemo.Motion> motionsSpawnCombine = new List<PositionerDemo.Motion>();
                     List<Configurable> configureAnimotion = new List<Configurable>();
@@ -821,7 +821,7 @@ public class AnimotionHandler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (motionControllerAttack != null && motionControllerAttack.isPerforming == false)
+            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
             {
                 List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
                 List<Configurable> configureAnimotion = new List<Configurable>();
@@ -864,7 +864,7 @@ public class AnimotionHandler : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (motionControllerBanner != null && motionControllerBanner.isPerforming == false)
+            if (motionControllerBanner != null && motionControllerBanner.IsPerforming == false)
             {
                 List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
                 List<Configurable> configureAnimotion = new List<Configurable>();
@@ -896,7 +896,7 @@ public class AnimotionHandler : MonoBehaviour
                 Debug.Log("Is Performing animation");
             }
 
-            if (motionControllerBannerTimmer != null && motionControllerBannerTimmer.isPerforming == false)
+            if (motionControllerBannerTimmer != null && motionControllerBannerTimmer.IsPerforming == false)
             {
                 List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
                 List<Configurable> configureAnimotion = new List<Configurable>();
@@ -943,7 +943,7 @@ public class AnimotionHandler : MonoBehaviour
                     return;
                 }
 
-                if (motionControllerCombineSpawnWithCheck != null && motionControllerCombineSpawnWithCheck.isPerforming == false)
+                if (motionControllerCombineSpawnWithCheck != null && motionControllerCombineSpawnWithCheck.IsPerforming == false)
                 {
                     List<PositionerDemo.Motion> motionsSpawnCombine = new List<PositionerDemo.Motion>();
                     List<Configurable> configureAnimotion = new List<Configurable>();
@@ -1456,7 +1456,7 @@ public class AnimotionHandler : MonoBehaviour
 
     private void OnCardSendToGraveyard(MikzeerGame.CardUI cardUI)
     {
-        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.IsPerforming == false)
         {
             Vector3 finalScale = new Vector3(0.2f, 0.2f, 1);
 
@@ -1484,7 +1484,7 @@ public class AnimotionHandler : MonoBehaviour
 
     private void OnCardWaitingTarget(MikzeerGame.CardUI cardUI)
     {
-        if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+        if (motionControllerCardSpawn != null && motionControllerCardSpawn.IsPerforming == false)
         {
             List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
 

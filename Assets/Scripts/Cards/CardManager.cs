@@ -87,7 +87,7 @@ namespace PositionerDemo
                 return;
             }
 
-            if (motionControllerCardSpawn.isPerforming == true)
+            if (motionControllerCardSpawn.IsPerforming == true)
             {
                 Debug.Log("Is Performing animation");
                 return;
@@ -152,7 +152,7 @@ namespace PositionerDemo
 
         public void AddCard(Player player)
         {
-            if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+            if (motionControllerCardSpawn != null && motionControllerCardSpawn.IsPerforming == false)
             {
 
                 Card newCard = TakeCardFromDeck(player);
@@ -269,7 +269,7 @@ namespace PositionerDemo
 
             bool isSapwn = false;
 
-            if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
+            if (motionControllerCardSpawn != null && motionControllerCardSpawn.IsPerforming == false)
             {
                 //List<Motion> motionsWaitToGraveyard = new List<Motion>();
 

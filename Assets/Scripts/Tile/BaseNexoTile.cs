@@ -1,4 +1,6 @@
-﻿namespace PositionerDemo
+﻿using UnityEngine;
+
+namespace PositionerDemo
 {
     public class BaseNexoTile : Tile
     {
@@ -16,6 +18,16 @@
             this.PlayerID = player.PlayerID;
             OcupyTile(player);
         }
+
+        public BaseNexoTile(Vector3 realPositon, int PosX, int PosY, Player player) : base(realPositon, PosX, PosY)
+        {
+            this.CardTargetType = cardTargetTYPE;
+            this.tileType = tileTYPE;
+            this._isWalkeable = false;
+            this.PlayerID = player.PlayerID;
+            OcupyTile(player);
+        }
+
     }
 
 }

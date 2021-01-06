@@ -13,6 +13,25 @@ namespace PositionerDemo
         private bool isFastForwarding = false;
         private float pressedTime = 0;
         private float timeToStarFastForward = 0.5f;
+        public bool IsPerforming
+        {
+            get
+            {
+                if (actualMotion != null)
+                {
+                    return actualMotion.performing;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            private set
+            {
+                IsPerforming = value;
+            }
+        }
 
         public MotionController()
         {
@@ -38,26 +57,6 @@ namespace PositionerDemo
             else
             {
                 Debug.Log("CANT CHANGE IS PERFORMING");
-            }
-        }
-
-        public bool isPerforming
-        {
-            get
-            {
-                if (actualMotion != null)
-                {
-                    return actualMotion.performing;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            private set
-            {
-                isPerforming = value;
             }
         }
 
@@ -136,4 +135,3 @@ namespace PositionerDemo
 
     }
 }
-

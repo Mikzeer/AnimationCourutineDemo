@@ -18,7 +18,7 @@ namespace PositionerDemo
                 return;
             }
 
-            if (motionControllerSpawn.isPerforming == true)
+            if (motionControllerSpawn.IsPerforming == true)
             {
                 Debug.Log("Is Performing animation");
                 return;
@@ -194,71 +194,5 @@ namespace PositionerDemo
         {
             return true;
         }
-
-        //public void Spawn(Tile TileObject, Player player)
-        //{
-        //    if (motionControllerSpawn != null && motionControllerSpawn.isPerforming == false)
-        //    {
-        //        Vector3 spawnPosition = TileObject.GetRealWorldLocation();
-
-        //        SpawnAbility spawnAbility = null;
-        //        if (player.Abilities.ContainsKey(0))
-        //        {
-        //            spawnAbility = (SpawnAbility)player.Abilities[0];
-        //        }
-        //        if (spawnAbility != null)
-        //        {
-        //            spawnAbility.Set(TileObject);
-        //        }
-        //        else
-        //        {
-        //            return;
-        //        }
-
-        //        if (spawnAbility.OnTryExecute() == false)
-        //        {
-        //            return;
-        //        }
-        //        else
-        //        {
-        //            spawnAbility.Perform();
-        //        }
-
-        //        //KimbokoGenericFactory kimbokoFac = new KimbokoGenericFactory();
-        //        //Kimboko kimboko = kimbokoFac.CreateKimboko(spawnIndexID, player, KimSO);
-        //        KimbokoXFactory kimbokoXFac = new KimbokoXFactory();
-        //        Kimboko kimboko = kimbokoXFac.CreateKimboko(spawnIndexID, player);
-        //        spawnIndexID++;
-
-        //        GameObject goKimbok = GameObject.Instantiate(GameCreator.Instance.kimbokoPrefab);
-        //        kimboko.SetGameObject(goKimbok);
-
-        //        if (TileObject.IsOccupied())
-        //        {
-        //            if (TileObject.GetOccupier().OccupierType == OCUPPIERTYPE.UNIT)
-        //            {
-        //                Kimboko unit = (Kimboko)TileObject.GetOccupier();
-
-        //                if (unit.ownerPlayer != player)
-        //                {
-        //                    // SPAWN COMBINABLE SI SE PUEDE....
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // SPAWN NORMAL
-        //            NormalSpawn(spawnPosition, player, goKimbok);
-        //            TileObject.OcupyTile(kimboko);
-        //            player.AddUnit(kimboko);
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("Is Performing animation");
-        //    }
-        //}
     }
-
 }

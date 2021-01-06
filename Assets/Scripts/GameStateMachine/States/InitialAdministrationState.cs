@@ -1,4 +1,5 @@
 ﻿using PositionerDemo;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InitialAdministrationState : AdministrationState
@@ -32,9 +33,9 @@ public class InitialAdministrationState : AdministrationState
         base.Exit();
     }
 
-    public override bool CheckCondition()
+    public override bool MeetCondition()
     {
-        return base.CheckCondition();
+        return base.MeetCondition();
     }
 
     public override void GetBack()
@@ -70,18 +71,18 @@ public class InitialAdministrationState : AdministrationState
         Tile tileP1 = mouseController.GetTile();
         Tile tileP2 = keyBoardController.GetTile();
 
-        GameCreator.Instance.highLightTile.OnTileSelection(tileP1, GameCreator.Instance.players[0]);
-        GameCreator.Instance.highLightTile.OnTileSelection(tileP2, GameCreator.Instance.players[1]);
+        gameCreator.highLightTile.OnTileSelection(tileP1, gameCreator.players[0]);
+        gameCreator.highLightTile.OnTileSelection(tileP2, gameCreator.players[1]);
 
-        if (mouseController.playerID == GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID)
+        if (mouseController.playerID == gameCreator.turnManager.GetActualPlayerTurn().PlayerID)
         {
             if (mouseController.Select() == true)
             {
                 if (tileP1 != null)
                 {
-                    if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
                     {
-                        GameCreator.Instance.spawnCotroller.OnTrySpawn(tileP1, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+                        gameCreator.spawnCotroller.OnTrySpawn(tileP1, gameCreator.turnManager.GetActualPlayerTurn());
                     }
                     else
                     {
@@ -93,15 +94,15 @@ public class InitialAdministrationState : AdministrationState
             mouseController.SpecialSelection();
         }
 
-        if (keyBoardController.playerID == GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID)
+        if (keyBoardController.playerID == gameCreator.turnManager.GetActualPlayerTurn().PlayerID)
         {
             if (keyBoardController.Select() == true)
             {
                 if (tileP2 != null)
                 {
-                    if (GameCreator.Instance.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
                     {
-                        GameCreator.Instance.spawnCotroller.OnTrySpawn(tileP2, GameCreator.Instance.turnManager.GetActualPlayerTurn());
+                        gameCreator.spawnCotroller.OnTrySpawn(tileP2, gameCreator.turnManager.GetActualPlayerTurn());
                     }
                     else
                     {
@@ -114,26 +115,26 @@ public class InitialAdministrationState : AdministrationState
         }
 
 
-        if (CheckCondition())
+        if (MeetCondition())
         {
             State nextState = null;
             int mngPts = 0;
             switch (index)
             {
                 case 0:
-                    nextState = new InitialAdministrationState(20, GameCreator.Instance, 2, 1);
+                    nextState = new InitialAdministrationState(20, gameCreator, 2, 1);
                     mngPts = 2;
                     break;
                 case 1:
-                    nextState = new InitialAdministrationState(20, GameCreator.Instance, 2, 2);
+                    nextState = new InitialAdministrationState(20, gameCreator, 2, 2);
                     mngPts = 2;
                     break;
                 case 2:
-                    nextState = new InitialAdministrationState(40, GameCreator.Instance, 4, 3);
+                    nextState = new InitialAdministrationState(40, gameCreator, 4, 3);
                     mngPts = 4;
                     break;
                 case 3:
-                    nextState = new AdministrationState(15, GameCreator.Instance, 1);
+                    nextState = new AdministrationState(15, gameCreator, 1);
                     mngPts = 1;
                     break;
                 default:
@@ -142,8 +143,8 @@ public class InitialAdministrationState : AdministrationState
             }
 
             //return nextState;
-            GameCreator.Instance.highLightTile.OnTileSelection(null, GameCreator.Instance.turnManager.GetActualPlayerTurn());
-            return GameCreator.Instance.turnManager.ChangeTurnState(mngPts, nextState);
+            gameCreator.highLightTile.OnTileSelection(null, gameCreator.turnManager.GetActualPlayerTurn());
+            return gameCreator.turnManager.ChangeTurnState(mngPts, nextState);
         }
         else
         {

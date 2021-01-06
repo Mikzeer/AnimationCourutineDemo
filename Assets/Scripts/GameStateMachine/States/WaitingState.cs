@@ -27,7 +27,7 @@ public class WaitingState : TimeConditionState
         //Debug.Log("exiiiiiiiiiiittttttt ");
     }
 
-    public override bool CheckCondition()
+    public override bool MeetCondition()
     {
         for (int i = 0; i < UnfinishActions.Count; i++)
         {
@@ -49,7 +49,7 @@ public class WaitingState : TimeConditionState
     {
         base.Update();
 
-        if (CheckCondition())
+        if (MeetCondition())
         {
             //Debug.Log("VOLVEMOS AL STATE QUE ESTABAMOS State ");
             return nextState;

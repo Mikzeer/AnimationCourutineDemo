@@ -12,15 +12,14 @@ namespace PositionerDemo
         private int _rows; // height
 
         private Vector3 originPosition;
+        private float tileSize;
 
         private GameObject tilePrefab;
         private GameObject baseTilePrefab;
         private GameObject playerTilePrefab;
 
         float playerTileWidth;
-        float playerTileHeight;
 
-        private float tileSize;
         float tileWidth;
         float tileHeight;
         float totalWidth;
@@ -131,7 +130,7 @@ namespace PositionerDemo
 
             SpriteRenderer spRendererNexo = playerTilePrefab.GetComponent<SpriteRenderer>();
             playerTileWidth = spRendererNexo.bounds.size.x;
-            playerTileHeight = spRendererNexo.bounds.size.y;
+
 
             totalWidth = _columns * tileWidth;
             totalHeight = _rows * tileHeight;
@@ -294,20 +293,15 @@ namespace PositionerDemo
         {
             int x, y;
             GetXY(worldPosition, out x, out y);
-
             Vector3 offsetPosition = GetWorldPosition(x, y);
-
             offsetPosition = offsetPosition + new Vector3(tileSize / 2, tileSize / 2, 0);
-
             return offsetPosition;
         }
 
         public Vector3 GetGridObjectRealWorldPositionByArrayPosition(int x, int y)
         {
             Vector3 offsetPosition = GetWorldPosition(x, y);
-
             offsetPosition = offsetPosition + new Vector3(tileSize / 2, tileSize / 2, 0);
-
             return offsetPosition;
         }
 
