@@ -19,8 +19,15 @@ namespace PositionerDemo
         Dictionary<int, Stat> stats;
         public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
 
+
+        Dictionary<STATTYPE, Stat> sttats;
+        public Dictionary<STATTYPE, Stat> Sttats { get => sttats; protected set => sttats = value; }
+
         Dictionary<int, AbilityAction> abilities;
         public Dictionary<int, AbilityAction> Abilities { get => abilities; protected set => abilities = value; }
+
+        Dictionary<ABILITYTYPE, AbilityAction> ability;
+        public Dictionary<ABILITYTYPE, AbilityAction> Abilityes { get => ability; protected set => ability = value; }
 
         private OCUPPIERTYPE _occupierType;
         public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
@@ -103,6 +110,24 @@ namespace PositionerDemo
             TurnManager.OnPlayerResetActionPoints += ResetActionPoints;
         }
 
+        public Player(int PlayerID)
+        {
+            Abilityes = new Dictionary<ABILITYTYPE, AbilityAction>();
+            Sttats = new Dictionary<STATTYPE, Stat>();
+            this.PlayerID = PlayerID;
+            this.playerType = PLAYERTYPE.PLAYER;
+            OccupierType = OCUPPIERTYPE.PLAYER;
+            CardTargetType = CARDTARGETTYPE.BASENEXO;
+            PlayersHands = new List<Card>();
+            Graveyard = new List<Card>();
+        }
+
+        public void SetStatsAndAbilities(Dictionary<ABILITYTYPE, AbilityAction> Ability, Dictionary<STATTYPE, Stat> Sttats)
+        {
+            this.Abilityes = Ability;
+            this.Sttats = Sttats;
+        }
+
         public void SetDeck(Stack<Card> Deck)
         {
             this.Deck = Deck;
@@ -143,9 +168,19 @@ namespace PositionerDemo
         {
             int actionPoints = 0;
 
-            if (stats.ContainsKey(4))
+            if (stats != null)
             {
-                actionPoints = stats[4].ActualStatValue;
+                if (stats.ContainsKey(4))
+                {
+                    actionPoints = stats[4].ActualStatValue;
+                }
+            }
+            else
+            {
+                if (sttats.ContainsKey(STATTYPE.ACTIONPOINTS))
+                {
+                    actionPoints = sttats[STATTYPE.ACTIONPOINTS].ActualStatValue;
+                }
             }
 
             return actionPoints;
@@ -166,6 +201,12 @@ namespace PositionerDemo
         public IOcuppy GetOcuppy()
         {
             return this;
+        }
+
+        public Ability GetAbility(ABILITYTYPE abilityType)
+        {
+            if (Abilityes.ContainsKey(abilityType)) return Abilityes[abilityType];
+            return null;
         }
     }        
 }

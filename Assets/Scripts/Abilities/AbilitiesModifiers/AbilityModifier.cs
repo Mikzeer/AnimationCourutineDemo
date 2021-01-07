@@ -1,4 +1,6 @@
-﻿namespace PositionerDemo
+﻿using CommandPatternActions;
+
+namespace PositionerDemo
 {
     public abstract class AbilityModifier
     {
@@ -61,6 +63,11 @@
                     return;
                 }
             }
+        }
+
+        public virtual ICommand ExecuteCmd(AbilityAction abilityAction)
+        {
+            return null;
         }
 
     }

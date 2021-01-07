@@ -26,15 +26,62 @@ namespace PositionerDemo
         {
             board2DManager = new Board2DManager(board2DManagerUI, 5, 7);
 
-            Player playerOne = new Player(0, PLAYERTYPE.PLAYER);
-            Player playerTwo = new Player(1, PLAYERTYPE.PLAYER);
-            players = new Player[2];
-            players[0] = playerOne;
-            players[1] = playerTwo;
+            CreatePlayers();
             Motion motion = board2DManager.CreateBoard(players, OnBoardComplete);
             ReproduceMotion(motion);
             spawnManager = new SpawnManager(spawnManagerUI);
         }
+
+        private void CreatePlayers()
+        {
+            Player playerOne = new Player(0);
+            playerOne.SetStatsAndAbilities(CreatePlayerAbilities(playerOne), CreatePlayerStat());
+
+            Player playerTwo = new Player(1);
+            playerTwo.SetStatsAndAbilities(CreatePlayerAbilities(playerTwo), CreatePlayerStat());
+
+            // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
+            ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
+            SpawnAbility spw = (SpawnAbility)playerOne.Abilityes[ABILITYTYPE.SPAWN];
+            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, ab));
+            CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
+            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, cancelSpawn));
+
+            Invoker.ExecuteCommands();
+
+
+            players = new Player[2];
+            players[0] = playerOne;
+            players[1] = playerTwo;
+        }
+
+        private Dictionary<STATTYPE, Stat> CreatePlayerStat()
+        {
+            Dictionary<STATTYPE, Stat> Stats = new Dictionary<STATTYPE, Stat>();
+            AttackPowerStat attackPow = new AttackPowerStat(2, 2);
+            AttackRangeStat attackRan = new AttackRangeStat(1, 3);
+            HealthStat healthStat = new HealthStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+
+            Stats.Add(attackPow.StatType, attackPow);
+            Stats.Add(attackRan.StatType, attackRan);
+            Stats.Add(healthStat.StatType, healthStat);
+            Stats.Add(actionPStat.StatType, actionPStat);
+
+            return Stats;
+        }
+
+        private Dictionary<ABILITYTYPE, AbilityAction> CreatePlayerAbilities(Player player)
+        {
+            Dictionary<ABILITYTYPE, AbilityAction> Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
+            SpawnAbility spawnAbility = new SpawnAbility(player);
+            TakeCardAbility takeCardAbility = new TakeCardAbility(player);
+            Abilities.Add(spawnAbility.AbilityType, spawnAbility);
+            Abilities.Add(takeCardAbility.AbilityType, takeCardAbility);
+            return Abilities;
+        }
+
+        
 
         private void OnBoardComplete()
         {
@@ -59,7 +106,7 @@ namespace PositionerDemo
                 Tile tile = mouseController.GetTile();
                 if (tile != null)
                 {
-                    spawnManager.Spawn(tile, players[0], 0);
+                    spawnManager.OnTrySpawn(tile, players[0]);
                     Invoker.ExecuteCommands();
                     InvokerMotion.StartExecution(this);
                 }
@@ -73,7 +120,6 @@ namespace CommandPatternActions
     public interface ICommand
     {
         COMMANDEXECUTINSTATE executionState { get; set; }
-        PositionerDemo.Motion motionToExecute { get; set; }
         bool isRunning { get; set; }
         bool logInsert { get; set; } // Define si lo podemos guardar como un cmd desejecutable
         void Execute();
@@ -94,7 +140,6 @@ namespace CommandPatternActions
         public COMMANDEXECUTINSTATE executionState { get; set; }
         public bool isRunning { get; set; }
         public bool logInsert { get; set; }
-        public PositionerDemo.Motion motionToExecute { get; set; }
 
         Tile TileObject;
         Player player;
@@ -121,6 +166,68 @@ namespace CommandPatternActions
             TileObject.Vacate();
             player.RemoveUnit(kimboko);
             kimboko.DestroyPrefab();
+        }
+    }
+
+    public class IAddAbilityActionModifierCommand : ICommand
+    {
+        public COMMANDEXECUTINSTATE executionState { get; set; }
+        public bool isRunning { get; set; }
+        public bool logInsert { get; set; }
+
+        AbilityAction ability;
+        AbilityModifier abilityModifier;
+
+        public IAddAbilityActionModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
+        {
+            this.ability = ability;
+            this.abilityModifier = abilityModifier;
+        }
+
+        public void Execute()
+        {
+            isRunning = true;
+
+            ability.AddAbilityModifier(abilityModifier);
+
+            executionState = COMMANDEXECUTINSTATE.FINISH;
+            isRunning = false;
+        }
+
+        public void Unexecute()
+        {
+            ability.RemoveAbilityModifier(abilityModifier);
+        }
+    }
+
+    public class IApplyModifierCommand : ICommand
+    {
+        public COMMANDEXECUTINSTATE executionState { get; set; }
+        public bool isRunning { get; set; }
+        public bool logInsert { get; set; }
+
+        AbilityAction ability;
+        AbilityModifier abilityModifier;
+
+        public IApplyModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
+        {
+            this.ability = ability;
+            this.abilityModifier = abilityModifier;
+        }
+
+        public void Execute()
+        {
+            isRunning = true;
+
+            abilityModifier.Execute(ability);
+
+            executionState = COMMANDEXECUTINSTATE.FINISH;
+            isRunning = false;
+        }
+
+        public void Unexecute()
+        {
+            //ability.RemoveAbilityModifier(abilityModifier);
         }
     }
 

@@ -11,11 +11,6 @@ namespace PositionerDemo
         Tile selectedTile;        
         private Player player;
 
-        // Esto lo va a tener cada clase en si... 
-        //event Action<AbilityEventInfo> OnActionStartExecute { get; set; }
-        //event Action<AbilityEventInfo> OnActionEndExecute { get; set; }
-        //event Action<SpawnAbilityEventInfo> OnActionStartExecute { get; set; }
-        //event Action<SpawnAbilityEventInfo> OnActionEndExecute { get; set; }
         public static Action<SpawnAbilityEventInfo> OnActionStartExecute { get; set; }
         public static Action<SpawnAbilityEventInfo> OnActionEndExecute { get; set; }
 

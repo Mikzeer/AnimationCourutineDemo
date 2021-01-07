@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -19,10 +20,18 @@ namespace PositionerDemo
         bool isAlly;
         public bool IsAlly { get => isAlly; protected set => isAlly = value; }
 
-        Dictionary<int, Stat> stats;
-        public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
         Dictionary<int, AbilityAction> abilities;
         public Dictionary<int, AbilityAction> Abilities { get => abilities; protected set => abilities = value; }
+
+        Dictionary<ABILITYTYPE, AbilityAction> ability;
+        public Dictionary<ABILITYTYPE, AbilityAction> Abilityes { get => ability; protected set => ability = value; }
+
+        Dictionary<int, Stat> stats;
+        public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
+
+        Dictionary<STATTYPE, Stat> sttats;
+        public Dictionary<STATTYPE, Stat> Sttats { get => sttats; protected set => sttats = value; }
+
         private OCUPPIERTYPE _occupierType;
         public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
         private CARDTARGETTYPE _cardTargetType;

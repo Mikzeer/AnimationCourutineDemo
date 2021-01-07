@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CommandPatternActions;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -37,7 +38,9 @@ namespace PositionerDemo
             {
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.EARLY)
                 {
-                    abilityModifier[i].Execute(this);
+                    Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
+                    // a reahabilitar
+                    //abilityModifier[i].Execute(this);
                     if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
                 }
             }
@@ -81,6 +84,17 @@ namespace PositionerDemo
         private void RestActionPoints()
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
+
+            if (performerIOcuppy.Stats == null)
+            {
+                if (performerIOcuppy.Sttats.ContainsKey(STATTYPE.ACTIONPOINTS))
+                {
+                    StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS], -actionPointsRequired, STATMODIFIERTYPE.NERF);
+                    performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS].AddStatModifier(statModification);
+                    performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS].ApplyModifications();
+                    return;
+                }
+            }
 
             if (performerIOcuppy.Stats.ContainsKey(ACTIONPOINTSTATID))
             {

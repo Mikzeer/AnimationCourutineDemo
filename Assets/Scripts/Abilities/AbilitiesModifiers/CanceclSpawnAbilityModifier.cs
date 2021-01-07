@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class ChangeUnitClassAbilityModifier : AbilityModifier
+    public class CanceclSpawnAbilityModifier : AbilityModifier
     {
         private const int ABILITYMODIFIFERID = 2;
-        private const int MODIFEREXECUTIIONORDER = 1;
+        private const int MODIFEREXECUTIIONORDER = 0;
         private int spawnAbilityID = 0;
 
-        public ChangeUnitClassAbilityModifier(IOcuppy performerIOcuppy) : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        public CanceclSpawnAbilityModifier(IOcuppy performerIOcuppy) : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             this.performerIOcuppy = performerIOcuppy;
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
@@ -17,7 +17,7 @@ namespace PositionerDemo
             //Enter();
         }
 
-        public ChangeUnitClassAbilityModifier() : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        public CanceclSpawnAbilityModifier() : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
             executeOnShot = false;
@@ -35,7 +35,7 @@ namespace PositionerDemo
         {
             base.Execute(abilityAction);
 
-            Debug.Log("Enter ChangeUnitClassAbilityModifier ");
+            Debug.Log("Enter Cancel Spawn ");
 
             if (abilityAction.AbilityType == ABILITYTYPE.SPAWN)
             {
@@ -43,19 +43,17 @@ namespace PositionerDemo
 
                 if (ab != null)
                 {
-                    Debug.Log("CAMBIO A Y ");
-                    ab.spawnAbilityInfo.spawnUnitType = UNITTYPE.Y;
+                    Debug.Log("cencelo el spawn");
+                    abilityAction.actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
+                    Expire();
                 }
-            }
-            else
-            {
-                Expire();
             }
         }
 
         public override ICommand ExecuteCmd(AbilityAction abilityAction)
         {
             IApplyModifierCommand applyModifierCommand = new IApplyModifierCommand(abilityAction, this);
+            abilityAction.actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
             return applyModifierCommand;
         }
 

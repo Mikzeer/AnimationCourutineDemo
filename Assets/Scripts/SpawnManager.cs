@@ -15,6 +15,22 @@ namespace PositionerDemo
 
         public void OnTrySpawn(Tile TileObject, Player player)
         {
+            // SI ESTOY EN EL JUEGO NORMAL SPAWNEO NORMALMENTE
+            // SI ESTOY EN EL JUEGO ONLINE ENTONCES EL SPAWN SE VA A ENCARGAR EL SERVER
+            // YA QUE NO SOLO LO TENGO QUE HACER INTERNAMENTE, SINO QUE TAMBIEN LO TIENE QUE VER REFLEJADO 
+            // EL OTRO JUGADOR
+
+            // SI YA TENEMOS GUARDADA EL SPAWN Y ES UN SAPWN VALIDO, ENTONCES DEBERIAMOS PASARLE LA SPAWNEVENTINFO
+            // AL METODO Spawn YA QUE SERIA LO MISMO... POR QUE EN EL SpawnEventInfo TENEMOS Player/UnitType/Tile
+            // HASTA SERIA MEJOR, YA QUE SI ENTREMEDIO ME CAMBIARON LA TILE, O EL JUGADOR O EL TIPO DE LA UNIDAD,
+            // ESTA SE VA A TERMINAR SPAWNEANDO EN OTRO LADO, O CON OTRO JUGADOR, O CON OTRO TIPO DE RANGO DE UNIDAD
+
+            // El SpawnEventInfo tambien podria tener una List<Motion>... esas motions las agregaria cada uno de 
+            // los modifiers que se le aplicaron a la unidad, y se ejecutarian en algun de la animacion del spawneo
+            // o en el mismo momento que empieza indicando todas las modificaciones.
+            // Cada AbilityModifier en si se encargaria de llenar la lista del SpawnEventInfo.List<Motions> ya que cada uno
+            // sabria que animacion aplicar al momento de activar un efecto, al igual que el sonido.
+
             // 6- SI ESTOY ONLINE TENGO QUE PREGUNTARLE AL SERVER SI ES UN MOVIMIENTO VALIDO
             //    SINO CHEQUEO TODO NORMALMENTE
             // QUIEN QUIERE SPAWNEAR, Y EN DONDE QUIERE SPAWNEAR
@@ -26,61 +42,29 @@ namespace PositionerDemo
                 Debug.Log("Ilegal Spawn");
                 return;
             }
-
-            SpawnAbility spawnAbility = null;
-            if (player.Abilities.ContainsKey(0))
+            if (player.Abilityes.ContainsKey(ABILITYTYPE.SPAWN) == false)
             {
-                spawnAbility = (SpawnAbility)player.Abilities[0];
-            }
-            else
-            {
-                Debug.Log("El Player no tiene la Spawn Ability");
-            }
-
-            if (spawnAbility != null)
-            {
-                spawnAbility.Set(TileObject);
-            }
-            else
-            {
-                Debug.Log("La ID de la Spawn Ability puede estar mal no funciono el casteo");
+                Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
-
-            if (spawnAbility.OnTryExecute() == false)
+            SpawnAbility spw = (SpawnAbility)player.Abilityes[ABILITYTYPE.SPAWN];
+            if (spw == null)
             {
-                Debug.Log("Fallo en el On Try Execte de la Spawn Ability");
+                Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
-            else
+            spw.Set(TileObject);
+            if (spw.OnTryExecute() == false)
             {
-                spawnAbility.Perform();
-            }
-
-            if (spawnAbility.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
-            {
-                Debug.Log("Se Cancelo desde la Ability la Spawn Ability");
+                Debug.Log("ERROR EN TRY EXECUTE DE LA HABILIDAD ");
                 return;
             }
-
-            // SI ESTOY EN EL JUEGO NORMAL SPAWNEO NORMALMENTE
-            // SI ESTOY EN EL JUEGO ONLINE ENTONCES EL SPAWN SE VA A ENCARGAR EL SERVER
-            // YA QUE NO SOLO LO TENGO QUE HACER INTERNAMENTE, SINO QUE TAMBIEN LO TIENE QUE VER REFLEJADO 
-            // EL OTRO JUGADOR
-
-
-            // SI YA TENEMOS GUARDADA EL SPAWN Y ES UN SAPWN VALIDO, ENTONCES DEBERIAMOS PASARLE LA SPAWNEVENTINFO
-            // AL METODO Spawn YA QUE SERIA LO MISMO... POR QUE EN EL SpawnEventInfo TENEMOS Player/UnitType/Tile
-            // HASTA SERIA MEJOR, YA QUE SI ENTREMEDIO ME CAMBIARON LA TILE, O EL JUGADOR O EL TIPO DE LA UNIDAD,
-            // ESTA SE VA A TERMINAR SPAWNEANDO EN OTRO LADO, O CON OTRO JUGADOR, O CON OTRO TIPO DE RANGO DE UNIDAD
-
-
-            // El SpawnEventInfo tambien podria tener una List<Motion>... esas motions las agregaria cada uno de 
-            // los modifiers que se le aplicaron a la unidad, y se ejecutarian en algun de la animacion del spawneo
-            // o en el mismo momento que empieza indicando todas las modificaciones.
-            // Cada AbilityModifier en si se encargaria de llenar la lista del SpawnEventInfo.List<Motions> ya que cada uno
-            // sabria que animacion aplicar al momento de activar un efecto, al igual que el sonido.
-
+            spw.Perform();
+            if (spw.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
+            {
+                Debug.Log("SPAWN ABILITY CANCELADA");
+                return;
+            }
             Spawn(TileObject, player, spawnIndexID);
         }
 
@@ -90,6 +74,29 @@ namespace PositionerDemo
         }
 
         public void Spawn(Tile TileObject, Player player, int spawnIndexID)
+        {
+            if (TileObject.IsOccupied())
+            {
+                CombineSpawn(TileObject, player, spawnIndexID);
+            }
+            else
+            {
+                NormalSpawn(TileObject, player, spawnIndexID);
+            }
+            Kimboko kimboko = GetNewKimboko(player, spawnIndexID);
+            GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
+
+            kimboko.SetGameObject(goKimboko);
+
+            ISpawnCommand spawnCommand = new ISpawnCommand(TileObject, player, kimboko);
+            Invoker.AddNewCommand(spawnCommand);
+
+            Vector3 spawnPosition = TileObject.GetRealWorldLocation();
+            Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            InvokerMotion.AddNewMotion(normalSpawnMotion);
+        }
+
+        public void NormalSpawn(Tile TileObject, Player player, int spawnIndexID)
         {
             Kimboko kimboko = GetNewKimboko(player, spawnIndexID);
             GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
@@ -104,7 +111,7 @@ namespace PositionerDemo
             InvokerMotion.AddNewMotion(normalSpawnMotion);
         }
 
-        public void CombineSpawn(Tile TileObject, Player player)
+        public void CombineSpawn(Tile TileObject, Player player, int spawnIndexID)
         {
             if (TileObject.IsOccupied())
             {
