@@ -32,6 +32,9 @@ namespace PositionerDemo
 
         private List<Kimboko> kimbokoUnits = new List<Kimboko>();
 
+        private Dictionary<IOcuppy, GameObject> _unitsPrefabs;
+        public Dictionary<IOcuppy, GameObject> UnitsPrefabs { get => _unitsPrefabs; protected set => _unitsPrefabs = value; }
+
         private Stack<Card> _deck;
         public Stack<Card> Deck { get { return _deck; } set { _deck = value; } }
         private List<Card> _playersHands;

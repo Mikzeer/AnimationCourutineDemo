@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CommandPatternActions;
+using UnityEngine;
 
 namespace PositionerDemo
 {
@@ -29,7 +30,6 @@ namespace PositionerDemo
             SpawnAbility spawnAbility = null;
             if (player.Abilities.ContainsKey(0))
             {
-
                 spawnAbility = (SpawnAbility)player.Abilities[0];
             }
             else
@@ -81,7 +81,7 @@ namespace PositionerDemo
             // Cada AbilityModifier en si se encargaria de llenar la lista del SpawnEventInfo.List<Motions> ya que cada uno
             // sabria que animacion aplicar al momento de activar un efecto, al igual que el sonido.
 
-            Spawn(TileObject, player);
+            Spawn(TileObject, player, spawnIndexID);
         }
 
         public bool IsLegalSpawn(Tile TileObject, Player player)
@@ -89,7 +89,22 @@ namespace PositionerDemo
             return true;
         }
 
-        public void Spawn(Tile TileObject, Player player)
+        public void Spawn(Tile TileObject, Player player, int spawnIndexID)
+        {
+            Kimboko kimboko = GetNewKimboko(player, spawnIndexID);
+            GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
+
+            kimboko.SetGameObject(goKimboko);
+
+            ISpawnCommand spawnCommand = new ISpawnCommand(TileObject, player, kimboko);
+            Invoker.AddNewCommand(spawnCommand);
+
+            Vector3 spawnPosition = TileObject.GetRealWorldLocation();
+            Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            InvokerMotion.AddNewMotion(normalSpawnMotion);
+        }
+
+        public void CombineSpawn(Tile TileObject, Player player)
         {
             if (TileObject.IsOccupied())
             {
@@ -103,18 +118,14 @@ namespace PositionerDemo
                     }
                 }
             }
-            else
-            {
-                // SPAWN NORMAL
-                Vector3 spawnPosition = TileObject.GetRealWorldLocation();
-                KimbokoXFactory kimbokoXFac = new KimbokoXFactory();
-                Kimboko kimboko = kimbokoXFac.CreateKimboko(spawnIndexID, player);
-                spawnIndexID++;
+        }
 
-                spawnManagerUI.NormalSpawn(spawnPosition, kimboko);
-                TileObject.OcupyTile(kimboko);
-                player.AddUnit(kimboko);
-            }
+        public Kimboko GetNewKimboko(Player player, int spawnIndexID)
+        {
+            // SPAWN NORMAL
+            KimbokoXFactory kimbokoXFac = new KimbokoXFactory();
+            Kimboko kimboko = kimbokoXFac.CreateKimboko(spawnIndexID, player);
+            return kimboko;
         }
     }
 }

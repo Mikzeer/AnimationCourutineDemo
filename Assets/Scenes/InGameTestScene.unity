@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6796fd04563f7249a8255e0c5d72ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnManagerUI: {fileID: 0}
+  spawnManagerUI: {fileID: 813764119}
   board2DManagerUI: {fileID: 1014192262}
   tileSelectionManagerUI: {fileID: 879840800}
 --- !u!4 &752617730
@@ -259,6 +259,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 813764118}
+  - component: {fileID: 813764119}
   m_Layer: 0
   m_Name: SpawnManagerUI
   m_TagString: Untagged
@@ -280,6 +281,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &813764119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 813764117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31b7f61af1688846a5b2ea3a94847e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Crane: {fileID: 1400148970}
+  CraneEnd: {fileID: 1400148969}
+  kimbokoPrefab: {fileID: 6915248913354744671, guid: 9e57a4c293d210f43ba55032630f4172,
+    type: 3}
 --- !u!1 &879840799
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,6 +454,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9bae96b5e2d289d4d9c0c5f955bbe766, type: 3}
+--- !u!4 &1400148969 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8064585885172209580, guid: 9bae96b5e2d289d4d9c0c5f955bbe766,
+    type: 3}
+  m_PrefabInstance: {fileID: 1400148968}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1400148970 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8416507162252569555, guid: 9bae96b5e2d289d4d9c0c5f955bbe766,
+    type: 3}
+  m_PrefabInstance: {fileID: 1400148968}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1657442714
 GameObject:
   m_ObjectHideFlags: 0

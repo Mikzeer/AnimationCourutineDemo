@@ -6,12 +6,10 @@ namespace PositionerDemo
         public KimbokoPositioConfigureAnimotion(T firstConfigure, O secondConfigure, int configureOrder, bool isForced = false) : base(firstConfigure, secondConfigure, configureOrder, isForced)
         {
         }
-
         public override void Configure()
         {
             firstConfigure.position = secondConfigure.position;
         }
     }
-
 }
 

@@ -5,23 +5,27 @@ namespace PositionerDemo
 {
     public class SpawnManagerUI : MonoBehaviour
     {
-        int craneTweenSpeedVelocity = 2;
-        int kimbokoTweenSpeedVelocity = 1;
+        int craneTweenSpeedVelocity = 1;
+        int kimbokoTweenSpeedVelocity = 2;
         [SerializeField] private GameObject Crane;
         [SerializeField] private Transform CraneEnd;
         [SerializeField] private GameObject kimbokoPrefab;
         Animator craneAnimator;
-
+        float craneStartPositionY;
         private void Start()
         {
             craneAnimator = Crane.GetComponent<Animator>();
+            craneStartPositionY = Crane.transform.position.y;
         }
 
-        public Motion NormalSpawn(Vector3 tileObjectRealWorldLocation, Kimboko kimboko)
+        public GameObject GetKimbokoPrefab()
         {
             GameObject goKimbok = Instantiate(kimbokoPrefab);
-            kimboko.SetGameObject(goKimbok);
+            return goKimbok;
+        }
 
+        public Motion NormalSpawn(Vector3 tileObjectRealWorldLocation, GameObject goKimbok)
+        {
             List<Motion> motionsSpawn = new List<Motion>();
             List<Configurable> configureAnimotion = new List<Configurable>();
 
@@ -30,8 +34,12 @@ namespace PositionerDemo
             Vector3 craneEndPostion;
 
             //B TWEEN DESDE UNA POSICION ELEVADA SOBRE LA TILE DONDE SE INDICO SPAWNEAR HASTA MAS ABAJO ASI SE VE DESDE ARRIBA EN EL TABLERO SOBRE LA TILE
-            craneStartPosition = new Vector3(tileObjectRealWorldLocation.x, Crane.transform.position.y, 0);
-            Crane.transform.position = craneStartPosition;
+            craneStartPosition = new Vector3(tileObjectRealWorldLocation.x, craneStartPositionY, 0);
+            ConfigurePositionAssistant cnfPosAssist = new ConfigurePositionAssistant(craneStartPosition);
+            TransformPositioConfigureAnimotion<Transform, ConfigurePositionAssistant> CranePositionConfigAnimotion =
+            new TransformPositioConfigureAnimotion<Transform, ConfigurePositionAssistant>(Crane.transform, cnfPosAssist, 0, true);
+            configureAnimotion.Add(CranePositionConfigAnimotion);
+
             craneEndPostion = new Vector3(tileObjectRealWorldLocation.x, Helper.GetCameraTopBorderYWorldPostion().y);
 
             //A CRANE//GRUA SET ACTIVE = TRUE // INSTANCIAMOS KIMBOKO SET ACTIVE FALSE
@@ -49,8 +57,14 @@ namespace PositionerDemo
             Motion motionCraneSpawn = new SpawnMotion(this, craneAnimator, 2);
             motionsSpawn.Add(motionCraneSpawn);
 
-            Motion motionSpawnSound = new SoundMotion(this, 2, GameSoundManager.Instance.audioSource, GameSoundManager.Instance.audioClips[3], false);
-            motionsSpawn.Add(motionSpawnSound);
+            if (GameSoundManager.Instance != null)
+            {
+                if (GameSoundManager.Instance.audioSource != null)
+                {
+                    Motion motionSpawnSound = new SoundMotion(this, 2, GameSoundManager.Instance.audioSource, GameSoundManager.Instance.audioClips[3], false);
+                    motionsSpawn.Add(motionSpawnSound);
+                }
+            }
 
             KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = 
                 new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);

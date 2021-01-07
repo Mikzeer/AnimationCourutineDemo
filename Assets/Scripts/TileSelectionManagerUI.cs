@@ -17,9 +17,10 @@ namespace PositionerDemo
         {
             tileSelectionFramePlayerOne = Instantiate(tileSelectionPrefab);
             tileSelectionFramePlayerTwo = Instantiate(tileSelectionPrefab);
-
+            SpriteRenderer spOne = tileSelectionFramePlayerOne.GetComponent<SpriteRenderer>();
+            spOne.sortingOrder = 5;
             SpriteRenderer sp = tileSelectionFramePlayerTwo.GetComponent<SpriteRenderer>();
-
+            sp.sortingOrder = 5;
             sp.color = Color.red;
             tileSelectionFramePlayerOne.SetActive(false);
             tileSelectionFramePlayerTwo.SetActive(false);
@@ -27,10 +28,10 @@ namespace PositionerDemo
             normalSize = tileSelectionFramePlayerOne.transform.localScale;
         }
 
-        public void SetController(Board2DManager board2D)
+        public void SetController(Board2DManager board2D, MouseController mouseController)
         {
             this.board2D = board2D;
-            mouseController = new MouseController(0, board2D, Camera.main);
+            this.mouseController = mouseController;
         }
 
         private void Update()
@@ -44,7 +45,7 @@ namespace PositionerDemo
             {
                 if (tileP1 != null)
                 {
-                    Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
+                    //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
                 }
             }
 
@@ -106,25 +107,20 @@ namespace PositionerDemo
                 {
                     if (selectedTilePlayerOne != null)
                     {
-
                         tileSelectionFramePlayerOne.SetActive(false);
                         selectedTilePlayerOne = null;
                     }
-
                 }
                 else
                 {
                     //Debug.Log("LLEGUE");
                     if (selectedTilePlayerTwo != null)
                     {
-
                         tileSelectionFramePlayerTwo.SetActive(false);
                         selectedTilePlayerTwo = null;
                     }
-
                 }
             }
-
         }
 
         private Vector3 GetTilePositionAndScale(Tile TileObject, bool isPlayerOne)
