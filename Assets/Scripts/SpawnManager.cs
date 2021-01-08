@@ -37,6 +37,13 @@ namespace PositionerDemo
             // SI EL PLAYER ES VALIDO Y ES SU TURNO
             // Y SI EL LUGAR PARA SPAWNEAR ES UN LUGAR VALIDO
             // ENTONCES EL SERVER TE DICE SI, PODES SPAWNEAR
+            if (TileObject == null)
+            {
+                Debug.Log("No Tile Object");
+                return;
+            }
+
+
             if (!IsLegalSpawn(TileObject, player))
             {
                 Debug.Log("Ilegal Spawn");
@@ -53,7 +60,9 @@ namespace PositionerDemo
                 Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
-            spw.Set(TileObject);
+            //spw.Set(TileObject);
+            SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject);
+            spw.SetRequireGameData(spwInf);
             if (spw.OnTryExecute() == false)
             {
                 Debug.Log("ERROR EN TRY EXECUTE DE LA HABILIDAD ");
@@ -83,17 +92,6 @@ namespace PositionerDemo
             {
                 NormalSpawn(TileObject, player, spawnIndexID);
             }
-            Kimboko kimboko = GetNewKimboko(player, spawnIndexID);
-            GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
-
-            kimboko.SetGameObject(goKimboko);
-
-            ISpawnCommand spawnCommand = new ISpawnCommand(TileObject, player, kimboko);
-            Invoker.AddNewCommand(spawnCommand);
-
-            Vector3 spawnPosition = TileObject.GetRealWorldLocation();
-            Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
-            InvokerMotion.AddNewMotion(normalSpawnMotion);
         }
 
         public void NormalSpawn(Tile TileObject, Player player, int spawnIndexID)

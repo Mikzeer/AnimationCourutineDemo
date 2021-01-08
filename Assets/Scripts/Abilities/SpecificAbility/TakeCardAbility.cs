@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class TakeCardAbility : AbilityAction
+    public class TakeCardAbility : GenericAbilityAction<TakeCardAbilityEventInfo>
     {
         private const int TAKECARDABILITYID = 1;
         private const ABILITYTYPE TYPEABILITY = ABILITYTYPE.TAKEACARD;
@@ -22,6 +22,10 @@ namespace PositionerDemo
             {
                 player = (Player)performerIOcuppy;
             }
+        }
+
+        public override void SetRequireGameData(TakeCardAbilityEventInfo gameData)
+        {            
         }
 
         public override bool OnTryEnter()

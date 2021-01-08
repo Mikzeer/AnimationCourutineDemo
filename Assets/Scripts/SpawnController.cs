@@ -49,7 +49,9 @@ namespace PositionerDemo
 
             if (spawnAbility != null)
             {
-                spawnAbility.Set(TileObject);
+                SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject);
+                spawnAbility.SetRequireGameData(spwInf);
+                //spawnAbility.Set(TileObject);
             }
             else
             {

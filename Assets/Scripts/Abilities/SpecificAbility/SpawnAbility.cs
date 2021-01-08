@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class SpawnAbility : AbilityAction
+    public class SpawnAbility : GenericAbilityAction<SpawnAbilityEventInfo>
     {
         private const int SPAWNABILITYID = 0;
         private const ABILITYTYPE TYPEABILITY = ABILITYTYPE.SPAWN;
@@ -25,10 +25,11 @@ namespace PositionerDemo
             }
         }
 
-        public void Set(Tile selectedTile)
+        public override void SetRequireGameData(SpawnAbilityEventInfo gameData)
         {
-            this.selectedTile = selectedTile;
-            spawnAbilityInfo = new SpawnAbilityEventInfo(player, UNITTYPE.X, selectedTile);
+            selectedTile = gameData.spawnTile;
+            spawnAbilityInfo = new SpawnAbilityEventInfo(gameData.spawnerPlayer, gameData.spawnUnitType , gameData.spawnTile);
+            Debug.Log("Set Data Spawn Ability");
             //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(player);
             //AddAbilityModifier(ab);
         }

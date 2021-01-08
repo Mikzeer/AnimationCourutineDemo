@@ -7,7 +7,9 @@ namespace PositionerDemo
         [SerializeField] private GameObject tileSelectionPrefab;
         MouseController mouseController;
         private Tile selectedTilePlayerOne;
+        public Tile SelectedTilePlayerOne { get { return selectedTilePlayerOne; } private set { selectedTilePlayerOne = value; } }
         private Tile selectedTilePlayerTwo;
+        public Tile SelectedTilePlayerTwo { get { return selectedTilePlayerTwo; } private set { selectedTilePlayerTwo = value; } }
         GameObject tileSelectionFramePlayerOne;
         GameObject tileSelectionFramePlayerTwo;
         private Vector2 normalSize;

@@ -1,6 +1,4 @@
 ﻿using CommandPatternActions;
-using PositionerDemo;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,19 +6,28 @@ namespace PositionerDemo
 {
     public class GameTestController : MonoBehaviour
     {
-        MotionController motionController = new MotionController();
+        public enum UPDATESTATE
+        {
+            ACTION,
+            SELECTION
+        }
+        [Header("UPDATE STATE ACTION")]
+        public UPDATESTATE updateState = UPDATESTATE.ACTION;
 
+        [Header("SPAWN MANAGER UI")]
         [SerializeField] private SpawnManagerUI spawnManagerUI;
         SpawnManager spawnManager;
-
+        [Header("BOARD MANAGER UI")]
         [SerializeField] private Board2DManagerUI board2DManagerUI;
         Board2DManager board2DManager;
-
+        [Header("TILE SELECTION MANAGER UI")]
         [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI;
+        [Header("TOGGLE CONTROLLER")]
+        [SerializeField] private ToggleController toggleController;
 
         MouseController mouseController;
+        Player[] players;       
 
-        Player[] players;
 
         private void Start()
         {
@@ -28,7 +35,8 @@ namespace PositionerDemo
 
             CreatePlayers();
             Motion motion = board2DManager.CreateBoard(players, OnBoardComplete);
-            ReproduceMotion(motion);
+            InvokerMotion.AddNewMotion(motion);
+            InvokerMotion.StartExecution(this);
             spawnManager = new SpawnManager(spawnManagerUI);
         }
 
@@ -41,14 +49,14 @@ namespace PositionerDemo
             playerTwo.SetStatsAndAbilities(CreatePlayerAbilities(playerTwo), CreatePlayerStat());
 
             // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
-            ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
-            SpawnAbility spw = (SpawnAbility)playerOne.Abilityes[ABILITYTYPE.SPAWN];
-            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, ab));
-            CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
-            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, cancelSpawn));
+            //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
+            //SpawnAbility spw = (SpawnAbility)playerOne.Abilityes[ABILITYTYPE.SPAWN];
+            //Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, ab));
+            //CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
+            //Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, cancelSpawn));
 
-            Invoker.ExecuteCommands();
-
+            //Invoker.ExecuteCommands();
+            
 
             players = new Player[2];
             players[0] = playerOne;
@@ -90,281 +98,49 @@ namespace PositionerDemo
             tileSelectionManagerUI.SetController(board2DManager, mouseController);
         }
 
-        private void ReproduceMotion(Motion motion)
-        {
-            MotionController motionController = new MotionController();
-            motionController.SetUpMotion(motion);
-            motionController.TryReproduceMotion();
-        }
-
         private void Update()
         {
             if (mouseController == null) return;
-
             if (mouseController.Select())
             {
                 Tile tile = mouseController.GetTile();
-                if (tile != null)
+                switch (updateState)
                 {
-                    spawnManager.OnTrySpawn(tile, players[0]);
-                    Invoker.ExecuteCommands();
-                    InvokerMotion.StartExecution(this);
-                }
-            }
-        }
-    }
-}
-namespace CommandPatternActions
-{
-
-    public interface ICommand
-    {
-        COMMANDEXECUTINSTATE executionState { get; set; }
-        bool isRunning { get; set; }
-        bool logInsert { get; set; } // Define si lo podemos guardar como un cmd desejecutable
-        void Execute();
-        void Unexecute();
-    }
-
-    public enum COMMANDEXECUTINSTATE
-    {
-        WAITFOREXECUTION,
-        EXECUTE,
-        FINISH,
-        ABORT,
-        CANCEL
-    }
-
-    public class ISpawnCommand : ICommand
-    {
-        public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool isRunning { get; set; }
-        public bool logInsert { get; set; }
-
-        Tile TileObject;
-        Player player;
-        Kimboko kimboko;
-        public ISpawnCommand(Tile TileObject, Player player, Kimboko kimboko)
-        {
-            logInsert = true;
-            this.TileObject = TileObject;
-            this.player = player;
-            this.kimboko = kimboko;
-        }
-
-        public void Execute()
-        {
-            isRunning = true;
-            TileObject.OcupyTile(kimboko);
-            player.AddUnit(kimboko);
-            executionState = COMMANDEXECUTINSTATE.FINISH;
-            isRunning = false;
-        }
-
-        public void Unexecute()
-        {
-            TileObject.Vacate();
-            player.RemoveUnit(kimboko);
-            kimboko.DestroyPrefab();
-        }
-    }
-
-    public class IAddAbilityActionModifierCommand : ICommand
-    {
-        public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool isRunning { get; set; }
-        public bool logInsert { get; set; }
-
-        AbilityAction ability;
-        AbilityModifier abilityModifier;
-
-        public IAddAbilityActionModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
-        {
-            this.ability = ability;
-            this.abilityModifier = abilityModifier;
-        }
-
-        public void Execute()
-        {
-            isRunning = true;
-
-            ability.AddAbilityModifier(abilityModifier);
-
-            executionState = COMMANDEXECUTINSTATE.FINISH;
-            isRunning = false;
-        }
-
-        public void Unexecute()
-        {
-            ability.RemoveAbilityModifier(abilityModifier);
-        }
-    }
-
-    public class IApplyModifierCommand : ICommand
-    {
-        public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool isRunning { get; set; }
-        public bool logInsert { get; set; }
-
-        AbilityAction ability;
-        AbilityModifier abilityModifier;
-
-        public IApplyModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
-        {
-            this.ability = ability;
-            this.abilityModifier = abilityModifier;
-        }
-
-        public void Execute()
-        {
-            isRunning = true;
-
-            abilityModifier.Execute(ability);
-
-            executionState = COMMANDEXECUTINSTATE.FINISH;
-            isRunning = false;
-        }
-
-        public void Unexecute()
-        {
-            //ability.RemoveAbilityModifier(abilityModifier);
-        }
-    }
-
-    public static class Invoker
-    {
-        private static List<ICommand> commandsToExecute = new List<ICommand>();
-        private static Stack<ICommand> executedCmd = new Stack<ICommand>();
-
-        public static void AddNewCommand(ICommand command)
-        {
-            commandsToExecute.Add(command);
-        }
-
-        public static void RemoveCommand(ICommand command)
-        {
-            commandsToExecute.Remove(command);
-        }
-
-        public static void ExecuteCommands()
-        {
-            for (int i = 0; i < commandsToExecute.Count; i++)
-            {
-                if (commandsToExecute[i].isRunning) continue;
-
-                switch (commandsToExecute[i].executionState)
-                {
-                    case COMMANDEXECUTINSTATE.WAITFOREXECUTION:
-                        commandsToExecute[i].Execute();
-                        commandsToExecute[i].executionState = COMMANDEXECUTINSTATE.EXECUTE;
+                    case UPDATESTATE.ACTION:
+                        ExecuteActions(tile);
                         break;
-                    case COMMANDEXECUTINSTATE.EXECUTE: // NO ESTA ESPERANDO Y SE ESTA EJECUTANDO... POR LAS DUDAS
-                        continue;
-                    case COMMANDEXECUTINSTATE.FINISH:
-                        if (commandsToExecute[i].logInsert == true) executedCmd.Push(commandsToExecute[i]);
-                        commandsToExecute.Remove(commandsToExecute[i]);
-                        i--;
-                        break;
-                    case COMMANDEXECUTINSTATE.ABORT:
-                        commandsToExecute[i].Unexecute();
-                        commandsToExecute.Remove(commandsToExecute[i]);
-                        i--;
-                        break;
-                    case COMMANDEXECUTINSTATE.CANCEL:
-                        commandsToExecute[i].Unexecute();
-                        commandsToExecute.Remove(commandsToExecute[i]);
-                        i--;
+                    case UPDATESTATE.SELECTION:
+                        ExecuteSelection();
                         break;
                     default:
-                        continue;
+                        break;
                 }
             }
-
-            // Mientras tengamos cmd en la lista para ejecutar vamos a seguir ejecutandolos hasta que terminen
-            // esto puede trabar potencialmente la ejecucion del programa...
-            //if (commandsToExecute.Count > 0) ExecuteCommands();
         }
 
-        public static void UnexecuteLastCommand()
+        private void ExecuteActions(Tile tile)
         {
-            if (executedCmd.Count > 0)
+            switch (toggleController.StateType)
             {
-                ICommand cmdAux = executedCmd.Pop();
-                cmdAux.Unexecute();
+                case ToggleController.STATETYPE.SPAWN:
+                    spawnManager.OnTrySpawn(tile, players[0]);
+                    break;
+                case ToggleController.STATETYPE.MOVE:
+                    break;
+                case ToggleController.STATETYPE.ATTACK:
+                    break;
+                default:
+                    break;
             }
-        }
-    }
 
-    public static class InvokerMotion
-    {
-        private static List<PositionerDemo.Motion> motionsToExecute = new List<PositionerDemo.Motion>();
-        public static bool isExecuting;
-        private static MotionController motionController = new MotionController();
-
-        public static void AddNewMotion(PositionerDemo.Motion motion)
-        {
-            motionsToExecute.Add(motion);
-            Debug.Log("NEW MOTION ADDED");
+            Invoker.ExecuteCommands();
+            InvokerMotion.StartExecution(this);
         }
 
-        public static void RemoveMotion(PositionerDemo.Motion motion)
+        private void ExecuteSelection()
         {
-            motionsToExecute.Remove(motion);
-            Debug.Log("MOTION REMOVED");
-        }
-
-        public static void StartExecution(MonoBehaviour dummy)
-        {
-            if (isExecuting)
-            {
-                Debug.Log("IS EXECUTION");
-                return;
-            }
-            dummy.StartCoroutine(ExecuteMotion());
-        }
-
-        public static IEnumerator ExecuteMotion()
-        {
-            isExecuting = true;
-
-            while (isExecuting)
-            {
-                // SI ESTA EJECUTANDO ENTONCES ESPERAMOS
-                if (motionController.IsPerforming)
-                {
-                    Debug.Log("IS PERFORMING");
-                    yield return null;
-                }
-                else
-                {
-                    // SI NO HAY MAS MOTIONS QUE EXECUTE ENTONCES TERMINAMOS
-                    if (motionsToExecute.Count == 0)
-                    {
-                        Debug.Log("MOTION HAS FINISH");
-                        isExecuting = false;
-                    }
-                    else
-                    {
-                        // SI NO ESTA EJECUTANDO, EJECUTAMOS
-                        PositionerDemo.Motion motionToExecute = motionsToExecute[0];
-                        ReproduceMotion(motionToExecute);
-                        RemoveMotion(motionsToExecute[0]);
-                        yield return null;
-                    }
-                }                
-            }
-            Debug.Log("MOTION HAS FINISH");
-
-            if (motionsToExecute.Count > 0)
-            {
-                Debug.Log("SE AGREGO UNA MOTION DESPUES DE FINALIZAR");
-            }
-        }
-
-        private static void ReproduceMotion(PositionerDemo.Motion motion)
-        {
-            motionController.SetUpMotion(motion);
-            motionController.TryReproduceMotion();
+            if (tileSelectionManagerUI.SelectedTilePlayerOne == null) return;
+            Debug.Log("Selected Tile " + tileSelectionManagerUI.SelectedTilePlayerOne.PosX + "," + tileSelectionManagerUI.SelectedTilePlayerOne.PosY);
         }
     }
 }
