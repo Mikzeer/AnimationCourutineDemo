@@ -9,10 +9,10 @@ using UnityEngine.Events;
 public class GameMenuManager : MonoBehaviour
 {
     [Header("PREFABS")]
-    [SerializeField] private GameObject popUpBannerPrefab;
+    [SerializeField] private GameObject popUpBannerPrefab = default;
     [Header("MANAGERS")]
-    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager;
-    [SerializeField] private ShopManager shopManager;
+    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager = default;
+    [SerializeField] private ShopManager shopManager = default;
     UserManager userManager;
     CardCollectionManager cardCollectionManager;
     UserResourcesManager userResourcesManager;

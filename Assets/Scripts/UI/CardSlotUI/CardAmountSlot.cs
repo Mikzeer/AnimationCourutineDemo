@@ -2,8 +2,8 @@
 
 public class CardAmountSlot : MonoBehaviour
 {
-    [SerializeField] private GameObject hasOne;
-    [SerializeField] private GameObject hasInDeck;
+    [SerializeField] private GameObject hasOne = default;
+    [SerializeField] private GameObject hasInDeck = default;
 
     public void TurnOnHasOne()
     {

@@ -4,7 +4,7 @@ namespace PositionerDemo
 {
     public class TileSelectionManagerUI : MonoBehaviour
     {
-        [SerializeField] private GameObject tileSelectionPrefab;
+        [SerializeField] private GameObject tileSelectionPrefab = default;
         MouseController mouseController;
         private Tile selectedTilePlayerOne;
         public Tile SelectedTilePlayerOne { get { return selectedTilePlayerOne; } private set { selectedTilePlayerOne = value; } }

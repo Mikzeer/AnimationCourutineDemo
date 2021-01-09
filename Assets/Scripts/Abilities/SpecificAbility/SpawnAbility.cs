@@ -113,7 +113,7 @@ namespace PositionerDemo
                 {
                     Kimboko unit = (Kimboko)spawnTile.GetOccupier();
                     Debug.Log("Spawn Ability: Tile Selected Is Occupied By a Kimboko");
-                    if (unit.ownerPlayer != player)
+                    if (unit.OwnerPlayerID != player.PlayerID)
                     {
                         return false;
                     }

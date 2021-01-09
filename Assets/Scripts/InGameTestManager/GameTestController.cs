@@ -15,15 +15,15 @@ namespace PositionerDemo
         public UPDATESTATE updateState = UPDATESTATE.ACTION;
 
         [Header("SPAWN MANAGER UI")]
-        [SerializeField] private SpawnManagerUI spawnManagerUI;
+        [SerializeField] private SpawnManagerUI spawnManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
         SpawnManager spawnManager;
         [Header("BOARD MANAGER UI")]
-        [SerializeField] private Board2DManagerUI board2DManagerUI;
+        [SerializeField] private Board2DManagerUI board2DManagerUI = default;
         Board2DManager board2DManager;
         [Header("TILE SELECTION MANAGER UI")]
-        [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI;
+        [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI = default;
         [Header("TOGGLE CONTROLLER")]
-        [SerializeField] private ToggleController toggleController;
+        [SerializeField] private ToggleController toggleController = default;
 
         MouseController mouseController;
         Player[] players;       
@@ -43,10 +43,10 @@ namespace PositionerDemo
         private void CreatePlayers()
         {
             Player playerOne = new Player(0);
-            playerOne.SetStatsAndAbilities(CreatePlayerAbilities(playerOne), CreatePlayerStat());
+            playerOne.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerOne), OccupierStatDatabase.CreatePlayerStat());
 
             Player playerTwo = new Player(1);
-            playerTwo.SetStatsAndAbilities(CreatePlayerAbilities(playerTwo), CreatePlayerStat());
+            playerTwo.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerTwo), OccupierStatDatabase.CreatePlayerStat());
 
             // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
             //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
@@ -62,35 +62,7 @@ namespace PositionerDemo
             players[0] = playerOne;
             players[1] = playerTwo;
         }
-
-        private Dictionary<STATTYPE, Stat> CreatePlayerStat()
-        {
-            Dictionary<STATTYPE, Stat> Stats = new Dictionary<STATTYPE, Stat>();
-            AttackPowerStat attackPow = new AttackPowerStat(2, 2);
-            AttackRangeStat attackRan = new AttackRangeStat(1, 3);
-            HealthStat healthStat = new HealthStat(2, 2);
-            ActionPointStat actionPStat = new ActionPointStat(2, 2);
-
-            Stats.Add(attackPow.StatType, attackPow);
-            Stats.Add(attackRan.StatType, attackRan);
-            Stats.Add(healthStat.StatType, healthStat);
-            Stats.Add(actionPStat.StatType, actionPStat);
-
-            return Stats;
-        }
-
-        private Dictionary<ABILITYTYPE, AbilityAction> CreatePlayerAbilities(Player player)
-        {
-            Dictionary<ABILITYTYPE, AbilityAction> Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
-            SpawnAbility spawnAbility = new SpawnAbility(player);
-            TakeCardAbility takeCardAbility = new TakeCardAbility(player);
-            Abilities.Add(spawnAbility.AbilityType, spawnAbility);
-            Abilities.Add(takeCardAbility.AbilityType, takeCardAbility);
-            return Abilities;
-        }
-
-        
-
+     
         private void OnBoardComplete()
         {
             Debug.Log("BOARD SE TERMINO DE CREAR");

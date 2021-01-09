@@ -14,7 +14,6 @@ namespace PositionerDemo
         bool isOver;
         float scrollAdTime = 0f;
         float scrollTriggerTime = 0.6f;
-        bool scrollTrigger = false;
         private ScrollRect ScrollRectParent;
         private IEnumerator ScrollRectCoroutine;
 

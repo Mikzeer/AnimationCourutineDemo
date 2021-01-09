@@ -4,8 +4,8 @@ using System;
 
 public class InputFiledDisplay : MonoBehaviour
 {
-    [SerializeField] private InputField inputField;
-    [SerializeField] private Text txtPlaceholder;
+    [SerializeField] private InputField inputField = default;
+    [SerializeField] private Text txtPlaceholder = default;
     private string strPlaceHolder;
     private Action<string, INPUTFIELDTYPE> OnDataChanges;
     public INPUTFIELDTYPE inputType { get; set; }

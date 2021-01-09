@@ -85,28 +85,16 @@ namespace PositionerDemo
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
 
-            if (performerIOcuppy.Stats == null)
+            if (performerIOcuppy.Stats.ContainsKey(STATTYPE.ACTIONPOINTS))
             {
-                if (performerIOcuppy.Sttats.ContainsKey(STATTYPE.ACTIONPOINTS))
-                {
-                    StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS], -actionPointsRequired, STATMODIFIERTYPE.NERF);
-                    performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS].AddStatModifier(statModification);
-                    performerIOcuppy.Sttats[STATTYPE.ACTIONPOINTS].ApplyModifications();
-                    return;
-                }
-            }
-
-            if (performerIOcuppy.Stats.ContainsKey(ACTIONPOINTSTATID))
-            {
-                StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[ACTIONPOINTSTATID], -actionPointsRequired, STATMODIFIERTYPE.NERF);
-                performerIOcuppy.Stats[ACTIONPOINTSTATID].AddStatModifier(statModification);
-                performerIOcuppy.Stats[ACTIONPOINTSTATID].ApplyModifications();
-
+                StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS], -actionPointsRequired, STATMODIFIERTYPE.NERF);
+                performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS].AddStatModifier(statModification);
+                performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS].ApplyModifications();
                 //if (performerIOcuppy.Stats[ACTIONPOINTSTATID].ActualStatValue == 0)
                 //{
                 //    Debug.Log("Llegue a Zero Action Points de Habilidad ACA DEBERIA ACTIVAR EL ON CHANGE TURN SI FUERA UN PLAYER....");
                 //}
-            }          
+            }         
         }
 
         public int GetActionPointsRequiredToUseAbility()

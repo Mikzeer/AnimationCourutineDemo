@@ -2,7 +2,6 @@
 
 public class HelperCardDataLimitFirebaseKimboko
 {
-    bool debugOn = true;
     FbCardDataLimit fbCardDataLimit;
     FbCardDataLimitUpdater fbCardDataLimitUpdater;
 

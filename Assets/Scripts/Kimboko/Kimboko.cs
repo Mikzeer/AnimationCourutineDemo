@@ -1,53 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace PositionerDemo
 {
-
-    public abstract class Kimboko : IOcuppy
+    public abstract class Kimboko : Occupier
     {
         #region VARIABLES
-
-        private int _id;
-        public int ID { get => _id; protected set => _id = value; }
-        public Player ownerPlayer { get; set; }
-
         protected Animator kimbokoAnimator;
         protected Transform kimbokoTransform;
-
-        bool isAlly;
-        public bool IsAlly { get => isAlly; protected set => isAlly = value; }
-
-        Dictionary<int, AbilityAction> abilities;
-        public Dictionary<int, AbilityAction> Abilities { get => abilities; protected set => abilities = value; }
-
-        Dictionary<ABILITYTYPE, AbilityAction> ability;
-        public Dictionary<ABILITYTYPE, AbilityAction> Abilityes { get => ability; protected set => ability = value; }
-
-        Dictionary<int, Stat> stats;
-        public Dictionary<int, Stat> Stats { get => stats; protected set => stats = value; }
-
-        Dictionary<STATTYPE, Stat> sttats;
-        public Dictionary<STATTYPE, Stat> Sttats { get => sttats; protected set => sttats = value; }
-
-        private OCUPPIERTYPE _occupierType;
-        public OCUPPIERTYPE OccupierType { get => _occupierType; protected set => _occupierType = value; }
-        private CARDTARGETTYPE _cardTargetType;
-        public CARDTARGETTYPE CardTargetType { get => _cardTargetType; protected set => _cardTargetType = value; }
-
-        private UNITTYPE _unitType;
-        public UNITTYPE UnitType { get => _unitType; protected set => _unitType = value; }
-        private MOVEDIRECTIONTYPE _moveDirectionerType;
-        public MOVEDIRECTIONTYPE MoveDirectionerType { get => _moveDirectionerType; protected set => _moveDirectionerType = value; }
-
+        public UNITTYPE UnitType { get; protected set; }
+        public MOVEDIRECTIONTYPE MoveDirectionerType { get; protected set; }
         #endregion
 
         public Kimboko(int ID, Player ownerPlayer, UNITTYPE UnitType, MOVEDIRECTIONTYPE MoveDirectionerType)
         {
             this.ID = ID;
-            this.ownerPlayer = ownerPlayer;
+            OwnerPlayerID = ownerPlayer.ID;
             CardTargetType = CARDTARGETTYPE.UNIT;
             OccupierType = OCUPPIERTYPE.UNIT;
 
@@ -56,7 +24,7 @@ namespace PositionerDemo
             TurnManager.OnUnitResetActionPoints += ResetActionPoints;
         }
 
-        public void OnSelect(bool isSelected, int playerID)
+        public override void OnSelect(bool isSelected, int playerID)
         {
             Debug.Log("KIMBOKO SELECTED");
         }
@@ -79,39 +47,8 @@ namespace PositionerDemo
 
         public void DestroyPrefab()
         {
-            ownerPlayer.RemoveUnit(this);
             MonoBehaviour.Destroy(kimbokoTransform.gameObject);
         }
 
-        public int GetCurrentActionPoints()
-        {
-            int actionPoints = 0;
-
-            if (stats.ContainsKey(4))
-            {
-                actionPoints = stats[4].ActualStatValue;
-            }
-
-            return actionPoints;
-        }
-
-        public void ResetActionPoints(int playerID, int amount)
-        {
-            if (ownerPlayer.PlayerID != playerID) return;
-
-            if (Stats.ContainsKey(4))
-            {
-                int actionPointsReset = 2;
-                StatModification statModification = new StatModification(this, Stats[4], actionPointsReset, STATMODIFIERTYPE.CHANGE);
-                Stats[4].AddStatModifier(statModification);
-                Stats[4].ApplyModifications();
-            }
-        }
-
-        public IOcuppy GetOcuppy()
-        {
-            return this;
-        }
     }
-
 }

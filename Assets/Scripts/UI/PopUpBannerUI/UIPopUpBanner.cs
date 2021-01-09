@@ -4,12 +4,12 @@ using UnityEngine.UI;
 
 public class UIPopUpBanner : MonoBehaviour
 {
-    [SerializeField] private Button btnCancel;
-    [SerializeField] private Button btnAccept;
-    [SerializeField] private Text txtTitle;
-    [SerializeField] private Text txtDescription;
+    [SerializeField] private Button btnCancel = default;
+    [SerializeField] private Button btnAccept = default;
+    [SerializeField] private Text txtTitle = default;
+    [SerializeField] private Text txtDescription = default;
 
-    [SerializeField] private GameObject canvasUI;
+    [SerializeField] private GameObject canvasUI = default;
 
     float destroyTime = 1.5f;
     bool autoClose;

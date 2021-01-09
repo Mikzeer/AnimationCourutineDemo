@@ -6,8 +6,8 @@ namespace PositionerDemo
     {
         private const int SHIELDABILITYMODIFIFERID = 1;
         private const int MODIFEREXECUTIIONORDER = 0;
-        private int takeDamageAbilityID = 6;
-
+        //private int takeDamageAbilityID = 6;
+        ABILITYTYPE abilityType = ABILITYTYPE.TAKEDAMAGE;
         public ShieldAbilityModifier(IOcuppy performerIOcuppy) : base(SHIELDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             this.performerIOcuppy = performerIOcuppy;
@@ -24,9 +24,9 @@ namespace PositionerDemo
 
         public override void Enter()
         {
-            if (performerIOcuppy.Abilities.ContainsKey(takeDamageAbilityID))
+            if (performerIOcuppy.Abilities.ContainsKey(abilityType))
             {
-                performerIOcuppy.Abilities[takeDamageAbilityID].AddAbilityModifier(this);
+                performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
             }
         }
 
@@ -51,7 +51,7 @@ namespace PositionerDemo
 
         public override void Expire()
         {
-            performerIOcuppy.Abilities[takeDamageAbilityID].RemoveAbilityModifier(this);
+            performerIOcuppy.Abilities[abilityType].RemoveAbilityModifier(this);
         }
     }
 

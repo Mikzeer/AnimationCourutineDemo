@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class KimbokoInfoPanel : MonoBehaviour
 {
-    [SerializeField] private Text nameText;
+    [SerializeField] private Text nameText = default;
     RectTransform rectTransform;
 
     void Awake()

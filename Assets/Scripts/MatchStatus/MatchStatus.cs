@@ -26,6 +26,14 @@ namespace PositionerDemo
          * 
          */
 
+
+
+        public MatchStatus()
+        {
+            UnitsSpawnedByPlayer = new Dictionary<int, int>();
+            UnitsAttacked = new Dictionary<int, List<DamageAbilityEventInfo>>();
+        }
+
         Dictionary<int, int> UnitsSpawnedByPlayer;
         public void OnUnitSpwan(int playerID)
         {

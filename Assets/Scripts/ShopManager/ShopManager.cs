@@ -12,22 +12,19 @@ public class ShopManager : MonoBehaviour
 {
     #region VARIABLES
     [Header("Screen Reference")]
-    [SerializeField] private GameObject ScreenContent;
+    [SerializeField] private GameObject ScreenContent = default;
     [Header("Pack Prefab")]
-    [SerializeField] private GameObject PackPrefab;
+    [SerializeField] private GameObject PackPrefab = default;
     [Header("Rect Placement")]
-    [SerializeField] private Transform PacksParent;
-    [SerializeField] private Transform InitialPackSpot;
+    [SerializeField] private Transform PacksParent = default;
     [SerializeField] private float RotationRange = 10f;
-    [SerializeField] private PackOpeningArea OpeningArea;
-    private float packPlacementOffset = -0.01f;
+    [SerializeField] private PackOpeningArea OpeningArea = default;
     private float PosXRange = 4f;
     private float PosYRange = 8f;
     [Header("Money And Price")]
-    [SerializeField] private Text MoneyText;
-    [SerializeField] private GameObject MoneyHUD;
-    [SerializeField] private int PackPrice;
-    [SerializeField] private int StartingAmountOfMoney = 1000;
+    [SerializeField] private Text MoneyText = default;
+    [SerializeField] private GameObject MoneyHUD = default;
+    [SerializeField] private int PackPrice = default;
     public int PacksCreated { get; set; } // ESTO ES UN INT PARA LOS PACKS COMPRADOS PERO NO ABIERTOS
     private int money;
     public int Money
@@ -40,9 +37,9 @@ public class ShopManager : MonoBehaviour
         }
     }
     [Header("Manager")]
-    [SerializeField] private GameMenuManager gameMenuManager;
+    [SerializeField] private GameMenuManager gameMenuManager = default;
 
-    [SerializeField] private Button btnBuy;
+    [SerializeField] private Button btnBuy = default;
     private bool debugOn = false;
     #endregion
 

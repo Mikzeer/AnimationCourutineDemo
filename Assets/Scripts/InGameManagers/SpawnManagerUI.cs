@@ -7,9 +7,9 @@ namespace PositionerDemo
     {
         int craneTweenSpeedVelocity = 1;
         int kimbokoTweenSpeedVelocity = 2;
-        [SerializeField] private GameObject Crane;
-        [SerializeField] private Transform CraneEnd;
-        [SerializeField] private GameObject kimbokoPrefab;
+        [SerializeField] private GameObject Crane = default;
+        [SerializeField] private Transform CraneEnd = default;
+        [SerializeField] private GameObject kimbokoPrefab = default;
         Animator craneAnimator;
         float craneStartPositionY;
         private void Start()

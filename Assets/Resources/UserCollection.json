@@ -2,7 +2,7 @@
     "dfCollection": [
         {
             "ID": "CardID1",
-            "Amount": 12
+            "Amount": 13
         },
         {
             "ID": "CardID10",
@@ -18,11 +18,11 @@
         },
         {
             "ID": "CardID18",
-            "Amount": 1
+            "Amount": 2
         },
         {
             "ID": "CardID19",
-            "Amount": 5
+            "Amount": 6
         },
         {
             "ID": "CardID2",
@@ -90,7 +90,7 @@
         },
         {
             "ID": "CardID8",
-            "Amount": 25
+            "Amount": 26
         },
         {
             "ID": "CardID9",

@@ -6,15 +6,15 @@ public class UIController : MonoBehaviour
 
     #region VARIABLES
 
-    [SerializeField] private TimePanelUI timePanelUI;
+    [SerializeField] private TimePanelUI timePanelUI = default;
 
-    [SerializeField] private Button btnTakeCard;
+    [SerializeField] private Button btnTakeCard = default;
     public delegate void ClickTakeCardAction();
-    public static event ClickTakeCardAction OnTakeCardActionClicked;
+    public static event ClickTakeCardAction OnTakeCardActionClicked = default;
 
-    [SerializeField] private Button btnEndTurn;
+    [SerializeField] private Button btnEndTurn = default;
     public delegate void ClickEndTurnAction();
-    public static event ClickEndTurnAction OnEndTurnActionClicked;
+    public static event ClickEndTurnAction OnEndTurnActionClicked = default;
 
     #endregion
 

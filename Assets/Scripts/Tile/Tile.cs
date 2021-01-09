@@ -5,18 +5,12 @@ namespace PositionerDemo
 {
     public abstract class Tile : ICardTarget
     {
-        private TILETYPE _tileType;
-        public TILETYPE tileType { get => _tileType; protected set => _tileType = value; }
-        private CARDTARGETTYPE _cardTargetType;
-        public CARDTARGETTYPE CardTargetType { get => _cardTargetType; protected set => _cardTargetType = value; }
-        private int _posX;
-        public int PosX { get => _posX; private set => _posX = value; }
-        private int _posY;
-        public int PosY { get => _posY; private set => _posY = value; }
-        private List<Tile> _neighborsTiles;
-        public List<Tile> NeighborsTiles { get => _neighborsTiles; set => _neighborsTiles = value; }
-        private Tile[,] _neighborsTilesMatrix;
-        public Tile[,] NeighborsTilesMatrix { get => _neighborsTilesMatrix; set => _neighborsTilesMatrix = value; }
+        public TILETYPE tileType { get; protected set; }
+        public CARDTARGETTYPE CardTargetType { get; protected set; }
+        public int PosX { get; private set; }
+        public int PosY { get; private set; }
+        public List<Tile> NeighborsTiles { get; set; }
+        public Tile[,] NeighborsTilesMatrix { get; set; }
 
         private IOcuppy occupier;
         protected bool _isWalkeable;

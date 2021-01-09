@@ -9,7 +9,8 @@
         }
         public virtual bool IsValidStat(IOcuppy ocuppy)
         {
-            return ocuppy.Abilities.ContainsKey(abilityID);
+            ABILITYTYPE abilityType = (ABILITYTYPE)abilityID;
+            return ocuppy.Abilities.ContainsKey(abilityType);
         }
     }
 }

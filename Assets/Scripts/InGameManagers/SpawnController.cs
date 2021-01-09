@@ -37,10 +37,10 @@ namespace PositionerDemo
             }
 
             SpawnAbility spawnAbility = null;
-            if (player.Abilities.ContainsKey(0))
+            if (player.Abilities.ContainsKey(ABILITYTYPE.SPAWN))
             {
 
-                spawnAbility = (SpawnAbility)player.Abilities[0];
+                spawnAbility = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
             }
             else
             {
@@ -115,7 +115,7 @@ namespace PositionerDemo
                 {
                     Kimboko unit = (Kimboko)TileObject.GetOccupier();
 
-                    if (unit.ownerPlayer != player)
+                    if (unit.OwnerPlayerID != player.PlayerID)
                     {
                         // SPAWN COMBINABLE SI SE PUEDE....
                     }
@@ -180,7 +180,7 @@ namespace PositionerDemo
             configureAnimotion.Add(kimbokoIdlleConfigureAnimotion);
             KimbokoIdlleConfigureAnimotion<Animator, Transform> craneIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(GameCreator.Instance.Crane.GetComponent<Animator>(), 6);
             configureAnimotion.Add(craneIdlleConfigureAnimotion);
-            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[0], 6);
+            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.SPAWN], 6);
             configureAnimotion.Add(abActionConfigureAnimotion);
 
             CombineMotion combinMoveMotion = new CombineMotion(GameCreator.Instance, 1, motionsSpawn, configureAnimotion);

@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class DeckBuilderCreationUI : MonoBehaviour
 {
-    [SerializeField] private GameObject deckPanel;
-    [SerializeField] private GameObject cardInDeckPanel;
-    [SerializeField] private GameObject backPanel;
-    [SerializeField] private DeckStatusVisualManager deckStatusVisualManager;
+    [SerializeField] private GameObject deckPanel = default;
+    [SerializeField] private GameObject cardInDeckPanel = default;
+    [SerializeField] private GameObject backPanel = default;
+    [SerializeField] private DeckStatusVisualManager deckStatusVisualManager = default;
 
     public void SetActiveStatusPanel()
     {

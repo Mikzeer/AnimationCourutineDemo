@@ -5,17 +5,17 @@ using System.Collections;
 
 public class UserSignInUpManager : MonoBehaviour
 {
-    [SerializeField] private GameObject inputTextPrefab;
-    [SerializeField] private RectTransform inputTextParent;
-    [SerializeField] private RectTransform autoLoginPanel;
-    [SerializeField] private Text txtErrorMessage;
-    [SerializeField] private Canvas canvas; // Este canvas sirva para llevar al frente de todo siempre lo que drageamos
-    [SerializeField] private Button btnSignUp;//Ir a pantalla de Registro
-    [SerializeField] private Button btnSignIn;//Ir a pantalla de Login
-    [SerializeField] private Button btnBack; //Ir a pantalla principal de SignIn/Up
-    [SerializeField] private Button btnConfirm;// Logear/Registrar al usuario segun modo
-    [SerializeField] private Text txtConfirmButton;
-    [SerializeField] private Toggle autoLoginToggle;
+    [SerializeField] private GameObject inputTextPrefab = default;
+    [SerializeField] private RectTransform inputTextParent = default;
+    [SerializeField] private RectTransform autoLoginPanel = default;
+    [SerializeField] private Text txtErrorMessage = default;
+    [SerializeField] private Canvas canvas = default; // Este canvas sirva para llevar al frente de todo siempre lo que drageamos
+    [SerializeField] private Button btnSignUp = default;//Ir a pantalla de Registro
+    [SerializeField] private Button btnSignIn = default;//Ir a pantalla de Login
+    [SerializeField] private Button btnBack = default; //Ir a pantalla principal de SignIn/Up
+    [SerializeField] private Button btnConfirm = default;// Logear/Registrar al usuario segun modo
+    [SerializeField] private Text txtConfirmButton = default;
+    [SerializeField] private Toggle autoLoginToggle = default;
     private string email;
     private string userName;
     private string pass;

@@ -6,9 +6,9 @@ namespace PositionerDemo
 {
     public class ToggleController : MonoBehaviour
     {
-        [SerializeField] private Toggle tggMove;
-        [SerializeField] private Toggle tggSpawn;
-        [SerializeField] private Toggle tggAttack;
+        [SerializeField] private Toggle tggMove = default;
+        [SerializeField] private Toggle tggSpawn = default;
+        [SerializeField] private Toggle tggAttack = default;
         STATETYPE _stateType;
         public STATETYPE StateType { get { return _stateType; } private set { _stateType = value; } }
 

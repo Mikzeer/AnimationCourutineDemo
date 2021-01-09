@@ -7,9 +7,9 @@ namespace PositionerDemo
     {
         private const int DEFENDABILITYMODIFIFERID = 0;
         private const int MODIFEREXECUTIIONORDER = 0;
-        private int takeDamageAbilityID = 6;
+        //private int takeDamageAbilityID = 6;
         int duration = 2;
-
+        ABILITYTYPE abilityType = ABILITYTYPE.TAKEDAMAGE;
         public DefendAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             this.performerIOcuppy = performerIOcuppy;
@@ -27,10 +27,10 @@ namespace PositionerDemo
 
         public override void Enter()
         {
-            if (performerIOcuppy.Abilities.ContainsKey(takeDamageAbilityID))
+            if (performerIOcuppy.Abilities.ContainsKey(abilityType))
             {
                 AnimotionHandler.OnChangeTurn += Expire;
-                performerIOcuppy.Abilities[takeDamageAbilityID].AddAbilityModifier(this);
+                performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
             }
         }
 
@@ -59,7 +59,7 @@ namespace PositionerDemo
             if (duration == 0)
             {
                 AnimotionHandler.OnChangeTurn -= Expire;
-                performerIOcuppy.Abilities[takeDamageAbilityID].RemoveAbilityModifier(this);
+                performerIOcuppy.Abilities[abilityType].RemoveAbilityModifier(this);
             }
 
         }

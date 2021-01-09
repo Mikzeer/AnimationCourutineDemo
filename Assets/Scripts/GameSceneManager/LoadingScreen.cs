@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class LoadingScreen : MonoBehaviour
 {
-    [SerializeField] Text txtAmountLoaded;
-    [SerializeField] Image barImage;
-    [SerializeField] Image roundLogo;
+    [SerializeField] Text txtAmountLoaded = default;
+    [SerializeField] Image barImage = default;
+    [SerializeField] Image roundLogo = default;
     public Canvas canvas;
     bool isLoading = false;
 

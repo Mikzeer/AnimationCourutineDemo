@@ -8,11 +8,13 @@ namespace PositionerDemo
         public ResultDataOperationFiltter resultDataOperationFiltter { get; set; }
 
         int statID;
+        STATTYPE statType;
         STATAMOUNTTYPE statAmountType;
         IOcuppy ocuppy;
         public StatIResultData(int statID, STATAMOUNTTYPE statAmountType, IOcuppy ocuppy)
         {
             this.statID = statID;
+            statType = (STATTYPE)statID;
             this.statAmountType = statAmountType;
             this.ocuppy = ocuppy;
             resultDataType = RESULTDATATYPE.STAT;
@@ -50,10 +52,10 @@ namespace PositionerDemo
             switch (statAmountType)
             {
                 case STATAMOUNTTYPE.ACTUAL:
-                    resultData.amount = ocuppy.Stats[statID].ActualStatValue;
+                    resultData.amount = ocuppy.Stats[statType].ActualStatValue;
                     break;
                 case STATAMOUNTTYPE.MAX:
-                    resultData.amount = ocuppy.Stats[statID].MaxStatValue;
+                    resultData.amount = ocuppy.Stats[statType].MaxStatValue;
                     break;
             }
 

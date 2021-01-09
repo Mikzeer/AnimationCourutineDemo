@@ -6,9 +6,7 @@ namespace PositionerDemo
     {
         private const CARDTARGETTYPE cardTargetTYPE = CARDTARGETTYPE.BASENEXO;
         private const TILETYPE tileTYPE = TILETYPE.BASENEXO;
-
-        private int _playerID;
-        public int PlayerID { get => _playerID; private set => _playerID = value; }
+        public int PlayerID { get; private set; }
 
         public BaseNexoTile(Board2D grid, int PosX, int PosY, Player player) : base(grid, PosX, PosY)
         {

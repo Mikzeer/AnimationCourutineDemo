@@ -5,10 +5,10 @@ public class CardSlotUI : MonoBehaviour
 {
     public GameObject libraryTextParent;
     public CardSlot cardSlot;
-    [SerializeField] private Text libraryAmount;
-    [SerializeField] private RectTransform cardSlotAmountParent;
-    [SerializeField] private GameObject cardSlotAmountPrefab;
-    [SerializeField] private GameObject notAvailablePanel;
+    [SerializeField] private Text libraryAmount = default;
+    [SerializeField] private RectTransform cardSlotAmountParent = default;
+    [SerializeField] private GameObject cardSlotAmountPrefab = default;
+    [SerializeField] private GameObject notAvailablePanel = default;
     RectTransform cardSlotRect;
     CardAmountSlot[] amountSlots;
     MikzeerGame.CardDisplay cardDisplay;

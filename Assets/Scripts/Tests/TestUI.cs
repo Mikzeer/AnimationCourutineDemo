@@ -141,8 +141,8 @@ public class TestUI : SimpleClickeableUI
         //panelsRibbonsRect
         Debug.Log("panelsRibbonsRect.rect.localPosition " + panelsRibbonsRect.localPosition); // Posicion dentro de la Pantalla/Parent
         //Debug.Log("panelsRibbonsRect.rect.anchoredPosition " + panelsRibbonsRect.anchoredPosition);
-        var screenPoint = Input.mousePosition;
-        Vector2 localPoint;
+        //var screenPoint = Input.mousePosition;
+        //Vector2 localPoint;
         //RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, panelRect.anchoredPosition, Camera.main, out localPoint);
         //Debug.Log("localPoint " + localPoint);
         //localPoint.x -= ribbonPixelSizeX / 2;

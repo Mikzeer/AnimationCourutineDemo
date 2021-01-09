@@ -68,7 +68,7 @@ public class AnimotionHandler : MonoBehaviour
     MotionController motionControllerSpawn = new MotionController();
     MotionController motionControllerCombineSpawn = new MotionController();
     MotionController motionControllerCombineSpawnWithCheck = new MotionController();
-    private int cardIndex = 0;
+    //private int cardIndex = 0;
     private Vector2 startPosition;
     private Vector3 endPostion;
     private Vector3 finishPosition;
@@ -103,7 +103,7 @@ public class AnimotionHandler : MonoBehaviour
     public InfoPanel infoPanel;
     public KimbokoInfoPanel kimbokoInfoPanel;
 
-    CardManager cardManager;
+    CardManager cardManager = null;
     MotionController motionControllerCardSpawn = new MotionController();
     public GameObject cardUIPrefab;
     public RectTransform canvasRootTransform;
@@ -163,7 +163,8 @@ public class AnimotionHandler : MonoBehaviour
     {
         for (int i = 0; i < actualPlayerTurn.Abilities.Count; i++)
         {
-            if (actualPlayerTurn.Abilities[i].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
+            ABILITYTYPE abType = (ABILITYTYPE)i;
+            if (actualPlayerTurn.Abilities[abType].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
             {
                 Debug.Log("Waiting for action to end");
                 return;
@@ -265,8 +266,12 @@ public class AnimotionHandler : MonoBehaviour
         Stack<Card> deckPlayerOne = new Stack<Card>();
         Stack<Card> deckPlayerTwo = new Stack<Card>();
 
-        players[0] = new Player(0, PLAYERTYPE.PLAYER, deckPlayerOne);
-        players[1] = new Player(1, PLAYERTYPE.PLAYER, deckPlayerTwo);
+        //players[0] = new Player(0, PLAYERTYPE.PLAYER, deckPlayerOne);
+        //players[1] = new Player(1, PLAYERTYPE.PLAYER, deckPlayerTwo);
+
+        players[0] = new Player(0);
+        players[1] = new Player(1);
+
 
         SetPlayerTurn(players[0]);
     }
@@ -1193,7 +1198,7 @@ public class AnimotionHandler : MonoBehaviour
         {
             if (TileObject != null)
             {
-                if (actualPlayerTurn.Abilities[0].OnTryEnter() == true)
+                if (actualPlayerTurn.Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
                 {
                     spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
                 }

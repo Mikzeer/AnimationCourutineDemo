@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public class RiboonDisplay : SimpleClickeableUI, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    [SerializeField] private Text txtName;
-    [SerializeField] private Text txtAmount;
+    [SerializeField] private Text txtName = default;
+    [SerializeField] private Text txtAmount = default;
     private IEnumerator actualCoroutine;
     public CardDisplay cardDisplay;
     RibbonData ribbonData;
@@ -25,7 +25,6 @@ public class RiboonDisplay : SimpleClickeableUI, IDragHandler, IBeginDragHandler
     bool isOver;
     float scrollAdTime = 0f;
     float scrollTriggerTime = 0.6f;
-    bool scrollTrigger = false;
     
     public void SetData(RibbonData ribbonData, Action<RibbonData> OnRibbonClick, CardDisplay cardDisplay)
     {

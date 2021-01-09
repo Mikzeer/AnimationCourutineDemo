@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class RibbonManagerUI : MonoBehaviour
 {
-    [SerializeField] private RectTransform rootRect;
-    [SerializeField] private GameObject ribbonPrefab;
-    [SerializeField] private RectTransform ribbonsParent;
-    [SerializeField] private ScrollRect ribbonScrollRectParent;
+    [SerializeField] private RectTransform rootRect = default;
+    [SerializeField] private GameObject ribbonPrefab = default;
+    [SerializeField] private RectTransform ribbonsParent = default;
+    [SerializeField] private ScrollRect ribbonScrollRectParent = default;
     CardDisplay cardDisplay;
 
     public RiboonDisplay CreateNewCardRibbon()

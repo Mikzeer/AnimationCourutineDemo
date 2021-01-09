@@ -12,7 +12,7 @@ namespace PositionerDemo
 
         public bool IsValidStatModifierType(IOcuppy ocuppy)
         {
-            foreach (KeyValuePair<int,Stat> item in ocuppy.Stats)
+            foreach (KeyValuePair<STATTYPE,Stat> item in ocuppy.Stats)
             {
                 var Value = item.Value;
                 if (Value.UnitsModifiersList.Count > 0)

@@ -4,8 +4,8 @@ using TMPro;
 
 public class InfoPanel : MonoBehaviour
 {
-    [SerializeField]private TextMeshProUGUI infoTextMesh;
-    [SerializeField]private RectTransform infoRect;
+    [SerializeField]private TextMeshProUGUI infoTextMesh = default;
+    [SerializeField]private RectTransform infoRect = default;
 
     RectTransform rectTransform;
 

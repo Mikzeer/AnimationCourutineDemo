@@ -6,7 +6,7 @@ public class UserDeckSelectionDisplay : UserDeckDisplay
     Vector3 initialScale;
     Vector3 bigScale;
     float augScale = 1.1f;
-    [SerializeField] private GameObject selectionImage;
+    [SerializeField] private GameObject selectionImage = default;
     protected override void InitializeSimpleUI()
     {
         initialScale = uiRectTansform.localScale;

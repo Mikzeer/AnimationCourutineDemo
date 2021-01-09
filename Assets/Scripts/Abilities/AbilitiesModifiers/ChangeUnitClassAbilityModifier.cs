@@ -7,8 +7,8 @@ namespace PositionerDemo
     {
         private const int ABILITYMODIFIFERID = 2;
         private const int MODIFEREXECUTIIONORDER = 1;
-        private int spawnAbilityID = 0;
-
+        //private int spawnAbilityID = 0;
+        ABILITYTYPE abilityType = ABILITYTYPE.SPAWN;
         public ChangeUnitClassAbilityModifier(IOcuppy performerIOcuppy) : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
         {
             this.performerIOcuppy = performerIOcuppy;
@@ -25,9 +25,9 @@ namespace PositionerDemo
 
         public override void Enter()
         {
-            if (performerIOcuppy.Abilities.ContainsKey(spawnAbilityID))
+            if (performerIOcuppy.Abilities.ContainsKey(abilityType))
             {
-                performerIOcuppy.Abilities[spawnAbilityID].AddAbilityModifier(this);
+                performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
             }
         }
 
@@ -61,14 +61,7 @@ namespace PositionerDemo
 
         public override void Expire()
         {
-            if (performerIOcuppy.Abilities == null)
-            {
-                performerIOcuppy.Abilityes[ABILITYTYPE.SPAWN].RemoveAbilityModifier(this);
-                return;
-            }
-            performerIOcuppy.Abilities[spawnAbilityID].RemoveAbilityModifier(this);
+            performerIOcuppy.Abilities[ABILITYTYPE.SPAWN].RemoveAbilityModifier(this);
         }
-
     }
-
 }

@@ -52,8 +52,8 @@ public class PackOpeningArea : MonoBehaviour
             }
         }
     }
-    [SerializeField] private ShopManager shopManager;
-    [SerializeField] private GameMenuManager gameMenuManager;
+    [SerializeField] private ShopManager shopManager = default;
+    [SerializeField] private GameMenuManager gameMenuManager = default;
     #endregion
 
     private void Awake()

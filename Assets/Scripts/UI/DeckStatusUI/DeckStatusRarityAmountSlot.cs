@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class DeckStatusRarityAmountSlot : MonoBehaviour
 {
-    [SerializeField] private Text txtActualAmount;
-    [SerializeField] private Text txtMaxAmount;
-    [SerializeField] private Image fillImage;
+    [SerializeField] private Text txtActualAmount = default;
+    [SerializeField] private Text txtMaxAmount = default;
+    [SerializeField] private Image fillImage = default;
     int actualAmount = 0;
     int maxAmount = 0;
 

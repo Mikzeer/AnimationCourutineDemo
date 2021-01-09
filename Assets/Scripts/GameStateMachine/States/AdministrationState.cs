@@ -57,7 +57,7 @@ public class AdministrationState : TimeConditionState
             {
                 if (TileObject != null)
                 {
-                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[0].OnTryEnter() == true)
+                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
                     {
                         gameCreator.spawnCotroller.OnTrySpawn(TileObject, gameCreator.turnManager.GetActualPlayerTurn());
                     }

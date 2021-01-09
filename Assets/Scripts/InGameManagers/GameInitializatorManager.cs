@@ -13,7 +13,6 @@ namespace PositionerDemo
         bool isBoardLoaded = false;
         MotionController motionControllerCreateBoard = new MotionController();
         Vector3 gridStartPosition = new Vector3(-10, -10, 0);
-        float cellSize = 4f;
         int withd = 7;
         int height = 5;
 
@@ -47,8 +46,12 @@ namespace PositionerDemo
             ConfigurationData cnfDat = helperCardCollectionJsonKimboko.GetConfigurationDataFromJson();
 
             // 1b- CREAR A LOS DOS PLAYERS SEGUN LA CONFIGURATION DATA
-            Player playerOne = new Player(0, PLAYERTYPE.PLAYER);
-            Player playerTwo = new Player(1, PLAYERTYPE.PLAYER);
+            Player playerOne = new Player(0);
+            playerOne.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerOne), OccupierStatDatabase.CreatePlayerStat());
+
+            Player playerTwo = new Player(1);
+            playerTwo.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerTwo), OccupierStatDatabase.CreatePlayerStat());
+
             Player[] players = new Player[2];
             players[0] = playerOne;
             players[1] = playerTwo;

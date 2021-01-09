@@ -10,22 +10,22 @@ public class DeckBuilderManager : MonoBehaviour
 {
     public bool debugOn = false;
     [Header("BUTTONS")]
-    [SerializeField] private Button btnCreateNewDeck;
-    [SerializeField] private Button btnBack;
-    [SerializeField] private Button btnDeleteDeck;
-    [SerializeField] private Button btnCancelDeleteDeck;
-    [SerializeField] private Button btnSave;
+    [SerializeField] private Button btnCreateNewDeck = default;
+    [SerializeField] private Button btnBack = default;
+    [SerializeField] private Button btnDeleteDeck = default;
+    [SerializeField] private Button btnCancelDeleteDeck = default;
+    [SerializeField] private Button btnSave = default;
     [Header("UI")]
-    [SerializeField] private InputField nameInputFiled;
+    [SerializeField] private InputField nameInputFiled = default;
     [Header("PARENTS")]
-    [SerializeField] private RectTransform canvas;
+    [SerializeField] private RectTransform canvas = default;
     [Header("MANAGERS")]
-    [SerializeField] private RibbonManagerUI ribbonManagerUI;
-    [SerializeField] private DeckBuilderCreationUI deckBuilderCreationUI;
-    [SerializeField] private DeckBuilderUserDeckUI deckBuilderUserDeckUI;
-    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager;
-    [SerializeField] private CardCollectionSearchManager cardCollectionSearchManager;
-    [SerializeField] private GameMenuManager gameMenuManager;
+    [SerializeField] private RibbonManagerUI ribbonManagerUI = default;
+    [SerializeField] private DeckBuilderCreationUI deckBuilderCreationUI = default;
+    [SerializeField] private DeckBuilderUserDeckUI deckBuilderUserDeckUI = default;
+    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager = default;
+    [SerializeField] private CardCollectionSearchManager cardCollectionSearchManager = default;
+    [SerializeField] private GameMenuManager gameMenuManager = default;
 
     public DeckBuilderCreationManager deckBuilderCreationManager { get; private set; }
     public static event Action<Deck> OnDeckChange;

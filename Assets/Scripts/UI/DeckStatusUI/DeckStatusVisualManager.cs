@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class DeckStatusVisualManager : MonoBehaviour
 {
-    [SerializeField] private DeckStatusRarityAmountSlot deckAmount;
-    [SerializeField] private GameObject deckStatusSlotPrefab;
-    [SerializeField] public RectTransform statusSlotPanelParent;
-    [SerializeField] public GameObject statusCanvas;
+    [SerializeField] private DeckStatusRarityAmountSlot deckAmount = default;
+    [SerializeField] private GameObject deckStatusSlotPrefab = default;
+    [SerializeField] public RectTransform statusSlotPanelParent = default;
+    [SerializeField] public GameObject statusCanvas = default;
     private DeckStatusRarityAmountVisualManager deckStatusSSlotslManager;
     public bool isInitialized = false;
     private void Awake()

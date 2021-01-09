@@ -218,6 +218,7 @@ namespace PositionerDemo
         List<Tile> boardTiles;
         public CardTargetManager(Board2D board2D)
         {
+            boardTiles = new List<Tile>();
             // RECORREMOS LA LISTA DE TILES
             for (int x = 0; x < board2D.GridArray.GetLength(0); x++)
             {

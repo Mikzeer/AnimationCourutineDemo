@@ -6,8 +6,8 @@ using UnityEngine;
 public class DeckBuilderUserDeckUI : MonoBehaviour
 {
     Dictionary<int, UserDeckDisplay> userDeckDisplayDictionary;
-    [SerializeField] private GameObject userDeckPrefab;
-    [SerializeField] private RectTransform userDeckParent;
+    [SerializeField] private GameObject userDeckPrefab = default;
+    [SerializeField] private RectTransform userDeckParent = default;
 
     public void ClearUserDeckDisplay()
     {

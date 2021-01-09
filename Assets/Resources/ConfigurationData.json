@@ -17,52 +17,44 @@
     "email": "mmm@mmm.com",
     "password": "m123456",
     "selectedDeck": {
-        "ID": 83,
-        "name": "Ternitas House",
-        "totalCards": 20,
+        "ID": 85,
+        "name": "El Tonjon",
+        "totalCards": 17,
         "userDeckJson": [
             {
-                "ID": "CardID2",
-                "Amount": 1
+                "ID": "CardID8",
+                "Amount": 5
             },
             {
                 "ID": "CardID3",
                 "Amount": 2
             },
             {
-                "ID": "CardID8",
-                "Amount": 3
-            },
-            {
-                "ID": "CardID1",
-                "Amount": 5
+                "ID": "CardID2",
+                "Amount": 1
             },
             {
                 "ID": "CardID11",
-                "Amount": 2
-            },
-            {
-                "ID": "CardID5",
                 "Amount": 1
             },
             {
-                "ID": "CardID10",
+                "ID": "CardID27",
                 "Amount": 1
             },
             {
-                "ID": "CardID9",
-                "Amount": 2
+                "ID": "CardID4",
+                "Amount": 4
             },
             {
                 "ID": "CardID23",
                 "Amount": 1
             },
             {
-                "ID": "CardID6",
+                "ID": "CardID28",
                 "Amount": 1
             },
             {
-                "ID": "CardID39",
+                "ID": "CardID47",
                 "Amount": 1
             }
         ]

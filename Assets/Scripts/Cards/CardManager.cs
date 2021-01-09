@@ -104,10 +104,10 @@ namespace PositionerDemo
             }
 
             TakeCardAbility takceCardAbility = null;
-            if (player.Abilities.ContainsKey(1))
+            if (player.Abilities.ContainsKey(ABILITYTYPE.TAKEACARD))
             {
 
-                takceCardAbility = (TakeCardAbility)player.Abilities[1];
+                takceCardAbility = (TakeCardAbility)player.Abilities[ABILITYTYPE.TAKEACARD];
             }
             else
             {
@@ -232,7 +232,7 @@ namespace PositionerDemo
 
                 configurables.Add(cardHandSetParentConfigAnimotion);
 
-                AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[1], 4);
+                AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
                 configurables.Add(abActionConfigureAnimotion);
 
 
@@ -267,7 +267,7 @@ namespace PositionerDemo
             //OnCardWaitingTarget(cardUI);
             //OnCardSendToGraveyard(cardUI);
 
-            bool isSapwn = false;
+            //bool isSapwn = false;
 
             if (motionControllerCardSpawn != null && motionControllerCardSpawn.IsPerforming == false)
             {
@@ -352,11 +352,11 @@ namespace PositionerDemo
 
     public class CardManagerUI : MonoBehaviour
     {
-        [SerializeField] private GameObject cardUIPrefab;
-        [SerializeField] private RectTransform cardHolderP1;
-        [SerializeField] private RectTransform cardHolderP2;
-        [SerializeField] private RectTransform canvasRootTransform;
-        [SerializeField] private InfoPanel infoPanel;
+        [SerializeField] private GameObject cardUIPrefab = default;
+        [SerializeField] private RectTransform cardHolderP1 = default;
+        [SerializeField] private RectTransform cardHolderP2 = default;
+        [SerializeField] private RectTransform canvasRootTransform = default;
+        [SerializeField] private InfoPanel infoPanel = default;
 
         public Motion AddCard(Card newCard, Player player, Action<MikzeerGame.CardUI> FireCardUITest, Action<bool> SetActiveInfoCard)
         {
@@ -441,7 +441,7 @@ namespace PositionerDemo
 
             configurables.Add(cardHandSetParentConfigAnimotion);
 
-            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[1], 4);
+            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
             configurables.Add(abActionConfigureAnimotion);
 
             CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsSpawn, configurables);

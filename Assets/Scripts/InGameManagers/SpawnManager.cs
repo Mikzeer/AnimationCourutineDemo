@@ -49,12 +49,12 @@ namespace PositionerDemo
                 Debug.Log("Ilegal Spawn");
                 return;
             }
-            if (player.Abilityes.ContainsKey(ABILITYTYPE.SPAWN) == false)
+            if (player.Abilities.ContainsKey(ABILITYTYPE.SPAWN) == false)
             {
                 Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
-            SpawnAbility spw = (SpawnAbility)player.Abilityes[ABILITYTYPE.SPAWN];
+            SpawnAbility spw = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
             if (spw == null)
             {
                 Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
@@ -117,7 +117,7 @@ namespace PositionerDemo
                 {
                     Kimboko unit = (Kimboko)TileObject.GetOccupier();
 
-                    if (unit.ownerPlayer != player)
+                    if (unit.OwnerPlayerID != player.PlayerID)
                     {
                         // SPAWN COMBINABLE SI SE PUEDE....
                     }

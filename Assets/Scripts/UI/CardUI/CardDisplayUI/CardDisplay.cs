@@ -7,17 +7,17 @@ namespace MikzeerGame
     public class CardDisplay : MonoBehaviour
     {
         private int id;
-        [SerializeField] private Image cardImage;
-        [SerializeField] private Text txtCardName;
-        [SerializeField] private Text txtCardDescription;
-        [SerializeField] private Text txtCardLevel;
-        [SerializeField] private Image cardSprite;
-        [SerializeField] private GameObject chainGameObject;
-        [SerializeField] private GameObject automaticGameObject;
-        [SerializeField] private Text txtDarkPoints;
+        [SerializeField] private Image cardImage = default;
+        [SerializeField] private Text txtCardName = default;
+        [SerializeField] private Text txtCardDescription = default;
+        [SerializeField] private Text txtCardLevel = default;
+        [SerializeField] private Image cardSprite = default;
+        [SerializeField] private GameObject chainGameObject = default;
+        [SerializeField] private GameObject automaticGameObject = default;
+        [SerializeField] private Text txtDarkPoints = default;
         
         //[SerializeField] private Sprite cardTypeSprite;
-        [SerializeField] private Image cardMiniatureSprite;
+        //[SerializeField] private Image cardMiniatureSprite = default;
 
         public void Initialized(Card card)
         {

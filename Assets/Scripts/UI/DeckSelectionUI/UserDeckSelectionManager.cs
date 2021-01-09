@@ -6,11 +6,11 @@ using UnityEngine.UI;
 
 public class UserDeckSelectionManager : MonoBehaviour
 {
-    [SerializeField] private Button btnStartGame;
-    [SerializeField] private Button btnBack;
-    [SerializeField] private Text txtDeckName;
-    [SerializeField] private DeckSelectionUserDeckUI deckSelectionUserDeckUI;
-    [SerializeField] private GameMenuManager gameMenuManager;
+    [SerializeField] private Button btnStartGame = default;
+    [SerializeField] private Button btnBack = default;
+    [SerializeField] private Text txtDeckName = default;
+    [SerializeField] private DeckSelectionUserDeckUI deckSelectionUserDeckUI = default;
+    [SerializeField] private GameMenuManager gameMenuManager = default;
     Deck selectedDeck;
 
     private void OnEnable()

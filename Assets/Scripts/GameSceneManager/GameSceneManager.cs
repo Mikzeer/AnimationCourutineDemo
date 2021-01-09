@@ -7,7 +7,7 @@ public class GameSceneManager : GenericSingleton<GameSceneManager>
 {
     public enum GAMESCENE { WELCOME, LOGINREGISTRATION, MAINMENU, GAME, LOADING, NONE}
     List<AsyncOperation> asyncOperations = new List<AsyncOperation>();
-    [SerializeField] private GameObject prefabLoadingScreen;
+    [SerializeField] private GameObject prefabLoadingScreen = default;
     LoadingScreen loadingScreen;
 
     private void Start()

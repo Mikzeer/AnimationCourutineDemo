@@ -149,9 +149,10 @@ public class TurnManager
 
         for (int i = 0; i < actualPlayerTurn.Abilities.Count; i++)
         {
-            if (actualPlayerTurn.Abilities[i].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
+            ABILITYTYPE abType = (ABILITYTYPE)i;
+            if (actualPlayerTurn.Abilities[abType].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
             {
-                unfinishActions.Add(actualPlayerTurn.Abilities[i]);
+                unfinishActions.Add(actualPlayerTurn.Abilities[abType]);
             }
         }
 

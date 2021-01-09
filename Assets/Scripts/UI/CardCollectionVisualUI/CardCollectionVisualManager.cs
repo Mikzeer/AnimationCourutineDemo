@@ -4,17 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 public class CardCollectionVisualManager : MonoBehaviour
 {
-    [SerializeField] private GameObject cardSlotPrefab;
-    [SerializeField] private GameObject cardPrefab;
-    [SerializeField] private RectTransform cardLibraryTransform;
-    [SerializeField] private DeckBuilderManager deckBuilderManager;
-    [SerializeField] private ScrollRect cardScrollRectParent;
+    [SerializeField] private GameObject cardSlotPrefab = default;
+    [SerializeField] private GameObject cardPrefab = default;
+    [SerializeField] private RectTransform cardLibraryTransform = default;
+    [SerializeField] private DeckBuilderManager deckBuilderManager = default;
+    [SerializeField] private ScrollRect cardScrollRectParent = default;
     CardCollectionSlotCreator cardCollectionSlotCreator;
     CardCollectionCardDisplayCreator cardCollectionCardDisplayCreator;
     Dictionary<CardData, CardDisplaySlot> cardSlotUIDisplay;
     VisualFilttersManagers visualFilttersManagers;
-    [SerializeField] private GameMenuManager gameMenuManager;
-    bool isLoaded = false;
+    [SerializeField] private GameMenuManager gameMenuManager = default;
     private void Awake()
     {
         cardCollectionSlotCreator = new CardCollectionSlotCreator(cardSlotPrefab, cardLibraryTransform);
@@ -47,7 +46,6 @@ public class CardCollectionVisualManager : MonoBehaviour
                 CreteSlotForCollection(allExistingCards[i], false, false);
             }
         }
-        isLoaded = true;
     }
 
     public void CreateDeckBuilderVisualUI(CardData[] allExistingCards, Dictionary<string, int> userCollection)

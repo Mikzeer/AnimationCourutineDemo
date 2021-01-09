@@ -14,7 +14,7 @@ namespace PositionerDemo
         protected int startSiblingIndex = 0; // el sibling index antes de comenzar a arrastrar la card
         protected Vector2 startAnchoredPosition; // la posicion en la cual estaba anclada la card antes de comenzar a dragearla
 
-        bool succesfullDrop = false; // Esto lo podriamos llegar a utilizar para una card que queremos que despues del drop no sea utilizable
+        //bool succesfullDrop = false; // Esto lo podriamos llegar a utilizar para una card que queremos que despues del drop no sea utilizable
         
         #endregion
 
@@ -104,7 +104,7 @@ namespace PositionerDemo
                 {
                     if (IsSuccesfulDropArea(result))
                     {
-                        succesfullDrop = true;
+                        //succesfullDrop = true;
                         OnSuccesfulDrop(result);
                         return;
                     }

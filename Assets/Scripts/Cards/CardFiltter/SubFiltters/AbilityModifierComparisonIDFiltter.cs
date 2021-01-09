@@ -13,7 +13,8 @@
         {
             if (base.IsValidStat(ocuppy))
             {
-                if (ocuppy.Abilities[abilityID].IsModifierApply(modifierID)) return true;
+                ABILITYTYPE abilityType = (ABILITYTYPE)abilityID;
+                if (ocuppy.Abilities[abilityType].IsModifierApply(modifierID)) return true;
             }
             return false;
         }

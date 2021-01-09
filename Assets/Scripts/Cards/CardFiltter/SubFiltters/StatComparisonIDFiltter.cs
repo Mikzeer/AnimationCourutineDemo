@@ -9,7 +9,8 @@
         }
         public bool IsValidStat(IOcuppy ocuppy)
         {
-            return ocuppy.Stats.ContainsKey(statID);
+            STATTYPE statType = (STATTYPE)statID;
+            return ocuppy.Stats.ContainsKey(statType);
         }
     }
 }

@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class CardCollectionSearchManager : MonoBehaviour
 {
-    [SerializeField] private List<CardRarityInteractuableImage> cardRarityInteactImage;
-    [SerializeField] private List<CardActivationTypeInteractuableImage> cardActivationTypeInteractImage;
-    [SerializeField] private List<CardTypeInteractuableImage> cardTypeInteractuableImage;
-    [SerializeField] private CardPlayerDontOwnsInteractuableImage cardPlayerDontOwnsInteractuable;
-    [SerializeField] private Toggle chainToggle;
-    [SerializeField] private Toggle darkToggle;
-    [SerializeField] private InputField tagInputFiled;
-    [SerializeField] private Button clearBtn;
-    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager;
+    [SerializeField] private List<CardRarityInteractuableImage> cardRarityInteactImage = default;
+    [SerializeField] private List<CardActivationTypeInteractuableImage> cardActivationTypeInteractImage = default;
+    [SerializeField] private List<CardTypeInteractuableImage> cardTypeInteractuableImage = default;
+    [SerializeField] private CardPlayerDontOwnsInteractuableImage cardPlayerDontOwnsInteractuable = default;
+    [SerializeField] private Toggle chainToggle = default;
+    [SerializeField] private Toggle darkToggle = default;
+    [SerializeField] private InputField tagInputFiled = default;
+    [SerializeField] private Button clearBtn = default;
+    [SerializeField] private CardCollectionVisualManager cardCollectionVisualManager = default;
     VisualFiltterUIHandler visualFiltterUIHandler;
     private void Start()
     {

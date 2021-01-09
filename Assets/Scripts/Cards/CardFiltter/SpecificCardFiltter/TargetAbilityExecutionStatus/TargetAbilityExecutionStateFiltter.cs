@@ -8,8 +8,10 @@ namespace PositionerDemo
         int abilityID;
         List<ABILITYEXECUTIONSTATUS> actionStatus;
         private const int FILTTER_ID = 44;
+        ABILITYTYPE abilityType;
         public TargetAbilityExecutionStateFiltter(int abilityID, List<ABILITYEXECUTIONSTATUS> actionStatus) : base(FILTTER_ID)
         {
+            abilityType = (ABILITYTYPE)abilityID;
             this.actionStatus = actionStatus;
             this.abilityID = abilityID;
         }
@@ -20,7 +22,7 @@ namespace PositionerDemo
             if (occupier == null) return null;
             for (int i = 0; i < actionStatus.Count; i++)
             {
-                if (occupier.Abilities[abilityID].actionStatus != actionStatus[i])
+                if (occupier.Abilities[abilityType].actionStatus != actionStatus[i])
                 {
                     return null;
                 }
