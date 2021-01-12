@@ -8,6 +8,7 @@ namespace PositionerDemo
         public CARDTARGETTYPE CardTargetType { get; protected set; }
         public Dictionary<ABILITYTYPE, AbilityAction> Abilities { get; protected set; }
         public Dictionary<STATTYPE, Stat> Stats { get; protected set; }
+        public GameObjectAnimatorContainer goAnimContainer { get; protected set; }
         public bool IsAlly { get; protected set; }
         public int ID { get; protected set; }
         public int OwnerPlayerID { get; protected set; }
@@ -35,9 +36,8 @@ namespace PositionerDemo
             return actionPoints;
         }
 
-        public void ResetActionPoints(int playerID, int amount)
+        public void ResetActionPoints(int amount)
         {
-            if (OwnerPlayerID != playerID) return;
             if (Stats != null)
             {
                 if (Stats.ContainsKey(STATTYPE.ACTIONPOINTS))
@@ -48,6 +48,11 @@ namespace PositionerDemo
                     return;
                 }
             }
+        }
+
+        public void SetGoAnimContainer(GameObjectAnimatorContainer goAnimCon)
+        {
+            goAnimContainer = goAnimCon;
         }
     }
 }

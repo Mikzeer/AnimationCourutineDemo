@@ -1,4 +1,5 @@
 ﻿using CommandPatternActions;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace PositionerDemo
 {
     public class GameTestController : MonoBehaviour
     {
+        #region VARIABLES
         public enum UPDATESTATE
         {
             ACTION,
@@ -13,7 +15,6 @@ namespace PositionerDemo
         }
         [Header("UPDATE STATE ACTION")]
         public UPDATESTATE updateState = UPDATESTATE.ACTION;
-
         [Header("SPAWN MANAGER UI")]
         [SerializeField] private SpawnManagerUI spawnManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
         SpawnManager spawnManager;
@@ -24,10 +25,9 @@ namespace PositionerDemo
         [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI = default;
         [Header("TOGGLE CONTROLLER")]
         [SerializeField] private ToggleController toggleController = default;
-
         MouseController mouseController;
-        Player[] players;       
-
+        Player[] players;
+        #endregion
 
         private void Start()
         {
@@ -38,6 +38,10 @@ namespace PositionerDemo
             InvokerMotion.AddNewMotion(motion);
             InvokerMotion.StartExecution(this);
             spawnManager = new SpawnManager(spawnManagerUI);
+            SpawnAbility.OnActionStartExecute += SpawnInfoTestStart;
+            SpawnAbility.OnActionEndExecute += SpawnInfoTestEnd;
+            TakeCardAbility.OnActionStartExecute += OnTakeCardActionStart;
+            TakeCardAbility.OnActionEndExecute += OnTakeCardActionEnd;
         }
 
         private void CreatePlayers()
@@ -112,7 +116,33 @@ namespace PositionerDemo
         private void ExecuteSelection()
         {
             if (tileSelectionManagerUI.SelectedTilePlayerOne == null) return;
-            Debug.Log("Selected Tile " + tileSelectionManagerUI.SelectedTilePlayerOne.PosX + "," + tileSelectionManagerUI.SelectedTilePlayerOne.PosY);
+            Debug.Log("Selected Tile " + tileSelectionManagerUI.SelectedTilePlayerOne.position.posX + "," + tileSelectionManagerUI.SelectedTilePlayerOne.position.posY);
+        }
+
+        private void SpawnInfoTestStart(SpawnAbilityEventInfo spawnInfo)
+        {
+            Debug.Log("Me va a spawnear el Player: " + spawnInfo.spawnerPlayer.PlayerID);
+            Debug.Log("Voy a ser del tipo: " + spawnInfo.spawnUnitType);
+            Debug.Log("Voy a estar en la Posicion: " + spawnInfo.spawnTile.position.posX + "/" + spawnInfo.spawnTile.position.posY);
+        }
+
+        private void SpawnInfoTestEnd(SpawnAbilityEventInfo spawnInfo)
+        {
+            Debug.Log("Me Spawneo el Player: " + spawnInfo.spawnerPlayer.PlayerID);
+            Debug.Log("Soy del tipo: " + spawnInfo.spawnUnitType);
+            Debug.Log("Estoy en la Posicion: " + spawnInfo.spawnTile.position.posX + "/" + spawnInfo.spawnTile.position.posY);
+        }
+
+        private void OnTakeCardActionEnd(TakeCardAbilityEventInfo obj)
+        {
+            Debug.Log("Soy el Jugador numero: " + obj.cardTaker.ID);
+            Debug.Log("Voy a tomar una carta");      
+        }
+
+        private void OnTakeCardActionStart(TakeCardAbilityEventInfo obj)
+        {
+            Debug.Log("Soy el Jugador numero: " + obj.cardTaker.ID);
+            Debug.Log("Tomar la carta: " + obj.card.CardData.CardName);
         }
     }
 }

@@ -11,11 +11,6 @@ namespace PositionerDemo
         Tile selectedTile;        
         private Player player;
 
-        public static Action<SpawnAbilityEventInfo> OnActionStartExecute { get; set; }
-        public static Action<SpawnAbilityEventInfo> OnActionEndExecute { get; set; }
-
-        public SpawnAbilityEventInfo spawnAbilityInfo;
-
         public SpawnAbility(IOcuppy performerIOcuppy) : base(SPAWNABILITYID, performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
         {
             actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
@@ -28,43 +23,10 @@ namespace PositionerDemo
         public override void SetRequireGameData(SpawnAbilityEventInfo gameData)
         {
             selectedTile = gameData.spawnTile;
-            spawnAbilityInfo = new SpawnAbilityEventInfo(gameData.spawnerPlayer, gameData.spawnUnitType , gameData.spawnTile);
+            abilityInfo = new SpawnAbilityEventInfo(gameData.spawnerPlayer, gameData.spawnUnitType , gameData.spawnTile);
             Debug.Log("Set Data Spawn Ability");
             //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(player);
             //AddAbilityModifier(ab);
-        }
-
-        public override bool OnTryEnter()
-        {
-            // 1- TENER LOS AP NECESARIOS
-            if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
-            {
-                return false;
-            }
-            
-            // 2- QUE EXISTAN TILES VACIAS EN LA BASE POR AHORA
-            return true;
-
-            // 3- EN ESTE CASO NO VAMOS A CHEQUEAR SI YA SE EJECUTO, YA QUE PUEDE EJECUTARSE VARIAS VECES POR TURNO SOLO AL INICIO DE LA PARTIDA
-            //    DESPUES SOLO UNA VEZ
-
-
-            // QUIEN SE VA A ENCARGAR DE "" MARCAR LAS TILES DEL SPAWN COMO ""SPAWNEABLES"????
-            // LA HABILIDAD O EL STATE?
-        }
-
-        public override void OnResetActionExecution()
-        {
-            if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == player)
-            {
-                //Debug.Log("Es mi turno Player y voy a reseteaer la Spawn Hability " + player.PlayerID);
-                actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
-            }
-            //else
-            //{
-            //    Debug.Log("NO ES MI TURNO Player " + player.PlayerID);
-            //    Debug.Log("NO ES MI TURNO Tengo Tantos Action Points " + player.GetCurrentActionPoints());
-            //}
         }
 
         public override bool OnTryExecute()
@@ -109,9 +71,9 @@ namespace PositionerDemo
             // 5- QUE LA TILE NO ESTE OCUPADA POR UN ENEMIGO, SINO YA SERIA LA HABILIDAD DE ATTACK EN BASE
             if (spawnTile.IsOccupied())
             {
-                if (spawnTile.GetOccupier().OccupierType == OCUPPIERTYPE.UNIT)
+                if (spawnTile.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
                 {
-                    Kimboko unit = (Kimboko)spawnTile.GetOccupier();
+                    Kimboko unit = (Kimboko)spawnTile.GetOcuppy();
                     Debug.Log("Spawn Ability: Tile Selected Is Occupied By a Kimboko");
                     if (unit.OwnerPlayerID != player.PlayerID)
                     {
@@ -155,7 +117,7 @@ namespace PositionerDemo
 
         public override void OnEndExecute()
         {
-            OnActionEndExecute?.Invoke(spawnAbilityInfo);
+            OnActionEndExecute?.Invoke(abilityInfo);
         }
 
     }

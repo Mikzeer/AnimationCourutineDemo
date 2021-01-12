@@ -3,9 +3,10 @@
     public enum ABILITYEXECUTIONSTATUS
     {
         WAIT,
-        EXECUTED, //=> para saber si se ejecuto
+        EXECUTED, //SUCCESS=> para saber si se ejecuto
         STARTED,
-        CANCELED //=> para saber si se cancelo y no se debe ejecutar => Click incorrecto... Algun Modifier que la cancele
+        CANCELED,//=> para saber si se cancelo y no se debe ejecutar => Click incorrecto... Algun Modifier que la cancele
+        NONEXECUTABLE // PARA CUANDO ESTAMOS ESPERANDO AL TURNO DEL OTRO JUGADOR
     };
 
 }

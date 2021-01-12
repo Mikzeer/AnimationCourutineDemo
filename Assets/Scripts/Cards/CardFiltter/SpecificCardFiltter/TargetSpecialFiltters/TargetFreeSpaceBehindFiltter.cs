@@ -21,7 +21,7 @@
 
             // SI ES ALIADO TENEMOS QUE CHEQUEAR LA POSICION EN X - 1
             // SI ES ENEMIGO TENEMOS QUE CHEQUEAR LA POSICION EN X + 1
-            int positionToCheckX = (int)tile.GetGridPosition().x;
+            int positionToCheckX = tile.GetGridPosition().x;
             if (targetTeamEnemyFiltter.CheckTarget(cardTarget) == null)
             {
                 positionToCheckX += 1;
@@ -42,7 +42,7 @@
             if (GridArray.GetLength(0) <= positionToCheckX)
             {
                 // SI EXISTE ENTONCES VAMOS A VERIFICAR SI ESTA OCUPADA
-                if (GridArray[positionToCheckX, tile.PosY].IsOccupied() == true)
+                if (GridArray[positionToCheckX, tile.position.posY].IsOccupied() == true)
                 {
                     return null;
                 }

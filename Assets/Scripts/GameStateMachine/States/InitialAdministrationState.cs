@@ -80,14 +80,7 @@ public class InitialAdministrationState : AdministrationState
             {
                 if (tileP1 != null)
                 {
-                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
-                    {
-                        gameCreator.spawnCotroller.OnTrySpawn(tileP1, gameCreator.turnManager.GetActualPlayerTurn());
-                    }
-                    else
-                    {
-                        Debug.Log("CANT ENTER");
-                    }
+                    gameCreator.spawnCotroller.OnTrySpawn(tileP1, gameCreator.turnManager.GetActualPlayerTurn());
                 }
             }
 
@@ -100,14 +93,7 @@ public class InitialAdministrationState : AdministrationState
             {
                 if (tileP2 != null)
                 {
-                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
-                    {
-                        gameCreator.spawnCotroller.OnTrySpawn(tileP2, gameCreator.turnManager.GetActualPlayerTurn());
-                    }
-                    else
-                    {
-                        Debug.Log("CANT ENTER");
-                    }
+                    gameCreator.spawnCotroller.OnTrySpawn(tileP2, gameCreator.turnManager.GetActualPlayerTurn());
                 }
             }
 

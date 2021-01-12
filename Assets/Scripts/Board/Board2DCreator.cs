@@ -123,44 +123,31 @@ namespace PositionerDemo
         private void SetNeighborsTiles(Tile tile)
         {
             //if (tile.PosX >= 0 && tile.PosY >= 0 && tile.PosX < _columns && tile.PosY < _rows)
-            //{
-
-            //}
-            //LIST//
-            //RIGHT
-            if (tile.PosX + 1 <= _columns - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY]);
-            // LEFT
-            if (tile.PosX - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY]);
-            // UP
-            if (tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX, tile.PosY + 1]);
-            // DOWN
-            if (tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX, tile.PosY - 1]);
-            // UP RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY + 1]);
-            // DOWN RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY - 1]);
-            // UP LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY + 1]);
-            // DOWN LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY - 1]);
-
             //MATRIX//
             //RIGHT
-            if (tile.PosX + 1 <= _columns - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.EAST.x, ArrayCardinalPosition.EAST.y] = GridArray[tile.PosX + 1, tile.PosY];
+            if (tile.position.posX + 1 <= _columns - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.EAST.x, ArrayCardinalPosition.EAST.y] = GridArray[tile.position.posX + 1, tile.position.posY];
             // LEFT
-            if (tile.PosX - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.WEST.x, ArrayCardinalPosition.WEST.y] = GridArray[tile.PosX - 1, tile.PosY];
+            if (tile.position.posX - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.WEST.x, ArrayCardinalPosition.WEST.y] = GridArray[tile.position.posX - 1, tile.position.posY];
             // UP
-            if (tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTH.x, ArrayCardinalPosition.NORTH.y] = GridArray[tile.PosX, tile.PosY + 1];
+            if (tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTH.x, ArrayCardinalPosition.NORTH.y] = GridArray[tile.position.posX, tile.position.posY + 1];
             // DOWN
-            if (tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTH.x, ArrayCardinalPosition.SOUTH.y] = GridArray[tile.PosX, tile.PosY - 1];
+            if (tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTH.x, ArrayCardinalPosition.SOUTH.y] = GridArray[tile.position.posX, tile.position.posY - 1];
             // UP RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHEAST.x, ArrayCardinalPosition.NORTHEAST.y] = GridArray[tile.PosX + 1, tile.PosY + 1];
+            if (tile.position.posX + 1 <= _columns - 1 && tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHEAST.x, ArrayCardinalPosition.NORTHEAST.y] = GridArray[tile.position.posX + 1, tile.position.posY + 1];
             // DOWN RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHEAST.x, ArrayCardinalPosition.SOUTHEAST.y] = GridArray[tile.PosX + 1, tile.PosY - 1];
+            if (tile.position.posX + 1 <= _columns - 1 && tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHEAST.x, ArrayCardinalPosition.SOUTHEAST.y] = GridArray[tile.position.posX + 1, tile.position.posY - 1];
             // UP LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHWEST.x, ArrayCardinalPosition.NORTHWEST.y] = GridArray[tile.PosX - 1, tile.PosY + 1];
+            if (tile.position.posX - 1 >= 0 && tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHWEST.x, ArrayCardinalPosition.NORTHWEST.y] = GridArray[tile.position.posX - 1, tile.position.posY + 1];
             // DOWN LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHWEST.x, ArrayCardinalPosition.SOUTHWEST.y] = GridArray[tile.PosX - 1, tile.PosY - 1];
+            if (tile.position.posX - 1 >= 0 && tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHWEST.x, ArrayCardinalPosition.SOUTHWEST.y] = GridArray[tile.position.posX - 1, tile.position.posY - 1];
 
         }
     }

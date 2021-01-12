@@ -31,7 +31,7 @@ namespace CommandPatternActions
         {
             TileObject.Vacate();
             player.RemoveUnit(kimboko);
-            kimboko.DestroyPrefab();
+            kimboko.goAnimContainer.DestroyPrefab();
         }
     }
 }

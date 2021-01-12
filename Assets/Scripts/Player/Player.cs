@@ -6,12 +6,9 @@ namespace PositionerDemo
     public class Player : Occupier
     {
         #region VARIABLES
-        private Animator playerAnimator;
-        private Transform playerTransform;
         public int PlayerID { get; private set; }
         public PLAYERTYPE playerType { get; set; }
-        private List<Kimboko> kimbokoUnits = new List<Kimboko>();
-        public Dictionary<IOcuppy, GameObject> UnitsPrefabs { get; protected set; }
+        public List<Kimboko> kimbokoUnits { get; private set; }
         public Stack<Card> Deck { get; set; }
         public List<Card> PlayersHands { get; private set; }
         public List<Card> Graveyard { get; private set; }
@@ -19,6 +16,7 @@ namespace PositionerDemo
 
         public Player(int PlayerID)
         {
+            kimbokoUnits = new List<Kimboko>();
             Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
             Stats = new Dictionary<STATTYPE, Stat>();
             this.PlayerID = PlayerID;
@@ -27,8 +25,6 @@ namespace PositionerDemo
             CardTargetType = CARDTARGETTYPE.BASENEXO;
             PlayersHands = new List<Card>();
             Graveyard = new List<Card>();
-
-            TurnManager.OnPlayerResetActionPoints += ResetActionPoints;
         }
 
         public override void OnSelect(bool isSelected, int playerID)
@@ -45,23 +41,7 @@ namespace PositionerDemo
         public void SetDeck(Stack<Card> Deck)
         {
             this.Deck = Deck;
-        }
-
-        public void SetGameObject(GameObject playerPrefab)
-        {
-            playerAnimator = playerPrefab.GetComponent<Animator>();
-            playerTransform = playerPrefab.transform;
-        }
-
-        public Transform GetTransform()
-        {
-            return playerTransform;
-        }
-
-        public Animator GetAnimator()
-        {
-            return playerAnimator;
-        }
+        }        
 
         public void AddUnit(Kimboko kimbokoUnit)
         {
@@ -73,7 +53,7 @@ namespace PositionerDemo
             kimbokoUnits.Remove(kimbokoUnit);
         }
 
-        public Ability GetAbility(ABILITYTYPE abilityType)
+        public AbilityAction GetAbility(ABILITYTYPE abilityType)
         {
             if (Abilities.ContainsKey(abilityType)) return Abilities[abilityType];
             return null;

@@ -10,7 +10,7 @@ namespace PositionerDemo
         Dictionary<ABILITYTYPE, AbilityAction> Abilities { get; }
         bool IsAlly { get; }
         int GetCurrentActionPoints();
-        void ResetActionPoints(int playerID, int amount);
+        void ResetActionPoints(int amount);
         void OnSelect(bool isSelected, int playerID); 
     }
 }

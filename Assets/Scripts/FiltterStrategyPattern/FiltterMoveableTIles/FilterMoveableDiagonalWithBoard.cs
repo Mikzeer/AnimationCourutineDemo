@@ -16,7 +16,7 @@ public class FilterMoveableDiagonalWithBoard : IFiltterMoveableTileWithBoardStra
 
         List<Tile> moveableTiles = new List<Tile>();
 
-        Position fromPosition = new Position(from.PosX, from.PosY);
+        PositionerDemo.Position fromPosition = new PositionerDemo.Position(from.position.posX, from.position.posY);
 
         int maxX = boardTiles.GetLength(0);
         int maxY = boardTiles.GetLength(1);

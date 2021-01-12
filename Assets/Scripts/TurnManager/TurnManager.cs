@@ -1,14 +1,9 @@
 ﻿using UnityEngine;
 using PositionerDemo;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 public class TurnManager
 {
-    public static event Action OnChangeTurn;
-    public static event Action<int, int> OnUnitResetActionPoints;
-    public static event Action<int, int> OnPlayerResetActionPoints;
-
     private Player actualPlayerTurn;
     private bool playerOneTurn;
     private Player[] players;
@@ -53,10 +48,6 @@ public class TurnManager
             actualPlayerTurn = players[0];
             playerOneTurn = true;
         }
-
-        OnChangeTurn?.Invoke();
-        OnUnitResetActionPoints?.Invoke(actualPlayerTurn.PlayerID, 2);
-        OnPlayerResetActionPoints?.Invoke(actualPlayerTurn.PlayerID, mngPoints);
     }
 
     public State ChangeTurnChain(State nextChainState)
@@ -125,10 +116,6 @@ public class TurnManager
             playerOneTurn = true;
         }
 
-        OnChangeTurn?.Invoke();
-        OnUnitResetActionPoints?.Invoke(actualPlayerTurn.PlayerID, 2);
-        OnPlayerResetActionPoints?.Invoke(actualPlayerTurn.PlayerID, mngPoints);
-
         State nextState; 
 
         if (unfinishActions.Count > 0)
@@ -157,6 +144,60 @@ public class TurnManager
         }
 
         return unfinishActions;
+    }
+
+    public void IncrementPlayerActions(Player player, int acAmount)
+    {
+        acAmount = 1;
+        //  LE DOY UN PUNTO AL PLAYER
+        player.ResetActionPoints(acAmount);
+        //  RESETEO TODAS SUS HABILIDADES PARA QUE LAS PUEDA EJECUTAR
+        foreach (KeyValuePair<ABILITYTYPE, AbilityAction> ab in player.Abilities)
+        {
+            ab.Value.actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
+        }
+    }
+
+    public void IncrementPlayerUnitsActions(Player player, int acAmount)
+    {
+        acAmount = 2;
+        for (int i = 0; i < player.kimbokoUnits.Count; i++)
+        {
+            player.kimbokoUnits[i].ResetActionPoints(acAmount);
+            foreach (KeyValuePair<ABILITYTYPE, AbilityAction> ab in player.kimbokoUnits[i].Abilities)
+            {
+                ab.Value.actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
+            }
+        }
+    }
+
+    public void RestPlayerActions(Player player)
+    {
+        int acAmount = 0;
+        //  LE DOY UN PUNTO AL PLAYER
+        player.ResetActionPoints(acAmount);
+        //  RESETEO TODAS SUS HABILIDADES PARA QUE LAS PUEDA EJECUTAR
+        foreach (KeyValuePair<ABILITYTYPE, AbilityAction> ab in player.Abilities)
+        {
+            ab.Value.actionStatus = ABILITYEXECUTIONSTATUS.NONEXECUTABLE;
+        }
+    }
+
+    public void RestPlayerUnitsActions(Player player)
+    {
+        int acAmount = 0;
+        for (int i = 0; i < player.kimbokoUnits.Count; i++)
+        {
+            player.kimbokoUnits[i].ResetActionPoints(acAmount);
+            foreach (KeyValuePair<ABILITYTYPE, AbilityAction> ab in player.kimbokoUnits[i].Abilities)
+            {
+                if (ab.Key == ABILITYTYPE.DIE || ab.Key == ABILITYTYPE.TAKEDAMAGE)
+                {
+                    continue;
+                }
+                ab.Value.actionStatus = ABILITYEXECUTIONSTATUS.NONEXECUTABLE;
+            }
+        }
     }
 
 }  

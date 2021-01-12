@@ -26,8 +26,6 @@ namespace PositionerDemo
          * 
          */
 
-
-
         public MatchStatus()
         {
             UnitsSpawnedByPlayer = new Dictionary<int, int>();
@@ -74,5 +72,4 @@ namespace PositionerDemo
 
         }
     }
-
 }

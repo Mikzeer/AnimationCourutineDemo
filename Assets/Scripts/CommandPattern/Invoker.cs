@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+
 namespace CommandPatternActions
 {
     public static class Invoker
     {
         private static List<ICommand> commandsToExecute = new List<ICommand>();
-        private static Stack<ICommand> executedCmd = new Stack<ICommand>();
 
         public static void AddNewCommand(ICommand command)
         {
@@ -31,8 +31,8 @@ namespace CommandPatternActions
                     case COMMANDEXECUTINSTATE.EXECUTE: // NO ESTA ESPERANDO Y SE ESTA EJECUTANDO... POR LAS DUDAS
                         continue;
                     case COMMANDEXECUTINSTATE.FINISH:
-                        if (commandsToExecute[i].logInsert == true) executedCmd.Push(commandsToExecute[i]);
-                        commandsToExecute.Remove(commandsToExecute[i]);
+                        if (commandsToExecute[i].logInsert == true) CommandLogSaver.AddCommandToUndo(commandsToExecute[i]);
+                        commandsToExecute.Remove(commandsToExecute[i]);                        
                         i--;
                         break;
                     case COMMANDEXECUTINSTATE.ABORT:
@@ -53,15 +53,6 @@ namespace CommandPatternActions
             // Mientras tengamos cmd en la lista para ejecutar vamos a seguir ejecutandolos hasta que terminen
             // esto puede trabar potencialmente la ejecucion del programa...
             //if (commandsToExecute.Count > 0) ExecuteCommands();
-        }
-
-        public static void UnexecuteLastCommand()
-        {
-            if (executedCmd.Count > 0)
-            {
-                ICommand cmdAux = executedCmd.Pop();
-                cmdAux.Unexecute();
-            }
         }
     }
 }

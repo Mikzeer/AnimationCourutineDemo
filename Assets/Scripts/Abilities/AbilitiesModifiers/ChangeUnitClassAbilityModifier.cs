@@ -44,7 +44,7 @@ namespace PositionerDemo
                 if (ab != null)
                 {
                     Debug.Log("CAMBIO A Y ");
-                    ab.spawnAbilityInfo.spawnUnitType = UNITTYPE.Y;
+                    ab.abilityInfo.spawnUnitType = UNITTYPE.Y;
                 }
             }
             else

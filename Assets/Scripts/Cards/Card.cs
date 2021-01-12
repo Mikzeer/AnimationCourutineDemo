@@ -52,11 +52,11 @@ namespace PositionerDemo
                         Tile actualTile = GameCreator.Instance.board2D.GetGridObject(x, y);
                         if (actualTile.IsOccupied())
                         {
-                            if (actualTile.GetOccupier().CardTargetType == CardData.cardTargetTypes[i])
+                            if (actualTile.GetOcuppy().CardTargetType == CardData.cardTargetTypes[i])
                             {
-                                if (foundTargets.Contains(actualTile.GetOccupier()) == false)
+                                if (foundTargets.Contains(actualTile.GetOcuppy()) == false)
                                 {
-                                    foundTargets.Add(actualTile.GetOccupier());
+                                    foundTargets.Add(actualTile.GetOcuppy());
                                 }
                             }
                         }
@@ -242,11 +242,11 @@ namespace PositionerDemo
                 {
                     if (boardTiles[z].IsOccupied())
                     {
-                        if (boardTiles[z].GetOccupier().CardTargetType == card.CardData.cardTargetTypes[i])
+                        if (boardTiles[z].GetOcuppy().CardTargetType == card.CardData.cardTargetTypes[i])
                         {
-                            if (foundTargets.Contains(boardTiles[z].GetOccupier()) == false)
+                            if (foundTargets.Contains(boardTiles[z].GetOcuppy()) == false)
                             {
-                                foundTargets.Add(boardTiles[z].GetOccupier());
+                                foundTargets.Add(boardTiles[z].GetOcuppy());
                             }
                         }
                     }

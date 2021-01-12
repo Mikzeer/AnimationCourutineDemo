@@ -111,7 +111,7 @@ namespace PositionerDemo
             }
             else
             {
-                Debug.Log("El Player no tiene la Spawn Ability");
+                Debug.Log("El Player no tiene la Take Card Ability");
             }
 
             if (takceCardAbility == null)
@@ -119,6 +119,22 @@ namespace PositionerDemo
                 Debug.Log("La ID de la TakeCard Ability puede estar mal no funciono el casteo");
                 return;
             }
+
+            if (player.GetCurrentActionPoints() < takceCardAbility.GetActionPointsRequiredToUseAbility())
+            {
+                return;
+            }
+
+            // 2- TENER UN PLAYER Y QUE TENGA CARDS EN SU MAZO
+            if (player != null)
+            {
+                if (player.Deck.Count <= 0)
+                {
+                    Debug.Log("TakeCardAbility: No Cards On Deck");
+                    return;
+                }
+            }
+
 
             if (takceCardAbility.OnTryExecute() == false)
             {

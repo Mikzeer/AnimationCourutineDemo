@@ -138,21 +138,26 @@ namespace PositionerDemo
 
         private void CreateSpawnTileHorizontal(int posX, int posY, Player player)
         {
-            SpawnTile spawnTile = new SpawnTile(this, posX, posY, player.PlayerID);
+            Vector3 realWorldPosition = GetGridObjectRealWorldPositionByArrayPosition(posX, posY);
+            SpawnTile spawnTile = new SpawnTile(realWorldPosition, posX, posY, player.PlayerID);
             Vector2 position = new Vector2(boardHolderPosX + posX * tileHeight, boardHolderPosY + posY * tileWidth);
             Vector2 position2 = GetWorldPosition(posX, posY);
             GameObject goAuxTile = MonoBehaviour.Instantiate(baseTilePrefab, position, Quaternion.identity);
-            spawnTile.SetGameObject(goAuxTile);
+
+            spawnTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
             GridArray[posX, posY] = spawnTile;
         }
 
         private void CreateBattlefiledTileHorizontal(int posX, int posY)
         {
-            BattlefieldTile battlefieldTile = new BattlefieldTile(this, posX, posY);
+            Vector3 realWorldPosition = GetGridObjectRealWorldPositionByArrayPosition(posX, posY);
+            BattlefieldTile battlefieldTile = new BattlefieldTile(realWorldPosition, posX, posY);
+
+
             Vector2 position = new Vector2(boardHolderPosX + posX * tileHeight, boardHolderPosY + posY * tileWidth);
             Vector2 position2 = GetWorldPosition(posX, posY);
             GameObject goAuxTile = MonoBehaviour.Instantiate(tilePrefab, position, Quaternion.identity);
-            battlefieldTile.SetGameObject(goAuxTile);
+            battlefieldTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
             GridArray[posX, posY] = battlefieldTile;
         }
 
@@ -172,19 +177,19 @@ namespace PositionerDemo
             switch (player.PlayerID)
             {
                 case 0:
-                    baseNexoTile = new BaseNexoTile(this, 0, 0, player);
                     position = GetPlayerNexusWorldPosition(player);
+                    baseNexoTile = new BaseNexoTile(position, 0, 0, player);
                     break;
                 case 1:
-                    baseNexoTile = new BaseNexoTile(this, 9, 0, player);
                     position = GetPlayerNexusWorldPosition(player);
+                    baseNexoTile = new BaseNexoTile(position, 9, 0, player);
                     break;
                 default:
                     break;
             }
 
             GameObject goAuxTile = MonoBehaviour.Instantiate(playerTilePrefab, position, Quaternion.identity);
-            baseNexoTile.SetGameObject(goAuxTile);
+            baseNexoTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
 
             return baseNexoTile;
         }
@@ -219,41 +224,31 @@ namespace PositionerDemo
             //{
 
             //}
-            //LIST//
-            //RIGHT
-            if (tile.PosX + 1 <= _columns - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY]);
-            // LEFT
-            if (tile.PosX - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY]);
-            // UP
-            if (tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX, tile.PosY + 1]);
-            // DOWN
-            if (tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX, tile.PosY - 1]);
-            // UP RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY + 1]);
-            // DOWN RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX + 1, tile.PosY - 1]);
-            // UP LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY + 1]);
-            // DOWN LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY - 1 >= 0) tile.NeighborsTiles.Add(GridArray[tile.PosX - 1, tile.PosY - 1]);
-
             //MATRIX//
             //RIGHT
-            if (tile.PosX + 1 <= _columns - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.EAST.x, ArrayCardinalPosition.EAST.y] = GridArray[tile.PosX + 1, tile.PosY];
+            if (tile.position.posX + 1 <= _columns - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.EAST.x, ArrayCardinalPosition.EAST.y] = GridArray[tile.position.posX + 1, tile.position.posY];
             // LEFT
-            if (tile.PosX - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.WEST.x, ArrayCardinalPosition.WEST.y] = GridArray[tile.PosX - 1, tile.PosY];            
+            if (tile.position.posX - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.WEST.x, ArrayCardinalPosition.WEST.y] = GridArray[tile.position.posX - 1, tile.position.posY];            
             // UP
-            if (tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTH.x, ArrayCardinalPosition.NORTH.y] = GridArray[tile.PosX, tile.PosY + 1];
+            if (tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTH.x, ArrayCardinalPosition.NORTH.y] = GridArray[tile.position.posX, tile.position.posY + 1];
             // DOWN
-            if (tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTH.x, ArrayCardinalPosition.SOUTH.y] = GridArray[tile.PosX, tile.PosY - 1];
+            if (tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTH.x, ArrayCardinalPosition.SOUTH.y] = GridArray[tile.position.posX, tile.position.posY - 1];
             // UP RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHEAST.x, ArrayCardinalPosition.NORTHEAST.y] = GridArray[tile.PosX + 1, tile.PosY + 1];            
+            if (tile.position.posX + 1 <= _columns - 1 && tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHEAST.x, ArrayCardinalPosition.NORTHEAST.y] = GridArray[tile.position.posX + 1, tile.position.posY + 1];            
             // DOWN RIGHT
-            if (tile.PosX + 1 <= _columns - 1 && tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHEAST.x, ArrayCardinalPosition.SOUTHEAST.y] = GridArray[tile.PosX + 1, tile.PosY - 1];            
+            if (tile.position.posX + 1 <= _columns - 1 && tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHEAST.x, ArrayCardinalPosition.SOUTHEAST.y] = GridArray[tile.position.posX + 1, tile.position.posY - 1];            
             // UP LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY + 1 <= _rows - 1) tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHWEST.x, ArrayCardinalPosition.NORTHWEST.y] = GridArray[tile.PosX - 1, tile.PosY + 1];
+            if (tile.position.posX - 1 >= 0 && tile.position.posY + 1 <= _rows - 1)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.NORTHWEST.x, ArrayCardinalPosition.NORTHWEST.y] = GridArray[tile.position.posX - 1, tile.position.posY + 1];
             // DOWN LEFT
-            if (tile.PosX - 1 >= 0 && tile.PosY - 1 >= 0) tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHWEST.x, ArrayCardinalPosition.SOUTHWEST.y] = GridArray[tile.PosX - 1, tile.PosY - 1];
+            if (tile.position.posX - 1 >= 0 && tile.position.posY - 1 >= 0)
+                tile.NeighborsTilesMatrix[ArrayCardinalPosition.SOUTHWEST.x, ArrayCardinalPosition.SOUTHWEST.y] = GridArray[tile.position.posX - 1, tile.position.posY - 1];
 
         }
 

@@ -6,6 +6,8 @@ namespace PositionerDemo
     {
         CARDTARGETTYPE CardTargetType { get; }
         IOcuppy GetOcuppy();
+        GameObjectAnimatorContainer goAnimContainer { get; }
+        void SetGoAnimContainer(GameObjectAnimatorContainer goAnimCon);
     }
    
 }

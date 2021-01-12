@@ -315,20 +315,20 @@ public class AnimotionHandler : MonoBehaviour
             {
                 if (x == 0 || x == 1)
                 {
-                    tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y] = board.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                     tiles[x, y].transform.SetParent(tileParent.transform);
                     continue;
                 }
                 if (x == 9 || x == 10)
                 {
-                    tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y] = board.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                     tiles[x, y].transform.SetParent(tileParent.transform);
                     continue;
                 }
 
                 Vector3 thisTileFinalPosition = board.GetGridObject(x, y).GetRealWorldLocation();
 
-                tiles[x, y] = board.GridArray[x, y].GetTransform().gameObject;
+                tiles[x, y] = board.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                 tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
                 tiles[x, y].transform.SetParent(tileParent.transform);
 
@@ -1198,14 +1198,7 @@ public class AnimotionHandler : MonoBehaviour
         {
             if (TileObject != null)
             {
-                if (actualPlayerTurn.Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
-                {
-                    spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
-                }
-                else
-                {
-                    Debug.Log("CANT ENTER");
-                }
+                spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
             }
         }
 
@@ -1220,16 +1213,16 @@ public class AnimotionHandler : MonoBehaviour
                 }
                 else if (actualTileObject != TileObject)
                 {
-                    tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.green;
+                    tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.green;
                     actualTileObject = TileObject;
-                    tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.blue;
+                    tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.blue;
                     UpdateKimbokoTileInfoPanel(actualTileObject);
                 }
             }
             else
             {
                 actualTileObject = TileObject;
-                tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.blue;
+                tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.blue;
                 UpdateKimbokoTileInfoPanel(actualTileObject);
             }
         }
@@ -1237,7 +1230,7 @@ public class AnimotionHandler : MonoBehaviour
         {
             if (actualTileObject != null)
             {
-                tiles[actualTileObject.PosX, actualTileObject.PosY].GetComponent<SpriteRenderer>().color = Color.green;
+                tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.green;
                 actualTileObject = null;
                 kimbokoInfoPanel.SetText(false);
             }
@@ -1249,7 +1242,7 @@ public class AnimotionHandler : MonoBehaviour
     {
         Debug.Log("Me Spawneo el Player: " + spawnInfo.spawnerPlayer.PlayerID);
         Debug.Log("Soy del tipo: " + spawnInfo.spawnUnitType);
-        Debug.Log("Estoy en la Posicion: " + spawnInfo.spawnTile.PosX + "/" + spawnInfo.spawnTile.PosY);
+        Debug.Log("Estoy en la Posicion: " + spawnInfo.spawnTile.position.posX + "/" + spawnInfo.spawnTile.position.posY);
     }
 
     private void UpdateKimbokoInfoPanel(HeatMapGridObject heatMapGridObject)
@@ -1274,7 +1267,7 @@ public class AnimotionHandler : MonoBehaviour
             string infoText = "IS OCCUPPY ";
             //Debug.Log(infoText);
             kimbokoInfoPanel.SetText(true, infoText);
-            tileObject.GetOccupier().OnSelect(true, 0);
+            tileObject.GetOcuppy().OnSelect(true, 0);
         }
         else
         {

@@ -5,16 +5,15 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public abstract class AbilityAction : Ability
+    public abstract class AbilityAction
     {
-        private const int ACTIONPOINTSTATID = 4;
-        private int id;
-        public int ID { get { return id; } private set { id = value; } }
-        public ABILITYEXECUTIONSTATUS actionStatus { get; set; }
-        public IOcuppy performerIOcuppy { get; private set; }
+        // Las ACTION son diferentes habilidades con las cuales puede contar todos los ACTORS del juego
+        public int ID { get; private set; }
+        public ABILITYTYPE AbilityType { get; private set; }
         private int actionPointsRequired; // Cantidad de Action Points que requiera la accion para ejecutarse
-        private ABILITYTYPE abilityType;
-        public ABILITYTYPE AbilityType { get { return abilityType; } private set { abilityType = value; } }
+        public IOcuppy performerIOcuppy { get; private set; }
+
+        public ABILITYEXECUTIONSTATUS actionStatus { get; set; }
         public List<AbilityModifier> abilityModifier { get; private set; }
 
         public AbilityAction(int ID, IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
@@ -23,13 +22,10 @@ namespace PositionerDemo
             this.ID = ID;
             this.actionPointsRequired = actionPointsRequired;
             abilityModifier = new List<AbilityModifier>();
-            TurnManager.OnChangeTurn += OnResetActionExecution;
-            this.abilityType = abilityType;
+            this.AbilityType = abilityType;
         }
 
-        public abstract void OnResetActionExecution();//-> este es un evento el cual se va a suscribir al TurnChange.?invoke(OnResetActionExecution()) para poner el estado en no ejecutado
-        public abstract bool OnTryEnter();
-        public abstract bool OnTryExecute();
+        public abstract bool OnTryExecute();// Cuando queremos ver si podemos ejecutar esta accion CHEQUEA SI SE TIENE LOS AP NECESARIOS Y CUALQUIER COSA RELATIVA A LA ACTION EN SI        
         private void StartActionModifierCheck() // Cuando empezamos a ejecuta esta accion y chequeamos los modificadores de accion que se ejecutan al inicio de la ejecucion de la accion StartActionModifier
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
@@ -45,8 +41,8 @@ namespace PositionerDemo
                 }
             }
         }
-        public abstract void OnStartExecute();
-        public abstract void Execute();
+        public abstract void OnStartExecute(); // Cuando empezamos a ejecutar esta accion // EVENTO 1 - OnActionStartExecute
+        public abstract void Execute();// Cuando ejecutamos esta accion // Esto es porpio de cada accion // ACA SE CREA EL CMD         
         private void EndActionModifierCheck()// Cuando terminamos de ejecutar esta accion y chequeamos los modificadores de accion que se ejecutan al final de la ejecucion de la accion EndActionModifier
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
@@ -61,7 +57,7 @@ namespace PositionerDemo
                 }
             }
         }
-        public abstract void OnEndExecute();
+        public abstract void OnEndExecute();// Cuando terminamos de ejecutar esta accion // EVENTO 2 - OnActionEndExecute
 
         public void Perform()
         {
@@ -81,37 +77,10 @@ namespace PositionerDemo
         }
 
         //resta la cantidad de action points requeridos por la accion
-        private void RestActionPoints()
-        {
-            if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-
-            if (performerIOcuppy.Stats.ContainsKey(STATTYPE.ACTIONPOINTS))
-            {
-                StatModification statModification = new StatModification(performerIOcuppy, performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS], -actionPointsRequired, STATMODIFIERTYPE.NERF);
-                performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS].AddStatModifier(statModification);
-                performerIOcuppy.Stats[STATTYPE.ACTIONPOINTS].ApplyModifications();
-                //if (performerIOcuppy.Stats[ACTIONPOINTSTATID].ActualStatValue == 0)
-                //{
-                //    Debug.Log("Llegue a Zero Action Points de Habilidad ACA DEBERIA ACTIVAR EL ON CHANGE TURN SI FUERA UN PLAYER....");
-                //}
-            }         
-        }
-
-        public int GetActionPointsRequiredToUseAbility()
-        {
-            return actionPointsRequired;
-        }
-
-        public void AddAbilityModifier(AbilityModifier modifier)
-        {
-            abilityModifier.Add(modifier);
-        }
-
-        public void RemoveAbilityModifier(AbilityModifier modifier)
-        {
-            abilityModifier.Remove(modifier);
-        }
-
+        private void RestActionPoints() => Invoker.AddNewCommand(new IRestActionPointsCommand(performerIOcuppy, actionPointsRequired));
+        public void AddAbilityModifier(AbilityModifier modifier) => Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(this, modifier));
+        public void RemoveAbilityModifier(AbilityModifier modifier) => Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(this, modifier));
+        public int GetActionPointsRequiredToUseAbility() => actionPointsRequired;
         public bool IsModifierApply(int modifierID)
         {
             if (abilityModifier.Count == 0) return false;
@@ -124,5 +93,6 @@ namespace PositionerDemo
             }
             return false;
         }
+
     }
 }

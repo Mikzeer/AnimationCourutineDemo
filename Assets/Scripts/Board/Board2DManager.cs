@@ -5,13 +5,9 @@ namespace PositionerDemo
 {
     public class Board2DManager
     {
-        private Tile[,] _gridArray; // Aca van a estar guardadas todas las tiles
-        public Tile[,] GridArray { get => _gridArray; private set => _gridArray = value; }
-        private int _columns; // widht
-        public int columnsWidht { get => _columns; private set => _columns = value; }
-        private int _rows; // height
-        public int rowsHeight { get => _rows; private set => _rows = value; }
-
+        public Tile[,] GridArray { get; private set; }
+        public int columnsWidht { get; private set; }
+        public int rowsHeight { get; private set; }
         private Vector3 originPosition;
         private float tileSize;
         private Board2DManagerUI board2DManagerUI;
@@ -22,13 +18,13 @@ namespace PositionerDemo
             // a la cantidad de columnas que tenga nuestro grid le vamos a agregar dos de cada lado
             // entonces si es de 5 filas por 7 columnas va a quedar de 5 filas por 11 columnas
             // le sumamos 4 para el espacio de la base del jugado 1 y del jugador 2
-            _columns = columnsWidht + 4;
-            _rows = rowsHeight;
+            this.columnsWidht = columnsWidht + 4;
+            this.rowsHeight = rowsHeight;
             tileSize = 4;
-            originPosition = board2DManagerUI.LoadSizeAndGetOriginPosition(_rows, _columns);
-            GridArray = new Tile[_columns, _rows];
+            originPosition = board2DManagerUI.LoadSizeAndGetOriginPosition(this.rowsHeight, this.columnsWidht);
+            GridArray = new Tile[this.columnsWidht, this.rowsHeight];
 
-            board2DCreator = new Board2DCreator(board2DManagerUI, this, _rows, _columns);
+            board2DCreator = new Board2DCreator(board2DManagerUI, this, this.rowsHeight, this.columnsWidht);
         }
 
         public Motion CreateBoard(Player[] players, Action OnBoardLoadComplete)
@@ -84,7 +80,7 @@ namespace PositionerDemo
 
         public Tile GetGridObject(int x, int y)
         {
-            if (x >= 0 && y >= 0 && x < _columns && y < _rows)
+            if (x >= 0 && y >= 0 && x < columnsWidht && y < rowsHeight)
             {
                 return GridArray[x, y];
             }
@@ -105,5 +101,6 @@ namespace PositionerDemo
         {
             return tileSize;
         }
+
     }
 }

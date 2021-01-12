@@ -10,11 +10,6 @@ namespace PositionerDemo
         private const int ACTIONPOINTSREQUIRED = 1;
         private Player player;
 
-        public static Action<TakeCardAbilityEventInfo> OnActionStartExecute { get; set; }
-        public static Action<TakeCardAbilityEventInfo> OnActionEndExecute { get; set; }
-
-        public TakeCardAbilityEventInfo takeCardAbilityInfo;
-
         public TakeCardAbility(IOcuppy performerIOcuppy) : base(TAKECARDABILITYID, performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
         {
             actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
@@ -26,35 +21,6 @@ namespace PositionerDemo
 
         public override void SetRequireGameData(TakeCardAbilityEventInfo gameData)
         {            
-        }
-
-        public override bool OnTryEnter()
-        {
-            // 1- TENER LOS AP NECESARIOS
-            if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
-            {
-                return false;
-            }
-
-            // 2- TENER UN PLAYER Y QUE TENGA CARDS EN SU MAZO
-            if (player != null)
-            {
-                if (player.Deck.Count <= 0)
-                {
-                    Debug.Log("TakeCardAbility: No Cards On Deck");
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public override void OnResetActionExecution()
-        {
-            if (GameCreator.Instance.turnManager.GetActualPlayerTurn() == player)
-            {
-                //Debug.Log("Reseteaer la Take Card Hability Player:" + player.PlayerID);
-                actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
-            }
         }
 
         public override bool OnTryExecute()
@@ -106,7 +72,7 @@ namespace PositionerDemo
 
         public override void OnEndExecute()
         {
-            OnActionEndExecute?.Invoke(takeCardAbilityInfo);
+            OnActionEndExecute?.Invoke(abilityInfo);
         }
     }
 }

@@ -107,13 +107,13 @@ namespace PositionerDemo
             spawnIndexID++;
 
             GameObject goKimbok = GameObject.Instantiate(GameCreator.Instance.kimbokoPrefab);
-            kimboko.SetGameObject(goKimbok);
+            kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(goKimbok, goKimbok.GetComponent<Animator>()));
 
             if (TileObject.IsOccupied())
             {
-                if (TileObject.GetOccupier().OccupierType == OCUPPIERTYPE.UNIT)
+                if (TileObject.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
                 {
-                    Kimboko unit = (Kimboko)TileObject.GetOccupier();
+                    Kimboko unit = (Kimboko)TileObject.GetOcuppy();
 
                     if (unit.OwnerPlayerID != player.PlayerID)
                     {

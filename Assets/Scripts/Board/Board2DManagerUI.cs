@@ -66,20 +66,20 @@ namespace PositionerDemo
                 {
                     if (x == 0 || x == 1)
                     {
-                        tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                         tiles[x, y].transform.SetParent(tileParent.transform);
                         continue;
                     }
                     if (x == 9 || x == 10)
                     {
-                        tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                         tiles[x, y].transform.SetParent(tileParent.transform);
                         continue;
                     }
 
                     Vector3 thisTileFinalPosition = board2D.GetGridObject(x, y).GetRealWorldLocation();
 
-                    tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                     tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
                     tiles[x, y].transform.SetParent(tileParent.transform);
 
@@ -119,14 +119,14 @@ namespace PositionerDemo
         {
             Vector2 position = new Vector2(boardHolderPosX + posX * tileHeight, boardHolderPosY + posY * tileWidth);
             GameObject goAuxTile = Instantiate(baseTilePrefab, position, Quaternion.identity);
-            spawnTile.SetGameObject(goAuxTile);
+            spawnTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
         }
 
         public void CreateBattlefiledTileHorizontal(int posX, int posY, BattlefieldTile battlefieldTile)
         {
             Vector2 position = new Vector2(boardHolderPosX + posX * tileHeight, boardHolderPosY + posY * tileWidth);
             GameObject goAuxTile = Instantiate(tilePrefab, position, Quaternion.identity);
-            battlefieldTile.SetGameObject(goAuxTile);
+            battlefieldTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
         }
 
         public void CreateBaseNexoTile(BaseNexoTile baseNexoTile, bool isPlayerOne)
@@ -141,7 +141,7 @@ namespace PositionerDemo
                 position = new Vector2(posInitXJug2, 0);
             }
             GameObject goAuxTile = Instantiate(playerTilePrefab, position, Quaternion.identity);
-            baseNexoTile.SetGameObject(goAuxTile);
+            baseNexoTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
         }
 
         public Vector3 GetPlayerNexusWorldPosition(bool isPlayerOne)

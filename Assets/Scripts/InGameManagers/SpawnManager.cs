@@ -60,6 +60,12 @@ namespace PositionerDemo
                 Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
+
+            if (player.GetCurrentActionPoints() < spw.GetActionPointsRequiredToUseAbility())
+            {
+                return;
+            }
+
             //spw.Set(TileObject);
             SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject);
             spw.SetRequireGameData(spwInf);
@@ -99,7 +105,7 @@ namespace PositionerDemo
             Kimboko kimboko = GetNewKimboko(player, spawnIndexID);
             GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
 
-            kimboko.SetGameObject(goKimboko);
+            kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(goKimboko, goKimboko.GetComponent<Animator>()));
 
             ISpawnCommand spawnCommand = new ISpawnCommand(TileObject, player, kimboko);
             Invoker.AddNewCommand(spawnCommand);
@@ -113,9 +119,9 @@ namespace PositionerDemo
         {
             if (TileObject.IsOccupied())
             {
-                if (TileObject.GetOccupier().OccupierType == OCUPPIERTYPE.UNIT)
+                if (TileObject.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
                 {
-                    Kimboko unit = (Kimboko)TileObject.GetOccupier();
+                    Kimboko unit = (Kimboko)TileObject.GetOcuppy();
 
                     if (unit.OwnerPlayerID != player.PlayerID)
                     {

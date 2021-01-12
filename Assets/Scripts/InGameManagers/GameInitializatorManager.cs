@@ -153,20 +153,20 @@ namespace PositionerDemo
                 {
                     if (x == 0 || x == 1)
                     {
-                        tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                         tiles[x, y].transform.SetParent(tileParent.transform);
                         continue;
                     }
                     if (x == 9 || x == 10)
                     {
-                        tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                         tiles[x, y].transform.SetParent(tileParent.transform);
                         continue;
                     }
 
                     Vector3 thisTileFinalPosition = board2D.GetGridObject(x, y).GetRealWorldLocation();
 
-                    tiles[x, y] = board2D.GridArray[x, y].GetTransform().gameObject;
+                    tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
                     tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
                     tiles[x, y].transform.SetParent(tileParent.transform);
 

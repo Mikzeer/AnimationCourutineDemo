@@ -8,7 +8,7 @@ public class FilterOccupier : IFiltterOccupierStrategy
 
         if (tile2D.IsOccupied())
         {
-            return tile2D.GetOccupier();
+            return tile2D.GetOcuppy();
         }
         return null;
     }

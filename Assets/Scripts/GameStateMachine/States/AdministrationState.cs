@@ -57,14 +57,7 @@ public class AdministrationState : TimeConditionState
             {
                 if (TileObject != null)
                 {
-                    if (gameCreator.turnManager.GetActualPlayerTurn().Abilities[ABILITYTYPE.SPAWN].OnTryEnter() == true)
-                    {
-                        gameCreator.spawnCotroller.OnTrySpawn(TileObject, gameCreator.turnManager.GetActualPlayerTurn());
-                    }
-                    else
-                    {
-                        Debug.Log("CANT ENTER");
-                    }
+                    gameCreator.spawnCotroller.OnTrySpawn(TileObject, gameCreator.turnManager.GetActualPlayerTurn());
                 }
             }
         }
