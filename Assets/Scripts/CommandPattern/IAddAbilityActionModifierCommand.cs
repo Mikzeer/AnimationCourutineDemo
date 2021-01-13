@@ -4,7 +4,6 @@ namespace CommandPatternActions
     public class IAddAbilityActionModifierCommand : ICommand
     {
         public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool isRunning { get; set; }
         public bool logInsert { get; set; }
 
         AbilityAction ability;
@@ -14,16 +13,13 @@ namespace CommandPatternActions
         {
             this.ability = ability;
             this.abilityModifier = abilityModifier;
+            logInsert = true;
         }
 
         public void Execute()
         {
-            isRunning = true;
-
-            ability.AddAbilityModifier(abilityModifier);
-
+            ability.abilityModifier.Add(abilityModifier);
             executionState = COMMANDEXECUTINSTATE.FINISH;
-            isRunning = false;
         }
 
         public void Unexecute()

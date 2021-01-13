@@ -95,7 +95,7 @@ namespace PositionerDemo
 
         public override void OnStartExecute()
         {
-            //OnActionStarExecute?.Invoke(actor, ActionEventInformation);
+            OnActionStartExecute?.Invoke(abilityInfo);
         }
 
         public override void Execute()

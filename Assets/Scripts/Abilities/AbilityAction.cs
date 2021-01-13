@@ -29,7 +29,7 @@ namespace PositionerDemo
         private void StartActionModifierCheck() // Cuando empezamos a ejecuta esta accion y chequeamos los modificadores de accion que se ejecutan al inicio de la ejecucion de la accion StartActionModifier
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-            abilityModifier.OrderBy(c => c.ModifierExecutionOrder);
+            abilityModifier = abilityModifier.OrderBy(c => c.ModifierExecutionOrder).ToList();
             for (int i = 0; i < abilityModifier.Count; i++)
             {
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.EARLY)
@@ -47,7 +47,7 @@ namespace PositionerDemo
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
 
-            abilityModifier.OrderBy(c => c.ModifierExecutionOrder);
+            abilityModifier = abilityModifier.OrderBy(c => c.ModifierExecutionOrder).ToList();
 
             for (int i = 0; i < abilityModifier.Count; i++)
             {

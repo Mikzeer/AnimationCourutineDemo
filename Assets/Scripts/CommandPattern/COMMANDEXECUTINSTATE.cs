@@ -3,7 +3,7 @@
     public enum COMMANDEXECUTINSTATE
     {
         WAITFOREXECUTION,
-        EXECUTE,
+        INEXECUTION,
         FINISH,
         ABORT,
         CANCEL

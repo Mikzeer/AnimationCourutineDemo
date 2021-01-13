@@ -90,7 +90,7 @@ namespace PositionerDemo
 
         public void Spawn(Tile TileObject, Player player, int spawnIndexID)
         {
-            if (TileObject.IsOccupied())
+            if (TileObject.IsOccupied() && TileObject.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
             {
                 CombineSpawn(TileObject, player, spawnIndexID);
             }
@@ -117,18 +117,11 @@ namespace PositionerDemo
 
         public void CombineSpawn(Tile TileObject, Player player, int spawnIndexID)
         {
-            if (TileObject.IsOccupied())
-            {
-                if (TileObject.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
-                {
-                    Kimboko unit = (Kimboko)TileObject.GetOcuppy();
+            Kimboko unit = (Kimboko)TileObject.GetOcuppy();
+            if (unit == null) return;
+            if (unit.OwnerPlayerID != player.PlayerID) return;
 
-                    if (unit.OwnerPlayerID != player.PlayerID)
-                    {
-                        // SPAWN COMBINABLE SI SE PUEDE....
-                    }
-                }
-            }
+            //bool canCombine = CombineKimbokoRules.CanICombineWithPoints()
         }
 
         public Kimboko GetNewKimboko(Player player, int spawnIndexID)

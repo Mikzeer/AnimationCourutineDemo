@@ -18,17 +18,20 @@ namespace CommandPatternActions
 
         public static void ExecuteCommands()
         {
+            int countDown = 10;
             for (int i = 0; i < commandsToExecute.Count; i++)
             {
-                if (commandsToExecute[i].isRunning) continue;
-
+                countDown--;
+                if (countDown == 0)
+                {
+                    return;
+                }
                 switch (commandsToExecute[i].executionState)
                 {
                     case COMMANDEXECUTINSTATE.WAITFOREXECUTION:
                         commandsToExecute[i].Execute();
-                        commandsToExecute[i].executionState = COMMANDEXECUTINSTATE.EXECUTE;
                         break;
-                    case COMMANDEXECUTINSTATE.EXECUTE: // NO ESTA ESPERANDO Y SE ESTA EJECUTANDO... POR LAS DUDAS
+                    case COMMANDEXECUTINSTATE.INEXECUTION: // NO ESTA ESPERANDO Y SE ESTA EJECUTANDO... POR LAS DUDAS
                         continue;
                     case COMMANDEXECUTINSTATE.FINISH:
                         if (commandsToExecute[i].logInsert == true) CommandLogSaver.AddCommandToUndo(commandsToExecute[i]);

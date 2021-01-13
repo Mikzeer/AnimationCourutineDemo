@@ -70,6 +70,11 @@ namespace PositionerDemo
             return null;
         }
 
+        public virtual ICommand ExpireCmd()
+        {
+            return null;
+        }
+
     }
 
 }

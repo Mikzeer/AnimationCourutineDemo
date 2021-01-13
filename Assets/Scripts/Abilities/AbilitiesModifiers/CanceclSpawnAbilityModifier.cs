@@ -14,7 +14,6 @@ namespace PositionerDemo
             this.performerIOcuppy = performerIOcuppy;
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
             executeOnShot = false;
-            //Enter();
         }
 
         public CanceclSpawnAbilityModifier() : base(ABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
@@ -24,8 +23,7 @@ namespace PositionerDemo
         }
 
         public override void Enter()
-        {
-            
+        {            
             if (performerIOcuppy.Abilities.ContainsKey(abilityType))
             {
                 performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
@@ -46,7 +44,7 @@ namespace PositionerDemo
                 {
                     Debug.Log("cencelo el spawn");
                     abilityAction.actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
-                    Expire();
+                    Invoker.AddNewCommand(ExpireCmd());
                 }
             }
         }
@@ -63,6 +61,11 @@ namespace PositionerDemo
             performerIOcuppy.Abilities[ABILITYTYPE.SPAWN].RemoveAbilityModifier(this);
         }
 
-    }
+        public override ICommand ExpireCmd()
+        {
+            IRemoveAbilityActionModifierCommand remove = new IRemoveAbilityActionModifierCommand(performerIOcuppy.Abilities[ABILITYTYPE.SPAWN], this);
+            return remove;
+        }
 
+    }
 }

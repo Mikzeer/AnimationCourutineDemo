@@ -4,7 +4,6 @@ namespace CommandPatternActions
     public class ISpawnCommand : ICommand
     {
         public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool isRunning { get; set; }
         public bool logInsert { get; set; }
 
         Tile TileObject;
@@ -15,16 +14,14 @@ namespace CommandPatternActions
             logInsert = true;
             this.TileObject = TileObject;
             this.player = player;
-            this.kimboko = kimboko;
+            this.kimboko = kimboko;            
         }
 
         public void Execute()
         {
-            isRunning = true;
             TileObject.OcupyTile(kimboko);
             player.AddUnit(kimboko);
             executionState = COMMANDEXECUTINSTATE.FINISH;
-            isRunning = false;
         }
 
         public void Unexecute()

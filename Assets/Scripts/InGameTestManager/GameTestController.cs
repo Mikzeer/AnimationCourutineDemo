@@ -53,14 +53,13 @@ namespace PositionerDemo
             playerTwo.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerTwo), OccupierStatDatabase.CreatePlayerStat());
 
             // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
-            //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
-            //SpawnAbility spw = (SpawnAbility)playerOne.Abilityes[ABILITYTYPE.SPAWN];
-            //Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, ab));
-            //CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
-            //Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(spw, cancelSpawn));
+            ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
+            SpawnAbility spw = (SpawnAbility)playerOne.Abilities[ABILITYTYPE.SPAWN];
+            spw.AddAbilityModifier(ab);
+            CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
+            spw.AddAbilityModifier(cancelSpawn);
+            Invoker.ExecuteCommands();
 
-            //Invoker.ExecuteCommands();
-            
 
             players = new Player[2];
             players[0] = playerOne;
