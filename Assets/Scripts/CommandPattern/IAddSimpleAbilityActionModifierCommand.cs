@@ -1,31 +1,32 @@
 ﻿using PositionerDemo;
+using System.Collections.Generic;
 
 namespace CommandPatternActions
 {
-    public class IAddAbilityActionModifierCommand : ICommand
+    public class IAddSimpleAbilityActionModifierCommand : ICommand
     {
         public COMMANDEXECUTINSTATE executionState { get; set; }
         public bool logInsert { get; set; }
 
-        AbilityAction ability;
+        List<AbilityModifier> modifierList;
         AbilityModifier abilityModifier;
 
-        public IAddAbilityActionModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
+        public IAddSimpleAbilityActionModifierCommand(List<AbilityModifier> modifierList, AbilityModifier abilityModifier)
         {
-            this.ability = ability;
+            this.modifierList = modifierList;
             this.abilityModifier = abilityModifier;
             logInsert = true;
         }
 
         public void Execute()
         {
-            ability.abilityModifier.Add(abilityModifier);
+            modifierList.Add(abilityModifier);
             executionState = COMMANDEXECUTINSTATE.FINISH;
         }
 
         public void Unexecute()
         {
-            ability.RemoveAbilityModifier(abilityModifier);
+            modifierList.Remove(abilityModifier);
         }
     }
 }

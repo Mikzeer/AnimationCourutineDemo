@@ -136,7 +136,7 @@ namespace PositionerDemo
             }
 
 
-            if (takceCardAbility.OnTryExecute() == false)
+            if (takceCardAbility.CanIExecute() == false)
             {
                 Debug.Log("Fallo en el On Try Execte de la TakeCard Ability");
                 return;

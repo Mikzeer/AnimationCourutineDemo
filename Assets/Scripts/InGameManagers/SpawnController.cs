@@ -59,7 +59,7 @@ namespace PositionerDemo
                 return;
             }
 
-            if (spawnAbility.OnTryExecute() == false)
+            if (spawnAbility.CanIExecute() == false)
             {
                 Debug.Log("Fallo en el On Try Execte de la Spawn Ability");
                 return;

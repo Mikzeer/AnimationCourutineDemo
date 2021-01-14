@@ -5,13 +5,12 @@ namespace PositionerDemo
 {
     public class SpawnAbility : GenericAbilityAction<SpawnAbilityEventInfo>
     {
-        private const int SPAWNABILITYID = 0;
         private const ABILITYTYPE TYPEABILITY = ABILITYTYPE.SPAWN;
         private const int ACTIONPOINTSREQUIRED = 1;
         Tile selectedTile;        
         private Player player;
 
-        public SpawnAbility(IOcuppy performerIOcuppy) : base(SPAWNABILITYID, performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
+        public SpawnAbility(IOcuppy performerIOcuppy) : base(performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
         {
             actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
             if (performerIOcuppy.OccupierType == OCUPPIERTYPE.PLAYER)
@@ -23,13 +22,11 @@ namespace PositionerDemo
         public override void SetRequireGameData(SpawnAbilityEventInfo gameData)
         {
             selectedTile = gameData.spawnTile;
-            abilityInfo = new SpawnAbilityEventInfo(gameData.spawnerPlayer, gameData.spawnUnitType , gameData.spawnTile);
-            Debug.Log("Set Data Spawn Ability");
-            //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(player);
-            //AddAbilityModifier(ab);
+            actionInfo = new SpawnAbilityEventInfo(gameData.spawnerPlayer, gameData.spawnUnitType , gameData.spawnTile);
+            //Debug.Log("Set Data Spawn Ability");
         }
 
-        public override bool OnTryExecute()
+        public override bool CanIExecute()
         {
             // 1- TENER LOS AP NECESARIOS
             if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
@@ -93,31 +90,23 @@ namespace PositionerDemo
             return true;
         }
 
-        public override void OnStartExecute()
-        {
-            OnActionStartExecute?.Invoke(abilityInfo);
-        }
-
         public override void Execute()
         {
+            // ACA TAMBIEN SE DEBERIA CREAR EL CMD
+
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
             {
                 Debug.Log("SpawnAbility CANCEL");
                 return;
             }
 
-            if (OnTryExecute() == false)
+            if (CanIExecute() == false)
             {
                 actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
                 return;
             }
 
             actionStatus = ABILITYEXECUTIONSTATUS.STARTED;
-        }
-
-        public override void OnEndExecute()
-        {
-            OnActionEndExecute?.Invoke(abilityInfo);
         }
 
     }

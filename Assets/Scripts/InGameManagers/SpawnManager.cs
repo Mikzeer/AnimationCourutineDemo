@@ -69,7 +69,7 @@ namespace PositionerDemo
             //spw.Set(TileObject);
             SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject);
             spw.SetRequireGameData(spwInf);
-            if (spw.OnTryExecute() == false)
+            if (spw.CanIExecute() == false)
             {
                 Debug.Log("ERROR EN TRY EXECUTE DE LA HABILIDAD ");
                 return;

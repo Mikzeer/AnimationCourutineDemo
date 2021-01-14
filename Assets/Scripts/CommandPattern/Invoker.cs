@@ -18,14 +18,8 @@ namespace CommandPatternActions
 
         public static void ExecuteCommands()
         {
-            int countDown = 10;
             for (int i = 0; i < commandsToExecute.Count; i++)
             {
-                countDown--;
-                if (countDown == 0)
-                {
-                    return;
-                }
                 switch (commandsToExecute[i].executionState)
                 {
                     case COMMANDEXECUTINSTATE.WAITFOREXECUTION:
@@ -52,10 +46,6 @@ namespace CommandPatternActions
                         continue;
                 }
             }
-
-            // Mientras tengamos cmd en la lista para ejecutar vamos a seguir ejecutandolos hasta que terminen
-            // esto puede trabar potencialmente la ejecucion del programa...
-            //if (commandsToExecute.Count > 0) ExecuteCommands();
         }
     }
 }

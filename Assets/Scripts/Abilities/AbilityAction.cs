@@ -8,7 +8,6 @@ namespace PositionerDemo
     public abstract class AbilityAction
     {
         // Las ACTION son diferentes habilidades con las cuales puede contar todos los ACTORS del juego
-        public int ID { get; private set; }
         public ABILITYTYPE AbilityType { get; private set; }
         private int actionPointsRequired; // Cantidad de Action Points que requiera la accion para ejecutarse
         public IOcuppy performerIOcuppy { get; private set; }
@@ -16,16 +15,15 @@ namespace PositionerDemo
         public ABILITYEXECUTIONSTATUS actionStatus { get; set; }
         public List<AbilityModifier> abilityModifier { get; private set; }
 
-        public AbilityAction(int ID, IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
+        public AbilityAction(IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
         {
             this.performerIOcuppy = performerIOcuppy;
-            this.ID = ID;
             this.actionPointsRequired = actionPointsRequired;
             abilityModifier = new List<AbilityModifier>();
             this.AbilityType = abilityType;
         }
 
-        public abstract bool OnTryExecute();// Cuando queremos ver si podemos ejecutar esta accion CHEQUEA SI SE TIENE LOS AP NECESARIOS Y CUALQUIER COSA RELATIVA A LA ACTION EN SI        
+        public abstract bool CanIExecute();// Cuando queremos ver si podemos ejecutar esta accion CHEQUEA SI SE TIENE LOS AP NECESARIOS Y CUALQUIER COSA RELATIVA A LA ACTION EN SI        
         private void StartActionModifierCheck() // Cuando empezamos a ejecuta esta accion y chequeamos los modificadores de accion que se ejecutan al inicio de la ejecucion de la accion StartActionModifier
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
@@ -35,8 +33,7 @@ namespace PositionerDemo
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.EARLY)
                 {
                     Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
-                    // a reahabilitar
-                    //abilityModifier[i].Execute(this);
+                    Invoker.ExecuteCommands();
                     if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
                 }
             }
@@ -46,14 +43,13 @@ namespace PositionerDemo
         private void EndActionModifierCheck()// Cuando terminamos de ejecutar esta accion y chequeamos los modificadores de accion que se ejecutan al final de la ejecucion de la accion EndActionModifier
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-
             abilityModifier = abilityModifier.OrderBy(c => c.ModifierExecutionOrder).ToList();
-
             for (int i = 0; i < abilityModifier.Count; i++)
             {
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.LATE)
                 {
-                    abilityModifier[i].Execute(this);
+                    Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
+                    Invoker.ExecuteCommands();
                 }
             }
         }
@@ -61,8 +57,7 @@ namespace PositionerDemo
 
         public void Perform()
         {
-            //OnResetActionExecution();
-            if (OnTryExecute())
+            if (CanIExecute())
             {
                 if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
                 StartActionModifierCheck();
@@ -70,6 +65,15 @@ namespace PositionerDemo
                 OnStartExecute();
                 if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
                 Execute();
+
+                // ACA DEBERIA GENERAR EL COMANDO DONDE SE EJECUTA LA HABILIDAD
+
+                // Y LUEGO APLICAR TODOS LOS END MODIFIERS PARA QUE TENGA SENTIDO
+
+                // Y LUEGO RESTAR LOS PUNTOS
+
+                // Y LUEGO EJECUTAR EL EVENTO DONDE INFORMO A TODOS LOS QUE NECESITEN QUE TERMINE DE EJECUTARME
+
                 EndActionModifierCheck();
                 RestActionPoints();
                 OnEndExecute();
@@ -77,10 +81,26 @@ namespace PositionerDemo
         }
 
         //resta la cantidad de action points requeridos por la accion
-        private void RestActionPoints() => Invoker.AddNewCommand(new IRestActionPointsCommand(performerIOcuppy, actionPointsRequired));
-        public void AddAbilityModifier(AbilityModifier modifier) => Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(this, modifier));
-        public void RemoveAbilityModifier(AbilityModifier modifier) => Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(this, modifier));
+        private void RestActionPoints()
+        {
+            Invoker.AddNewCommand(new IRestActionPointsCommand(performerIOcuppy, actionPointsRequired));
+            Invoker.ExecuteCommands();
+        }
+
+        public void AddAbilityModifier(AbilityModifier modifier)
+        {
+            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(this, modifier));
+            Invoker.ExecuteCommands();
+        }
+
+        public void RemoveAbilityModifier(AbilityModifier modifier)
+        {
+            Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(this, modifier));
+            Invoker.ExecuteCommands();
+        }
+
         public int GetActionPointsRequiredToUseAbility() => actionPointsRequired;
+
         public bool IsModifierApply(int modifierID)
         {
             if (abilityModifier.Count == 0) return false;
@@ -94,5 +114,36 @@ namespace PositionerDemo
             return false;
         }
 
+    }
+
+    public abstract class Abilityy
+    {
+        public ABILITYTYPE AbilityType { get; private set; }
+        public IOcuppy performerIOcuppy { get; private set; }
+        private int actionPointsRequired; 
+
+        public ABILITYEXECUTIONSTATUS actionStatus { get; set; }
+        public List<AbilityModifier> abilityModifier { get; private set; }
+
+        public Abilityy(IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
+        {
+            this.performerIOcuppy = performerIOcuppy;
+            this.actionPointsRequired = actionPointsRequired;
+            abilityModifier = new List<AbilityModifier>();
+            this.AbilityType = abilityType;
+        }
+
+        // Cuando queremos ver si podemos ejecutar esta accion CHEQUEA SI SE TIENE LOS AP NECESARIOS Y CUALQUIER COSA RELATIVA A LA ACTION EN SI
+        public abstract bool CanIExecute();
+
+    }
+
+    public class AbilityManager
+    {
+        GameTestController gameTestController;
+        public AbilityManager(GameTestController gameTestController)
+        {
+            this.gameTestController = gameTestController;            
+        }
     }
 }

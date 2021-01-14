@@ -12,11 +12,14 @@ namespace PositionerDemo
         public Stack<Card> Deck { get; set; }
         public List<Card> PlayersHands { get; private set; }
         public List<Card> Graveyard { get; private set; }
+        // ACA ESTAN TODOS LOS MODIFIERS QUE SE ACTIVAN CON ALGUN EVENTO ESPECIFICO
+        public List<AbilityModifier> GeneralModifiers { get; private set;}
         #endregion
 
         public Player(int PlayerID)
         {
             kimbokoUnits = new List<Kimboko>();
+            GeneralModifiers = new List<AbilityModifier>();
             Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
             Stats = new Dictionary<STATTYPE, Stat>();
             this.PlayerID = PlayerID;

@@ -1,45 +1,26 @@
-﻿using UnityEngine;
+﻿using CommandPatternActions;
+using UnityEngine;
 
 namespace PositionerDemo
 {
-
-    public class DefendAbilityModifier : AbilityModifier
+    public class DefendAbilityModifier : TimeEventAbilityModifier
     {
         private const int DEFENDABILITYMODIFIFERID = 0;
         private const int MODIFEREXECUTIIONORDER = 0;
-        //private int takeDamageAbilityID = 6;
         int duration = 2;
-        ABILITYTYPE abilityType = ABILITYTYPE.TAKEDAMAGE;
-        public DefendAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
-        {
-            this.performerIOcuppy = performerIOcuppy;
-            executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
-            executeOnShot = false;
-            Enter();
-        }
-
-        public DefendAbilityModifier() : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        public DefendAbilityModifier(IOcuppy performerIOcuppy) : base(DEFENDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER, performerIOcuppy)
         {
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
-            executeOnShot = false;
         }
-
 
         public override void Enter()
         {
-            if (performerIOcuppy.Abilities.ContainsKey(abilityType))
-            {
-                AnimotionHandler.OnChangeTurn += Expire;
-                performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
-            }
+            TurnController.OnChangeTurn += RestDuration;
         }
 
         public override void Execute(AbilityAction abilityAction)
         {
-            base.Execute(abilityAction);
-
             Debug.Log("Enter DefendAbilityModifier ");
-
             if (abilityAction.AbilityType == ABILITYTYPE.TAKEDAMAGE)
             {
                 //TakeDamageAbility ab = (TakeDamageAbility)abilityAction;
@@ -53,17 +34,14 @@ namespace PositionerDemo
             }
         }
 
-        public override void Expire()
+        public override void RestDuration()
         {
             duration--;
             if (duration == 0)
             {
-                AnimotionHandler.OnChangeTurn -= Expire;
-                performerIOcuppy.Abilities[abilityType].RemoveAbilityModifier(this);
+                TurnController.OnChangeTurn -= RestDuration;
+                Invoker.AddNewCommand(ExpireCmd());
             }
-
         }
-
     }
-
 }

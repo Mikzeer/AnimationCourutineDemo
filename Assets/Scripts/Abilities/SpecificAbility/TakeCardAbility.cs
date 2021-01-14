@@ -5,12 +5,11 @@ namespace PositionerDemo
 {
     public class TakeCardAbility : GenericAbilityAction<TakeCardAbilityEventInfo>
     {
-        private const int TAKECARDABILITYID = 1;
         private const ABILITYTYPE TYPEABILITY = ABILITYTYPE.TAKEACARD;
         private const int ACTIONPOINTSREQUIRED = 1;
         private Player player;
 
-        public TakeCardAbility(IOcuppy performerIOcuppy) : base(TAKECARDABILITYID, performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
+        public TakeCardAbility(IOcuppy performerIOcuppy) : base(performerIOcuppy, ACTIONPOINTSREQUIRED, TYPEABILITY)
         {
             actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
             if (performerIOcuppy.OccupierType == OCUPPIERTYPE.PLAYER)
@@ -23,7 +22,7 @@ namespace PositionerDemo
         {            
         }
 
-        public override bool OnTryExecute()
+        public override bool CanIExecute()
         {
             // 1- TENER LOS AP NECESARIOS
             if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
@@ -48,11 +47,6 @@ namespace PositionerDemo
             return true;
         }
 
-        public override void OnStartExecute()
-        {
-            //OnActionStarExecute?.Invoke(actor, ActionEventInformation);
-        }
-
         public override void Execute()
         {
             if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
@@ -61,7 +55,7 @@ namespace PositionerDemo
                 return;
             }
 
-            if (OnTryExecute() == false)
+            if (CanIExecute() == false)
             {
                 actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
                 return;
@@ -70,9 +64,5 @@ namespace PositionerDemo
             actionStatus = ABILITYEXECUTIONSTATUS.STARTED;
         }
 
-        public override void OnEndExecute()
-        {
-            OnActionEndExecute?.Invoke(abilityInfo);
-        }
     }
 }

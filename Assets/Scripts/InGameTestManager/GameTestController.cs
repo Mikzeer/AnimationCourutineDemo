@@ -18,6 +18,7 @@ namespace PositionerDemo
         [Header("SPAWN MANAGER UI")]
         [SerializeField] private SpawnManagerUI spawnManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
         SpawnManager spawnManager;
+
         [Header("BOARD MANAGER UI")]
         [SerializeField] private Board2DManagerUI board2DManagerUI = default;
         Board2DManager board2DManager;
@@ -53,14 +54,16 @@ namespace PositionerDemo
             playerTwo.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerTwo), OccupierStatDatabase.CreatePlayerStat());
 
             // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
-            ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
-            SpawnAbility spw = (SpawnAbility)playerOne.Abilities[ABILITYTYPE.SPAWN];
-            spw.AddAbilityModifier(ab);
-            CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
-            spw.AddAbilityModifier(cancelSpawn);
+            //SpawnAbility spw = (SpawnAbility)playerOne.Abilities[ABILITYTYPE.SPAWN];
+            //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);
+            //spw.AddAbilityModifier(ab);
+            //CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
+            //spw.AddAbilityModifier(cancelSpawn);
+
+            TestAbilityModifier cnlEnemy = new TestAbilityModifier(playerTwo);
+            IAddSimpleAbilityActionModifierCommand simple = new IAddSimpleAbilityActionModifierCommand(playerTwo.GeneralModifiers, cnlEnemy);
+            Invoker.AddNewCommand(simple);
             Invoker.ExecuteCommands();
-
-
             players = new Player[2];
             players[0] = playerOne;
             players[1] = playerTwo;

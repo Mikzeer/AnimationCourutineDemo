@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CommandPatternActions;
+using UnityEngine;
 
 namespace PositionerDemo
 {
@@ -6,36 +7,14 @@ namespace PositionerDemo
     {
         private const int SHIELDABILITYMODIFIFERID = 1;
         private const int MODIFEREXECUTIIONORDER = 0;
-        //private int takeDamageAbilityID = 6;
-        ABILITYTYPE abilityType = ABILITYTYPE.TAKEDAMAGE;
-        public ShieldAbilityModifier(IOcuppy performerIOcuppy) : base(SHIELDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
-        {
-            this.performerIOcuppy = performerIOcuppy;
-            executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
-            executeOnShot = false;
-            Enter();
-        }
-
-        public ShieldAbilityModifier() : base(SHIELDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER)
+        public ShieldAbilityModifier(IOcuppy performerIOcuppy) : base(SHIELDABILITYMODIFIFERID, MODIFEREXECUTIIONORDER, performerIOcuppy)
         {
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
-            executeOnShot = false;
-        }
-
-        public override void Enter()
-        {
-            if (performerIOcuppy.Abilities.ContainsKey(abilityType))
-            {
-                performerIOcuppy.Abilities[abilityType].AddAbilityModifier(this);
-            }
         }
 
         public override void Execute(AbilityAction abilityAction)
         {
-            base.Execute(abilityAction);
-
             Debug.Log("Enter ShieldAbilityModifier ");
-
             if (abilityAction.AbilityType == ABILITYTYPE.TAKEDAMAGE)
             {
                 //TakeDamageAbility ab = (TakeDamageAbility)abilityAction;
@@ -48,11 +27,5 @@ namespace PositionerDemo
                 //}
             }           
         }
-
-        public override void Expire()
-        {
-            performerIOcuppy.Abilities[abilityType].RemoveAbilityModifier(this);
-        }
     }
-
 }
