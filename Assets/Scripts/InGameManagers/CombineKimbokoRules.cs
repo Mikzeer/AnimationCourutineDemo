@@ -48,7 +48,7 @@ namespace PositionerDemo
             }
         }
 
-        public static bool CanICobineAndEvolve(Kimboko combinerCharacter, Kimboko toCombineCharacter)
+        public static bool CanICombineAndEvolve(Kimboko combinerCharacter, Kimboko toCombineCharacter)
         {
             if (combinerCharacter.UnitType == UNITTYPE.FUSION || toCombineCharacter.UnitType == UNITTYPE.FUSION) return false;
             if (combinerCharacter.UnitType != UNITTYPE.X && toCombineCharacter.UnitType != UNITTYPE.X) return false;

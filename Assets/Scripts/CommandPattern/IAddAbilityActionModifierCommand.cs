@@ -7,10 +7,10 @@ namespace CommandPatternActions
         public COMMANDEXECUTINSTATE executionState { get; set; }
         public bool logInsert { get; set; }
 
-        AbilityAction ability;
+        IAbility ability;
         AbilityModifier abilityModifier;
 
-        public IAddAbilityActionModifierCommand(AbilityAction ability, AbilityModifier abilityModifier)
+        public IAddAbilityActionModifierCommand(IAbility ability, AbilityModifier abilityModifier)
         {
             this.ability = ability;
             this.abilityModifier = abilityModifier;
@@ -25,7 +25,9 @@ namespace CommandPatternActions
 
         public void Unexecute()
         {
-            ability.RemoveAbilityModifier(abilityModifier);
+            Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(ability, abilityModifier));
+            Invoker.ExecuteCommands();
+            //ability.RemoveAbilityModifier(abilityModifier);
         }
     }
 }

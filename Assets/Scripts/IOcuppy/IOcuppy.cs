@@ -7,10 +7,11 @@ namespace PositionerDemo
     {
         OCUPPIERTYPE OccupierType { get; }
         Dictionary<STATTYPE, Stat> Stats { get; }
-        Dictionary<ABILITYTYPE, AbilityAction> Abilities { get; }
+        Dictionary<ABILITYTYPE, IAbility> Abilities { get; }
         bool IsAlly { get; }
         int GetCurrentActionPoints();
         void ResetActionPoints(int amount);
-        void OnSelect(bool isSelected, int playerID); 
+        void OnSelect(bool isSelected, int playerID);
+        int OwnerPlayerID { get; }
     }
 }

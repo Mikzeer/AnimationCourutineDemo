@@ -18,11 +18,11 @@ namespace PositionerDemo
             this.ModifierExecutionOrder = ModifierExecutionOrder;
         }
 
-        public virtual void Execute(AbilityAction abilityAction)
+        public virtual void Execute(IAbility abilityAction)
         {
         }
 
-        public ICommand ExecuteCmd(AbilityAction abilityAction)
+        public ICommand ExecuteCmd(IAbility abilityAction)
         {
             IApplyModifierCommand applyModifierCommand = new IApplyModifierCommand(abilityAction, this);
             return applyModifierCommand;

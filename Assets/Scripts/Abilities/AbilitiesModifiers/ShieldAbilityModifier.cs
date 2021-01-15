@@ -12,7 +12,7 @@ namespace PositionerDemo
             executionTime = ABILITYMODIFIEREXECUTIONTIME.EARLY;
         }
 
-        public override void Execute(AbilityAction abilityAction)
+        public override void Execute(IAbility abilityAction)
         {
             Debug.Log("Enter ShieldAbilityModifier ");
             if (abilityAction.AbilityType == ABILITYTYPE.TAKEDAMAGE)

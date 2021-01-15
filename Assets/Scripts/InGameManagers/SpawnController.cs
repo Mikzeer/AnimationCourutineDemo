@@ -49,7 +49,7 @@ namespace PositionerDemo
 
             if (spawnAbility != null)
             {
-                SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject);
+                SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject, spawnIndexID);
                 spawnAbility.SetRequireGameData(spwInf);
                 //spawnAbility.Set(TileObject);
             }
@@ -66,7 +66,7 @@ namespace PositionerDemo
             }
             else
             {
-                spawnAbility.Perform();
+                //spawnAbility.Perform();
             }
 
             if (spawnAbility.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
@@ -180,7 +180,7 @@ namespace PositionerDemo
             configureAnimotion.Add(kimbokoIdlleConfigureAnimotion);
             KimbokoIdlleConfigureAnimotion<Animator, Transform> craneIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(GameCreator.Instance.Crane.GetComponent<Animator>(), 6);
             configureAnimotion.Add(craneIdlleConfigureAnimotion);
-            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.SPAWN], 6);
+            AbilityActionStatusConfigureAnimotion<IAbility, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<IAbility, Transform>(player.Abilities[ABILITYTYPE.SPAWN], 6);
             configureAnimotion.Add(abActionConfigureAnimotion);
 
             CombineMotion combinMoveMotion = new CombineMotion(GameCreator.Instance, 1, motionsSpawn, configureAnimotion);

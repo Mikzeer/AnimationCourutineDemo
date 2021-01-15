@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class TakeCardAbility : GenericAbilityAction<TakeCardAbilityEventInfo>
+    public class TakeCardAbility : Ability<TakeCardAbilityEventInfo>
     {
         private const ABILITYTYPE TYPEABILITY = ABILITYTYPE.TAKEACARD;
         private const int ACTIONPOINTSREQUIRED = 1;
@@ -24,6 +24,8 @@ namespace PositionerDemo
 
         public override bool CanIExecute()
         {
+            if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return false;
+
             // 1- TENER LOS AP NECESARIOS
             if (performerIOcuppy.GetCurrentActionPoints() < GetActionPointsRequiredToUseAbility())
             {
@@ -46,23 +48,5 @@ namespace PositionerDemo
             // ENTONCES EL SERVER TE DICE SI, PODES LEVANTAR CARD
             return true;
         }
-
-        public override void Execute()
-        {
-            if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
-            {
-                Debug.Log("TakeCardAbility CANCEL");
-                return;
-            }
-
-            if (CanIExecute() == false)
-            {
-                actionStatus = ABILITYEXECUTIONSTATUS.CANCELED;
-                return;
-            }
-
-            actionStatus = ABILITYEXECUTIONSTATUS.STARTED;
-        }
-
     }
 }

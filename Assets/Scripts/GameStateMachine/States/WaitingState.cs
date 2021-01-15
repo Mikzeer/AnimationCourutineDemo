@@ -5,10 +5,10 @@ using UnityEngine;
 public class WaitingState : TimeConditionState
 {
     private const string name = "ADMINISTRATION";
-    List<AbilityAction> UnfinishActions;
+    List<IAbility> UnfinishActions;
     State nextState;
 
-    public WaitingState(int duration, GameCreator gameCreator, List<AbilityAction> UnfinishActions, State nextState) : base(duration, gameCreator, name)
+    public WaitingState(int duration, GameCreator gameCreator, List<IAbility> UnfinishActions, State nextState) : base(duration, gameCreator, name)
     {
         this.UnfinishActions = UnfinishActions;
         this.nextState = nextState;

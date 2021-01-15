@@ -17,15 +17,15 @@ namespace PositionerDemo
 
         public override void Enter()
         {
-            SpawnAbility.OnActionEndExecute += OnEnemySpawnExecute;
+            SpawnAbility.OnActionStartExecute += OnEnemySpawnExecute;
         }
 
         public override void RestDuration()
         {
-            SpawnAbility.OnActionEndExecute -= OnEnemySpawnExecute;
+            SpawnAbility.OnActionStartExecute -= OnEnemySpawnExecute;
         }
 
-        public override void Execute(AbilityAction abilityAction)
+        public override void Execute(IAbility abilityAction)
         {
 
             if (info.spawnerPlayer.kimbokoUnits.Count > 0)
@@ -35,7 +35,7 @@ namespace PositionerDemo
             else
             {
                 Debug.Log("Es zero");
-                return;
+                //return;
             }
             
 

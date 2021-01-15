@@ -10,6 +10,7 @@
 
         public override ICardTarget CheckTarget(ICardTarget cardTarget)
         {
+            //TODO: IsAlly no se setea desde ningun lado, asi que es una chotada
             IOcuppy ocuppier = cardTarget.GetOcuppy();
             if (ocuppier == null) return null;
             if (ocuppier.IsAlly != isAlly) return null;

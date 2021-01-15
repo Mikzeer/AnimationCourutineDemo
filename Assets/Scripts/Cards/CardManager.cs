@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace PositionerDemo
 {
-    public class CardManager
+    public class CardManager : AbilityManager
     {
         Dictionary<int, Card> allCards = new Dictionary<int, Card>();
         int cardIndex = 0;
@@ -143,7 +143,7 @@ namespace PositionerDemo
             }
             else
             {
-                takceCardAbility.Perform();
+                //takceCardAbility.Perform();
             }
 
             if (takceCardAbility.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
@@ -248,7 +248,7 @@ namespace PositionerDemo
 
                 configurables.Add(cardHandSetParentConfigAnimotion);
 
-                AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
+                AbilityActionStatusConfigureAnimotion<IAbility, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<IAbility, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
                 configurables.Add(abActionConfigureAnimotion);
 
 
@@ -457,7 +457,7 @@ namespace PositionerDemo
 
             configurables.Add(cardHandSetParentConfigAnimotion);
 
-            AbilityActionStatusConfigureAnimotion<AbilityAction, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<AbilityAction, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
+            AbilityActionStatusConfigureAnimotion<IAbility, Transform> abActionConfigureAnimotion = new AbilityActionStatusConfigureAnimotion<IAbility, Transform>(player.Abilities[ABILITYTYPE.TAKEACARD], 4);
             configurables.Add(abActionConfigureAnimotion);
 
             CombineMotion combineMoveMotion = new CombineMotion(this, 1, motionsSpawn, configurables);

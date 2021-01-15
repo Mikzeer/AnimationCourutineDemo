@@ -32,7 +32,7 @@ namespace PositionerDemo
             {
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.EARLY)
                 {
-                    Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
+                    //Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
                     Invoker.ExecuteCommands();
                     if (actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
                 }
@@ -48,7 +48,7 @@ namespace PositionerDemo
             {
                 if (abilityModifier[i].executionTime == ABILITYMODIFIEREXECUTIONTIME.LATE)
                 {
-                    Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
+                    //Invoker.AddNewCommand(abilityModifier[i].ExecuteCmd(this));
                     Invoker.ExecuteCommands();
                 }
             }
@@ -89,13 +89,13 @@ namespace PositionerDemo
 
         public void AddAbilityModifier(AbilityModifier modifier)
         {
-            Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(this, modifier));
+            //Invoker.AddNewCommand(new IAddAbilityActionModifierCommand(this, modifier));
             Invoker.ExecuteCommands();
         }
 
         public void RemoveAbilityModifier(AbilityModifier modifier)
         {
-            Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(this, modifier));
+            //Invoker.AddNewCommand(new IRemoveAbilityActionModifierCommand(this, modifier));
             Invoker.ExecuteCommands();
         }
 
@@ -114,36 +114,11 @@ namespace PositionerDemo
             return false;
         }
 
-    }
-
-    public abstract class Abilityy
-    {
-        public ABILITYTYPE AbilityType { get; private set; }
-        public IOcuppy performerIOcuppy { get; private set; }
-        private int actionPointsRequired; 
-
-        public ABILITYEXECUTIONSTATUS actionStatus { get; set; }
-        public List<AbilityModifier> abilityModifier { get; private set; }
-
-        public Abilityy(IOcuppy performerIOcuppy, int actionPointsRequired, ABILITYTYPE abilityType)
+        public List<AbilityModifier> GetAbilityModifierOrderByExecution()
         {
-            this.performerIOcuppy = performerIOcuppy;
-            this.actionPointsRequired = actionPointsRequired;
-            abilityModifier = new List<AbilityModifier>();
-            this.AbilityType = abilityType;
+            abilityModifier = abilityModifier.OrderBy(c => c.ModifierExecutionOrder).ToList();
+            return abilityModifier;
         }
 
-        // Cuando queremos ver si podemos ejecutar esta accion CHEQUEA SI SE TIENE LOS AP NECESARIOS Y CUALQUIER COSA RELATIVA A LA ACTION EN SI
-        public abstract bool CanIExecute();
-
-    }
-
-    public class AbilityManager
-    {
-        GameTestController gameTestController;
-        public AbilityManager(GameTestController gameTestController)
-        {
-            this.gameTestController = gameTestController;            
-        }
     }
 }

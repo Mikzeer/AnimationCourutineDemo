@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class GameTestController : MonoBehaviour
+    public class GameTestController : MonoBehaviour, IGame
     {
         #region VARIABLES
         public enum UPDATESTATE
@@ -17,11 +17,10 @@ namespace PositionerDemo
         public UPDATESTATE updateState = UPDATESTATE.ACTION;
         [Header("SPAWN MANAGER UI")]
         [SerializeField] private SpawnManagerUI spawnManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
-        SpawnManager spawnManager;
-
+        public SpawnManager spawnManager { get; private set; }
         [Header("BOARD MANAGER UI")]
         [SerializeField] private Board2DManagerUI board2DManagerUI = default;
-        Board2DManager board2DManager;
+        public Board2DManager board2DManager { get; private set; }
         [Header("TILE SELECTION MANAGER UI")]
         [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI = default;
         [Header("TOGGLE CONTROLLER")]
@@ -60,10 +59,10 @@ namespace PositionerDemo
             //CanceclSpawnAbilityModifier cancelSpawn = new CanceclSpawnAbilityModifier(playerOne);
             //spw.AddAbilityModifier(cancelSpawn);
 
-            TestAbilityModifier cnlEnemy = new TestAbilityModifier(playerTwo);
-            IAddSimpleAbilityActionModifierCommand simple = new IAddSimpleAbilityActionModifierCommand(playerTwo.GeneralModifiers, cnlEnemy);
-            Invoker.AddNewCommand(simple);
-            Invoker.ExecuteCommands();
+            //TestAbilityModifier cnlEnemy = new TestAbilityModifier(playerTwo);
+            //IAddSimpleAbilityActionModifierCommand simple = new IAddSimpleAbilityActionModifierCommand(playerTwo.GeneralModifiers, cnlEnemy);
+            //Invoker.AddNewCommand(simple);
+            //Invoker.ExecuteCommands();
             players = new Player[2];
             players[0] = playerOne;
             players[1] = playerTwo;
@@ -110,7 +109,6 @@ namespace PositionerDemo
                 default:
                     break;
             }
-
             Invoker.ExecuteCommands();
             InvokerMotion.StartExecution(this);
         }

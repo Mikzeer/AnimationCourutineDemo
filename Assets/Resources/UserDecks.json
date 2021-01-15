@@ -187,44 +187,6 @@
                     }
                 ]
             }
-        },
-        {
-            "ID": 88,
-            "userDeck": {
-                "ID": 88,
-                "name": "Pija",
-                "totalCards": 11,
-                "userDeckJson": [
-                    {
-                        "ID": "CardID7",
-                        "Amount": 1
-                    },
-                    {
-                        "ID": "CardID8",
-                        "Amount": 3
-                    },
-                    {
-                        "ID": "CardID11",
-                        "Amount": 1
-                    },
-                    {
-                        "ID": "CardID1",
-                        "Amount": 3
-                    },
-                    {
-                        "ID": "CardID9",
-                        "Amount": 1
-                    },
-                    {
-                        "ID": "CardID28",
-                        "Amount": 1
-                    },
-                    {
-                        "ID": "CardID23",
-                        "Amount": 1
-                    }
-                ]
-            }
         }
     ]
 }

@@ -18,7 +18,7 @@ namespace PositionerDemo
             TurnController.OnChangeTurn += RestDuration;
         }
 
-        public override void Execute(AbilityAction abilityAction)
+        public override void Execute(IAbility abilityAction)
         {
             Debug.Log("Enter DefendAbilityModifier ");
             if (abilityAction.AbilityType == ABILITYTYPE.TAKEDAMAGE)

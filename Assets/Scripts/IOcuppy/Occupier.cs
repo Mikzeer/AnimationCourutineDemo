@@ -6,7 +6,7 @@ namespace PositionerDemo
     {
         public OCUPPIERTYPE OccupierType { get; protected set; }
         public CARDTARGETTYPE CardTargetType { get; protected set; }
-        public Dictionary<ABILITYTYPE, AbilityAction> Abilities { get; protected set; }
+        public Dictionary<ABILITYTYPE, IAbility> Abilities { get; protected set; }
         public Dictionary<STATTYPE, Stat> Stats { get; protected set; }
         public GameObjectAnimatorContainer goAnimContainer { get; protected set; }
         public bool IsAlly { get; protected set; }

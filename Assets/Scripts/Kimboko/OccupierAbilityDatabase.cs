@@ -4,9 +4,9 @@ namespace PositionerDemo
 {
     public static class OccupierAbilityDatabase
     {
-        public static Dictionary<ABILITYTYPE, AbilityAction> CreatePlayerAbilities(Player player)
+        public static Dictionary<ABILITYTYPE, IAbility> CreatePlayerAbilities(Player player)
         {
-            Dictionary<ABILITYTYPE, AbilityAction> Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
+            Dictionary<ABILITYTYPE, IAbility> Abilities = new Dictionary<ABILITYTYPE, IAbility>();
             SpawnAbility spawnAbility = new SpawnAbility(player);
             TakeCardAbility takeCardAbility = new TakeCardAbility(player);
             Abilities.Add(spawnAbility.AbilityType, spawnAbility);

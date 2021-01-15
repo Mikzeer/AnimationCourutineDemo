@@ -20,9 +20,10 @@ namespace PositionerDemo
         {
             kimbokoUnits = new List<Kimboko>();
             GeneralModifiers = new List<AbilityModifier>();
-            Abilities = new Dictionary<ABILITYTYPE, AbilityAction>();
+            Abilities = new Dictionary<ABILITYTYPE, IAbility>();
             Stats = new Dictionary<STATTYPE, Stat>();
             this.PlayerID = PlayerID;
+            OwnerPlayerID = PlayerID;
             this.playerType = PLAYERTYPE.PLAYER;
             OccupierType = OCUPPIERTYPE.PLAYER;
             CardTargetType = CARDTARGETTYPE.BASENEXO;
@@ -35,7 +36,7 @@ namespace PositionerDemo
             Debug.Log("PLAYER SELECTED");
         }
        
-        public void SetStatsAndAbilities(Dictionary<ABILITYTYPE, AbilityAction> Ability, Dictionary<STATTYPE, Stat> Sttats)
+        public void SetStatsAndAbilities(Dictionary<ABILITYTYPE, IAbility> Ability, Dictionary<STATTYPE, Stat> Sttats)
         {
             this.Abilities = Ability;
             this.Stats = Sttats;
@@ -56,7 +57,7 @@ namespace PositionerDemo
             kimbokoUnits.Remove(kimbokoUnit);
         }
 
-        public AbilityAction GetAbility(ABILITYTYPE abilityType)
+        public IAbility GetAbility(ABILITYTYPE abilityType)
         {
             if (Abilities.ContainsKey(abilityType)) return Abilities[abilityType];
             return null;

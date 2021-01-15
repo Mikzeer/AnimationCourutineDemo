@@ -6,10 +6,10 @@ namespace CommandPatternActions
         public COMMANDEXECUTINSTATE executionState { get; set; }
         public bool logInsert { get; set; }
 
-        AbilityAction ability;
+        IAbility ability;
         AbilityModifier modifier;
 
-        public IRemoveAbilityActionModifierCommand(AbilityAction ability, AbilityModifier modifier)
+        public IRemoveAbilityActionModifierCommand(IAbility ability, AbilityModifier modifier)
         {
             this.ability = ability;
             this.modifier = modifier;
