@@ -27,6 +27,7 @@ namespace PositionerDemo
         [SerializeField] private ToggleController toggleController = default;
         MouseController mouseController;
         Player[] players;
+        public CombineManager combineManager { get; private set; }
         #endregion
 
         private void Start()
@@ -37,7 +38,8 @@ namespace PositionerDemo
             Motion motion = board2DManager.CreateBoard(players, OnBoardComplete);
             InvokerMotion.AddNewMotion(motion);
             InvokerMotion.StartExecution(this);
-            spawnManager = new SpawnManager(spawnManagerUI);
+            spawnManager = new SpawnManager(spawnManagerUI, this);
+            combineManager = new CombineManager(this);
             SpawnAbility.OnActionStartExecute += SpawnInfoTestStart;
             SpawnAbility.OnActionEndExecute += SpawnInfoTestEnd;
             TakeCardAbility.OnActionStartExecute += OnTakeCardActionStart;

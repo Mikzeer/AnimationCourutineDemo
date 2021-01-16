@@ -1,4 +1,5 @@
 ﻿using CommandPatternActions;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -8,10 +9,11 @@ namespace PositionerDemo
         SpawnManagerUI spawnManagerUI;
         int spawnIndexID = 0;
         bool debugOn = false;
-
-        public SpawnManager(SpawnManagerUI spawnManagerUI)
+        IGame game;
+        public SpawnManager(SpawnManagerUI spawnManagerUI, IGame game)
         {
             this.spawnManagerUI = spawnManagerUI;
+            this.game = game;
         }
 
         public void OnTrySpawn(Tile TileObject, Player player)
@@ -67,7 +69,7 @@ namespace PositionerDemo
         {
             if (spwInf.spawnTile.IsOccupied() && spwInf.spawnTile.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
             {
-                CombineSpawn(spwInf);
+                SpecialSpawn(spwInf);
             }
             else if (spwInf.spawnTile.IsOccupied() == false)
             {
@@ -84,7 +86,6 @@ namespace PositionerDemo
         {
             Kimboko kimboko = GetNewKimboko(spwInf.spawnerPlayer, spwInf.spawnIndexID, spwInf.spawnUnitType);
             GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
-
             kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(goKimboko, goKimboko.GetComponent<Animator>()));
 
             ISpawnCommand spawnCommand = new ISpawnCommand(spwInf.spawnTile, spwInf.spawnerPlayer, kimboko);
@@ -96,35 +97,27 @@ namespace PositionerDemo
             InvokerMotion.AddNewMotion(normalSpawnMotion);
         }
 
-        public void CombineSpawn(SpawnAbilityEventInfo spwInf)
+        public void SpecialSpawn(SpawnAbilityEventInfo spwInf)
         {
             Kimboko unit = (Kimboko)spwInf.spawnTile.GetOcuppy();
             if (unit == null) return;
             if (unit.OwnerPlayerID != spwInf.spawnerPlayer.PlayerID) return;
-            Kimboko kimboko = GetNewKimboko(spwInf.spawnerPlayer, spwInf.spawnIndexID, spwInf.spawnUnitType);
+            //Kimboko kimboko = GetNewKimboko(spwInf.spawnerPlayer, spwInf.spawnIndexID, spwInf.spawnUnitType);
+            //GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
+            //kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(goKimboko, goKimboko.GetComponent<Animator>()));
+            //bool canCombine = CombineKimbokoRules.CanICombine(unit, kimboko);
+            //bool canCombineAndEvolve = CombineKimbokoRules.CanICombineAndEvolve(unit, kimboko);
+            bool canCombine = CombineKimbokoRules.CanICombineWithUnitType(unit, spwInf.spawnUnitType);
+            bool canCombineAndEvolve = CombineKimbokoRules.CanICombineAndEvolveWithUnitType(unit, spwInf.spawnUnitType);
 
-            bool canCombine = CombineKimbokoRules.CanICombine(unit, kimboko);
-            bool canCombineAndEvolve = CombineKimbokoRules.CanICombineAndEvolve(unit, kimboko);
 
             if (canCombineAndEvolve)
             {
-                // ACA DEBERIA TENER UNA REFERENCIA AL COMBINE MANAGER
-                // ACA DEBERIA TENER UNA REFERENCIA AL EVOLVE MANAGER
-
-                // CREAMOS UNA COMBINE MOTION
-                // A - Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
-                // B - GENERAMOS UN DESTELLO O ALGO SIMILAR EN LA POSICION DE SPAWNEO
-                // C - DESTRUIMOS LOS OBJETOS ACTUALES DE LOS KIMBOKOS
-                // D - CREAMOS EL NUEVO KIMBOKO EVOLUCIONADO
+                CombineAndEvolveSpawn(unit, spwInf);
             }
             else if (canCombine)
             {
-                // ACA DEBERIA TENER UNA REFERENCIA AL COMBINE MANAGER
-
-                // ENTONCES CREAMOS UNA COMBINE MOTION CON ESTOS TRES 
-                // A - MOVEMOS A LOS KIMBOKOS QUE OCUPEN LA TILE A LOS COSTADOS
-                // B - Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
-                // C - REPOSICIONAMOS A LOS KIMBOKO
+                CombineSpawn(unit, spwInf);
             }
             else
             {
@@ -136,6 +129,46 @@ namespace PositionerDemo
                 // ENTONCES DE ESTA MANERA SABEMOS QUE SE CANCELO Y NO HACEMOS EL END PERFORM...
             }
         }
+
+        public void CombineSpawn(Kimboko unit, SpawnAbilityEventInfo spwInf)
+        {
+            // ACA DEBERIA TENER UNA REFERENCIA AL COMBINE MANAGER
+
+            // 1 - TENEMOS QUE CREAR EL COMBINE COMMAND... Y QUE MIERDA SERIA LO QUE HACE????? XD XD XD
+
+
+            // ENTONCES CREAMOS UNA COMBINE MOTION CON ESTOS TRES 
+            // A - MOVEMOS A LOS KIMBOKOS QUE OCUPEN LA TILE A LOS COSTADOS
+
+            // B - Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            Kimboko kimboko = GetNewKimboko(spwInf.spawnerPlayer, spwInf.spawnIndexID, spwInf.spawnUnitType);
+            GameObject goKimboko = spawnManagerUI.GetKimbokoPrefab();
+            kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(goKimboko, goKimboko.GetComponent<Animator>()));
+
+            ISpawnCommand spawnCommand = new ISpawnCommand(spwInf.spawnTile, spwInf.spawnerPlayer, kimboko);
+            Invoker.AddNewCommand(spawnCommand);
+            Invoker.ExecuteCommands();
+
+            Vector3 spawnPosition = spwInf.spawnTile.GetRealWorldLocation();
+            Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            InvokerMotion.AddNewMotion(normalSpawnMotion);
+
+
+            // C - REPOSICIONAMOS A LOS KIMBOKO
+        }
+
+        public void CombineAndEvolveSpawn(Kimboko unit, SpawnAbilityEventInfo spwInf)
+        {
+            // ACA DEBERIA TENER UNA REFERENCIA AL COMBINE MANAGER
+            // ACA DEBERIA TENER UNA REFERENCIA AL EVOLVE MANAGER
+
+            // CREAMOS UNA COMBINE MOTION
+            // A - Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            // B - GENERAMOS UN DESTELLO O ALGO SIMILAR EN LA POSICION DE SPAWNEO
+            // C - DESTRUIMOS LOS OBJETOS ACTUALES DE LOS KIMBOKOS
+            // D - CREAMOS EL NUEVO KIMBOKO EVOLUCIONADO
+        }
+
 
         public Kimboko GetNewKimboko(Player player, int spawnIndexID, UNITTYPE unitType)
         {
@@ -163,6 +196,73 @@ namespace PositionerDemo
             }
 
             return kimboko;
+        }
+    }
+
+    public class CombineManager : AbilityManager
+    {
+        bool debugOn = false;
+        IGame game;
+
+        public CombineManager(IGame game)
+        {
+            this.game = game;
+        }
+
+        public void OnTryCombine(CombineAbilityEventInfo cmbInfo)
+        {
+            if (!IsLegalCombine(cmbInfo))
+            {
+                if (debugOn) Debug.Log("Ilegal Spawn");
+                return;
+            }
+            if (cmbInfo.combiner.Abilities.ContainsKey(ABILITYTYPE.COMBINE) == false)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD COMBINE NO ENCONTRADA");
+                return;
+            }
+            CombineAbility cmb = (CombineAbility)cmbInfo.combiner.Abilities[ABILITYTYPE.COMBINE];
+            if (cmb == null)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD COMBINE NULL");
+                return;
+            }
+
+            cmb.SetRequireGameData(cmbInfo);
+            StartPerform(cmb);
+
+            if (cmb.CanIExecute() == false)
+            {
+                if (debugOn) Debug.Log("COMBINE ABILITY NO SE PUEDE EJECUTAR");
+                return;
+            }
+            Combine(cmbInfo);
+            EndPerform(cmb);
+        }
+
+        public bool IsLegalCombine(CombineAbilityEventInfo cmbInfo)
+        {
+            return true;
+        }
+
+        public void Combine(CombineAbilityEventInfo cmbInfo)
+        {
+            // TENGO QUE CREAR EL NUEVO KIMBOKO Y SU GAME OBJECT
+            // TECNICAMENTE ESTO DEBERIA ESTAR CREADO COMO EL KIMBOKO TO COMBINE... 
+            // NO DEBERIA CREAR NADA NUEVO TEEEECCCNIICAMENTE
+            // SOLO EL COMBINE KIMBOKO, YA QUE SI ES UNA COMBINACION NO VOY A DESTRUR NINGUN GO
+
+            List<Kimboko> kimbokosTocombine = new List<Kimboko>();
+            kimbokosTocombine.Add(cmbInfo.combiner);
+            kimbokosTocombine.Add(cmbInfo.kimbokoToCombine);
+
+            Kimboko kimboko = null;
+            KimbokoCombineFactory kimbokoCombFac = new KimbokoCombineFactory(kimbokosTocombine);
+            kimboko = kimbokoCombFac.CreateKimboko(cmbInfo.IndexID , cmbInfo.player);
+
+            // 1 - CREAMOS EL GO DEL COMBINE
+            // 2 - CREAMOS EL COMBINE KIMBOKO
+            // 3 - 
         }
     }
 }

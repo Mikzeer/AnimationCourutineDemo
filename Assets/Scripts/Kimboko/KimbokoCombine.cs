@@ -10,7 +10,8 @@ namespace PositionerDemo
         public KimbokoCombine(List<Kimboko> kimbokos, int ID, Player ownerPlayer, MOVEDIRECTIONTYPE moveDirectionerType) 
                        : base(ID, ownerPlayer, unitType, moveDirectionerType)
         {
-            this.kimbokos = kimbokos;
+            this.kimbokos = kimbokos;            
+            kimbokos = OccupierStatDatabase.GetCombineKimbokoOrder(kimbokos);
             Stats = OccupierStatDatabase.CreateKimbokoCombineStat(kimbokos);
         }
     }

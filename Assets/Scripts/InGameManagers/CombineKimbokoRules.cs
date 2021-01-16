@@ -48,6 +48,37 @@ namespace PositionerDemo
             }
         }
 
+        public static bool CanICombineWithUnitType(Kimboko combiner, UNITTYPE toCombine)
+        {
+            if (combiner.UnitType == UNITTYPE.FUSION || toCombine == UNITTYPE.FUSION || toCombine == UNITTYPE.COMBINE) return false;
+
+            int totalPoints;
+
+            int combinerPoints = PuntuateKimboko(combiner);
+            int toCombinePoints = PuntuateUnitType(toCombine);
+
+            totalPoints = combinerPoints + toCombinePoints;
+
+            switch (totalPoints)
+            {
+                case 2:
+                case 5:
+                case 7:
+                case 8:
+                case 18:
+                case 34:
+                case 39:
+                case 55:
+                case 116:
+                case 132:
+                case 136:
+                case 138:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static bool CanICombineAndEvolve(Kimboko combinerCharacter, Kimboko toCombineCharacter)
         {
             if (combinerCharacter.UnitType == UNITTYPE.FUSION || toCombineCharacter.UnitType == UNITTYPE.FUSION) return false;
@@ -56,6 +87,28 @@ namespace PositionerDemo
             int totalPoints;
             int combinerPoints = PuntuateKimboko(combinerCharacter);
             int toCombinePoints = PuntuateKimboko(toCombineCharacter);
+
+            totalPoints = combinerPoints + toCombinePoints;
+
+            switch (totalPoints)
+            {
+                case 22:
+                case 41:
+                case 121:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool CanICombineAndEvolveWithUnitType(Kimboko combinerCharacter, UNITTYPE toCombineCharacter)
+        {
+            if (combinerCharacter.UnitType == UNITTYPE.FUSION || toCombineCharacter == UNITTYPE.FUSION) return false;
+            if (combinerCharacter.UnitType != UNITTYPE.X && toCombineCharacter != UNITTYPE.X) return false;
+
+            int totalPoints;
+            int combinerPoints = PuntuateKimboko(combinerCharacter);
+            int toCombinePoints = PuntuateUnitType(toCombineCharacter);
 
             totalPoints = combinerPoints + toCombinePoints;
 
@@ -180,6 +233,30 @@ namespace PositionerDemo
                                 return 0;
                         }
                     }
+                    break;
+                case UNITTYPE.FUSION:
+                    return 0;
+                default:
+                    return 0;
+            }
+
+            return totalPoints;
+        }
+
+        public static int PuntuateUnitType(UNITTYPE unitType)
+        {
+            int totalPoints = 0;
+
+            switch (unitType)
+            {
+                case UNITTYPE.X:
+                    totalPoints += Xpoints;
+                    break;
+                case UNITTYPE.Y:
+                    totalPoints += Ypoints;
+                    break;
+                case UNITTYPE.Z:
+                    totalPoints += Zpoints;
                     break;
                 case UNITTYPE.FUSION:
                     return 0;

@@ -953,6 +953,14 @@ public class AnimotionHandler : MonoBehaviour
                     List<PositionerDemo.Motion> motionsSpawnCombine = new List<PositionerDemo.Motion>();
                     List<Configurable> configureAnimotion = new List<Configurable>();
 
+
+
+                    /////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
                     // 2 - DESPUES ME DEBERIA FIJAR SI TENGO ENEMIGOS EN LA QUE SELECCIONE, Y SI TENGO DEBERIA AGREGAR EL COMANDO DE REPOSICIONARLOS
                     if (heatMapGridObject.GetEnemies().Count > 0)
                     {
@@ -1009,6 +1017,10 @@ public class AnimotionHandler : MonoBehaviour
                         }
                     }
 
+
+                    ///////////////////////////////////////////////////////////////////////////////////////////
+
+
                     // TWEENCRANE / SPAWNCRANE / TWEEN KIMBOKO / TWEENBACKCRANE
                     // KIMBOKO POSITION END CRANE / KIMBOKO SET ACTIVE TRUE / KIMBOKO IDLEE / CRANE IDLLE
                     int craneTweenSpeedVelocity = 1;
@@ -1058,6 +1070,9 @@ public class AnimotionHandler : MonoBehaviour
                     //G TWEEN DE LA CRANE PARA QUE SALGA DEL MAPA
                     PositionerDemo.Motion motionTweenBackCraneMove = new MoveTweenMotion(this, Crane.transform, 6, craneStartPosition, craneTweenSpeedVelocity);
                     motionsSpawnCombine.Add(motionTweenBackCraneMove);
+
+
+                    /////////////////////////////////////////////////////////////////////////////////////////
 
                     //  - DESPUES ME DEBERIA FIJAR SI TENGO ENEMIGOS EN LA QUE SELECCIONE, Y SI TENGO DEBERIA AGREGAR EL COMANDO DE REPOSICIONARLOS
                     if (heatMapGridObject.GetEnemies().Count > 1)
