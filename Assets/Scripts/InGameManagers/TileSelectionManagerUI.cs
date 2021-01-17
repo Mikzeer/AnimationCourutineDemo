@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace PositionerDemo
 {
@@ -6,14 +7,15 @@ namespace PositionerDemo
     {
         [SerializeField] private GameObject tileSelectionPrefab = default;
         MouseController mouseController;
-        private Tile selectedTilePlayerOne;
-        public Tile SelectedTilePlayerOne { get { return selectedTilePlayerOne; } private set { selectedTilePlayerOne = value; } }
-        private Tile selectedTilePlayerTwo;
-        public Tile SelectedTilePlayerTwo { get { return selectedTilePlayerTwo; } private set { selectedTilePlayerTwo = value; } }
+        KeyBoardController keyBoardController;
+        public Tile SelectedTilePlayerOne { get; private set; }
+        public Tile SelectedTilePlayerTwo { get; private set; }
         GameObject tileSelectionFramePlayerOne;
         GameObject tileSelectionFramePlayerTwo;
         private Vector2 normalSize;
         Board2DManager board2D;
+        public PLAYERWCONTROLLERTYPE controlerType = PLAYERWCONTROLLERTYPE.MOUSE;
+        public Action<Tile> onTileSelected;
 
         private void Awake()
         {
@@ -30,28 +32,49 @@ namespace PositionerDemo
             normalSize = tileSelectionFramePlayerOne.transform.localScale;
         }
 
-        public void SetController(Board2DManager board2D, MouseController mouseController)
+        public void SetController(Board2DManager board2D, MouseController mouseController, KeyBoardController keyBoardController)
         {
             this.board2D = board2D;
             this.mouseController = mouseController;
+            this.keyBoardController = keyBoardController;
         }
 
         private void Update()
         {
-            if (mouseController == null) return;
-
-            Tile tileP1 = mouseController.GetTile();
-            OnTileSelection(tileP1, true);
-
-            if (mouseController.Select() == true)
+            switch (controlerType)
             {
-                if (tileP1 != null)
-                {
-                    //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
-                }
+                case PLAYERWCONTROLLERTYPE.JOYSTICK:
+                    if (keyBoardController == null) return;
+                    Tile tileP1 = keyBoardController.GetTile();
+                    OnTileSelection(tileP1, true);
+                    if (keyBoardController.Select() == true)
+                    {
+                        if (tileP1 != null)
+                        {
+                            onTileSelected?.Invoke(tileP1);
+                            //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
+                        }
+                    }
+                    break;
+                case PLAYERWCONTROLLERTYPE.TOUCH:
+                    break;
+                case PLAYERWCONTROLLERTYPE.MOUSE:
+                    if (mouseController == null) return;
+                    tileP1 = mouseController.GetTile();
+                    OnTileSelection(tileP1, true);
+                    if (mouseController.Select() == true)
+                    {
+                        if (tileP1 != null)
+                        {
+                            onTileSelected?.Invoke(tileP1);
+                            //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
+                        }
+                    }
+                    //mouseController.SpecialSelection();
+                    break;
+                default:
+                    break;
             }
-
-            mouseController.SpecialSelection();
         }
 
         public void OnTileSelection(Tile TileObject, bool isPlayerOne)
@@ -60,15 +83,15 @@ namespace PositionerDemo
             {
                 if (isPlayerOne)
                 {
-                    if (selectedTilePlayerOne != null)
+                    if (SelectedTilePlayerOne != null)
                     {
-                        if (selectedTilePlayerOne == TileObject)
+                        if (SelectedTilePlayerOne == TileObject)
                         {
                             return;
                         }
                         else
                         {
-                            selectedTilePlayerOne = TileObject;
+                            SelectedTilePlayerOne = TileObject;
                             tileSelectionFramePlayerOne.transform.position = GetTilePositionAndScale(TileObject, isPlayerOne);
                         }
                     }
@@ -76,21 +99,20 @@ namespace PositionerDemo
                     {
                         tileSelectionFramePlayerOne.transform.position = GetTilePositionAndScale(TileObject, isPlayerOne);
                         tileSelectionFramePlayerOne.SetActive(true);
-                        selectedTilePlayerOne = TileObject;
+                        SelectedTilePlayerOne = TileObject;
                     }
-
                 }
                 else
                 {
-                    if (selectedTilePlayerTwo != null)
+                    if (SelectedTilePlayerTwo != null)
                     {
-                        if (selectedTilePlayerTwo == TileObject)
+                        if (SelectedTilePlayerTwo == TileObject)
                         {
                             return;
                         }
                         else
                         {
-                            selectedTilePlayerTwo = TileObject;
+                            SelectedTilePlayerTwo = TileObject;
                             tileSelectionFramePlayerTwo.transform.position = GetTilePositionAndScale(TileObject, isPlayerOne);
                         }
                     }
@@ -98,7 +120,7 @@ namespace PositionerDemo
                     {
                         tileSelectionFramePlayerTwo.transform.position = GetTilePositionAndScale(TileObject, isPlayerOne);
                         tileSelectionFramePlayerTwo.SetActive(true);
-                        selectedTilePlayerTwo = TileObject;
+                        SelectedTilePlayerTwo = TileObject;
                     }
                 }
             }
@@ -107,19 +129,19 @@ namespace PositionerDemo
 
                 if (isPlayerOne)
                 {
-                    if (selectedTilePlayerOne != null)
+                    if (SelectedTilePlayerOne != null)
                     {
                         tileSelectionFramePlayerOne.SetActive(false);
-                        selectedTilePlayerOne = null;
+                        SelectedTilePlayerOne = null;
                     }
                 }
                 else
                 {
                     //Debug.Log("LLEGUE");
-                    if (selectedTilePlayerTwo != null)
+                    if (SelectedTilePlayerTwo != null)
                     {
                         tileSelectionFramePlayerTwo.SetActive(false);
-                        selectedTilePlayerTwo = null;
+                        SelectedTilePlayerTwo = null;
                     }
                 }
             }

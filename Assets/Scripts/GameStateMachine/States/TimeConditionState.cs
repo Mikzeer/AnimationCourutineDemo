@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PositionerDemo;
+using System;
 
 public class TimeConditionState : State
 {
@@ -44,6 +45,11 @@ public class TimeConditionState : State
     public virtual bool MeetCondition()
     {
         return false;
+    }
+
+    public virtual void OnTileSelection(Tile tile)
+    {
+
     }
 
 }

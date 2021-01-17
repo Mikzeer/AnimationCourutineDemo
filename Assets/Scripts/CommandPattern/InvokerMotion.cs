@@ -7,7 +7,7 @@ namespace CommandPatternActions
     public static class InvokerMotion
     {
         private static List<PositionerDemo.Motion> motionsToExecute = new List<PositionerDemo.Motion>();
-        public static bool isExecuting;
+        private static bool isExecuting;
         private static MotionController motionController = new MotionController();
         static bool logOn = false;
         public static void AddNewMotion(PositionerDemo.Motion motion)
@@ -80,6 +80,11 @@ namespace CommandPatternActions
         {
             motionController.SetUpMotion(motion);
             motionController.TryReproduceMotion();
+        }
+
+        public static bool IsExecuting()
+        {
+            return isExecuting;
         }
     }
 }

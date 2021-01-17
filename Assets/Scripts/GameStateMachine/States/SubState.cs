@@ -1,4 +1,6 @@
-﻿public abstract class SubState : State
+﻿using PositionerDemo;
+
+public abstract class SubState : State
 {
     public GameCreator gameCreator { get; private set; }
     public bool endState { get; set; }
@@ -33,6 +35,11 @@
     public virtual bool CheckCondition()
     {
         return true;
+    }
+
+    public virtual void OnTileSelection(Tile tile)
+    {
+
     }
 
 }

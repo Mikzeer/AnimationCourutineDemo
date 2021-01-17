@@ -9,6 +9,8 @@ public class KeyBoardController : PlayerRealWorldController
     int actualPosX;
     int actualPosY;
 
+    Board2DManager board2DManager;
+
     public KeyBoardController(int playerID) : base(playerID)
     {
         controllerType = PLAYERWCONTROLLERTYPE.JOYSTICK;
@@ -20,6 +22,21 @@ public class KeyBoardController : PlayerRealWorldController
         height = GameCreator.Instance.board2D.GridArray.GetLength(1);
 
         //actualPosX = Mathf.FloorToInt(actualPosX / 2);
+        actualPosX = width - 2;
+        actualPosY = Mathf.FloorToInt(actualPosY / 2);
+    }
+
+    public KeyBoardController(int playerID, Board2DManager board2DManager, Camera cam) : base(playerID)
+    {
+        controllerType = PLAYERWCONTROLLERTYPE.JOYSTICK;
+        controllerScheme = PLAYERWCONTROLLERSCHEME.INGAME;
+
+        this.board2DManager = board2DManager;
+
+        actualPosX = board2DManager.GridArray.GetLength(0);
+        actualPosY = board2DManager.GridArray.GetLength(1);
+        width = board2DManager.GridArray.GetLength(0);
+        height = board2DManager.GridArray.GetLength(1);
         actualPosX = width - 2;
         actualPosY = Mathf.FloorToInt(actualPosY / 2);
     }
@@ -76,7 +93,7 @@ public class KeyBoardController : PlayerRealWorldController
 
         }
 
-        Tile TileObject = GameCreator.Instance.board2D.GetGridObject(actualPosX, actualPosY);        
+        Tile TileObject = board2DManager.GetGridObject(actualPosX, actualPosY);        
 
         if (TileObject != null)
         {
@@ -98,10 +115,10 @@ public class KeyBoardController : PlayerRealWorldController
 
     public override void SpecialSelection()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            GameCreator.Instance.TryTakeCard(GameCreator.Instance.players[playerID]);
-        }
+        //if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    GameCreator.Instance.TryTakeCard(GameCreator.Instance.players[playerID]);
+        //}
     }
 
 }

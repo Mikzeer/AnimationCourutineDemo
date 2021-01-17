@@ -246,5 +246,22 @@ public class ActionsManager
         }
     }
 
+    public bool DoesThePlayerHaveActionToExecute(Player player)
+    {
+        return player.GetCurrentActionPoints() <= 0;
+    }
+
+    public bool DoesThePlayerUnitsHaveActionsToExecute(Player player)
+    {
+        for (int i = 0; i < player.kimbokoUnits.Count; i++)
+        {
+            if (player.kimbokoUnits[i].GetCurrentActionPoints() > 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

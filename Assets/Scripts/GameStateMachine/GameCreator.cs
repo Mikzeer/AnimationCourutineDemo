@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System;
 using System.Collections.Generic;
 
-public class GameCreator : GameStateMachine
+public class GameCreator : GameStateMachine, IGame
 {
 
     #region SINGLETON
@@ -36,6 +36,11 @@ public class GameCreator : GameStateMachine
     #region VARIABLES
 
     public TurnManager turnManager { get; set; }
+
+    public SpawnManager spawnManager => throw new NotImplementedException();
+    public Board2DManager board2DManager => throw new NotImplementedException();
+    public CombineManager combineManager => throw new NotImplementedException();
+
     public Player[] players;
     public Camera cam;
 
