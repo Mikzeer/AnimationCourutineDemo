@@ -9,6 +9,7 @@ namespace PositionerDemo
         public Dictionary<ABILITYTYPE, IAbility> Abilities { get; protected set; }
         public Dictionary<STATTYPE, Stat> Stats { get; protected set; }
         public GameObjectAnimatorContainer goAnimContainer { get; protected set; }
+        public MOVEDIRECTIONTYPE MoveDirectionerType { get; protected set; }
         public bool IsAlly { get; protected set; }
         public int ID { get; protected set; }
         public int OwnerPlayerID { get; protected set; }

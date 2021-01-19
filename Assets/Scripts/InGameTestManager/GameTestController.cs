@@ -11,6 +11,9 @@ namespace PositionerDemo
         [Header("SPAWN MANAGER UI")]
         [SerializeField] private SpawnManagerUI spawnManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
         public SpawnManager spawnManager { get; private set; }
+        [Header("MOVEMENT MANAGER UI")]
+        [SerializeField] private MoveManagerUI moveManagerUI = default; // DE ESTA MANERA EVITAMOS EL WARNING EN EL INSPECTOR
+        public MovementManager movementManager { get; private set; }
         [Header("BOARD MANAGER UI")]
         [SerializeField] private Board2DManagerUI board2DManagerUI = default;
         public Board2DManager board2DManager { get; private set; }
@@ -22,6 +25,7 @@ namespace PositionerDemo
         KeyBoardController keyBoardController;
         Player[] players;
         public CombineManager combineManager { get; private set; }
+
         #endregion
 
         private void Start()
@@ -33,6 +37,7 @@ namespace PositionerDemo
             InvokerMotion.StartExecution(this);
             spawnManager = new SpawnManager(spawnManagerUI, this);
             combineManager = new CombineManager(this);
+            movementManager = new MovementManager(this, moveManagerUI);
             tileSelectionManagerUI.onTileSelected += ExecuteActions;
         }
 

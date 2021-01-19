@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -8,6 +9,7 @@ namespace PositionerDemo
         public Tile[,] GridArray { get; private set; }
         public int columnsWidht { get; private set; }
         public int rowsHeight { get; private set; }
+        public Dictionary<IOcuppy, Position> occupierPositions { get; set; }
         private Vector3 originPosition;
         private float tileSize;
         private Board2DManagerUI board2DManagerUI;
@@ -15,6 +17,7 @@ namespace PositionerDemo
         public Board2DManager(Board2DManagerUI board2DManagerUI, int rowsHeight, int columnsWidht)
         {
             this.board2DManagerUI = board2DManagerUI;
+            occupierPositions = new Dictionary<IOcuppy, Position>();
             // a la cantidad de columnas que tenga nuestro grid le vamos a agregar dos de cada lado
             // entonces si es de 5 filas por 7 columnas va a quedar de 5 filas por 11 columnas
             // le sumamos 4 para el espacio de la base del jugado 1 y del jugador 2
@@ -102,5 +105,30 @@ namespace PositionerDemo
             return tileSize;
         }
 
+        public void AddModifyOccupierPosition(IOcuppy ocuppier, Position position)
+        {
+            if (occupierPositions.ContainsKey(ocuppier))
+            {
+                occupierPositions[ocuppier] = position;
+            }
+            else
+            {
+                occupierPositions.Add(ocuppier, position);
+            }
+        }
+
+        public void RemoveOccupierPosition(IOcuppy ocuppier)
+        {
+            if (occupierPositions.ContainsKey(ocuppier))
+            {
+                occupierPositions.Remove(ocuppier);
+            }
+        }
+
+        public Tile GetUnitPosition(IOcuppy ocuppier)
+        {
+            if (occupierPositions.ContainsKey(ocuppier)) return GetGridObject(occupierPositions[ocuppier].posX, occupierPositions[ocuppier].posY);
+            return null;
+        }
     }
 }

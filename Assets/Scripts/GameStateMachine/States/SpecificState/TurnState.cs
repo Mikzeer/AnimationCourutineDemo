@@ -1,4 +1,6 @@
-﻿public class TurnState : TimeConditionState
+﻿using UIButtonPattern;
+
+public class TurnState : TimeConditionState
 {
     private const string name = "TURN STATE";
     //SelectInputIClickeable selectInput;
@@ -6,7 +8,6 @@
     //SelectionPlayer selectionPlayer;
     //SelectionUnit selectionUnit;
     //HighLightUnitMenu highLightUnitMenu;
-
     //UIInputActionPattern uiInputActions;
 
     public TurnState(int duration, GameCreator gameCreator) : base(duration, gameCreator, name)

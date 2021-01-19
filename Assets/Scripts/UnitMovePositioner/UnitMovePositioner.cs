@@ -109,6 +109,38 @@ namespace PositionerDemo
             return transformWithPositionToTween;
         }
 
+        public Dictionary<GameObject, Vector3[]> GetRoutePositions(GameObject[] enemies, POSITIONTYPE positionType, Vector3 finalWorldDestination, Vector3 actualPosition)
+        {
+            int amountOfPositionsToVisit = 3;
+
+            Dictionary<GameObject, Vector3[]> transformWithPositionToTween = new Dictionary<GameObject, Vector3[]>();
+
+            Vector3[] finalDestinationForEach = GetPositions(finalWorldDestination, positionType);
+
+            Vector3 pointOfExitFromActualTile = GetTileExitDirection(actualPosition, finalWorldDestination);
+
+            pointOfExitFromActualTile = actualPosition + new Vector3(offsetPosition * pointOfExitFromActualTile.x, offsetPosition * pointOfExitFromActualTile.y, 0);
+
+
+            // Position[0] = transformToPosition[i].position
+            // Position[1] = El Borde por donde salga para ir hacia la unidad, entonces tengo que tener una funcion para saber para que lado estoy yendo
+            //               Este borde va a ser igual para todas las unidades, asi que es una posicion que vamos a guardar al principio
+            // Position[2] = finalDestinationForEach[n]
+
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                Vector3[] ListOfPositionsForDictionary = new Vector3[amountOfPositionsToVisit];
+
+                ListOfPositionsForDictionary[0] = enemies[i].transform.position;
+                ListOfPositionsForDictionary[1] = pointOfExitFromActualTile;
+                ListOfPositionsForDictionary[2] = finalDestinationForEach[i];
+
+                transformWithPositionToTween.Add(enemies[i], ListOfPositionsForDictionary);
+            }
+
+            return transformWithPositionToTween;
+        }
+
         public Vector3 GetTileExitDirection(Vector3 actualPosition, Vector3 endPosition)
         {
             Vector3 tileExit = new Vector3(0,0,0);

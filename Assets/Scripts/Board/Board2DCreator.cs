@@ -107,10 +107,12 @@ namespace PositionerDemo
             {
                 case 0:
                     baseNexoTile = new BaseNexoTile(position, 0, 0, player);
+                    board2DManager.AddModifyOccupierPosition(player, new Position(0, 0));
                     board2DManagerUI.CreateBaseNexoTile(baseNexoTile, true);
                     break;
                 case 1:
                     baseNexoTile = new BaseNexoTile(position, 9, 0, player);
+                    board2DManager.AddModifyOccupierPosition(player, new Position(9, 0));
                     board2DManagerUI.CreateBaseNexoTile(baseNexoTile, false);
                     break;
                 default:

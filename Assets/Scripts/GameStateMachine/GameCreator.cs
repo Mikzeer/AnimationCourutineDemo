@@ -40,6 +40,7 @@ public class GameCreator : GameStateMachine, IGame
     public SpawnManager spawnManager => throw new NotImplementedException();
     public Board2DManager board2DManager => throw new NotImplementedException();
     public CombineManager combineManager => throw new NotImplementedException();
+    public MovementManager movementManager { get; private set; }
 
     public Player[] players;
     public Camera cam;

@@ -18,6 +18,7 @@ namespace PositionerDemo
 
         public Player(int PlayerID)
         {
+            MoveDirectionerType = MOVEDIRECTIONTYPE.NONE;
             kimbokoUnits = new List<Kimboko>();
             GeneralModifiers = new List<AbilityModifier>();
             Abilities = new Dictionary<ABILITYTYPE, IAbility>();

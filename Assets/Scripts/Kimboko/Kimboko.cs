@@ -6,7 +6,6 @@ namespace PositionerDemo
     {
         #region VARIABLES
         public UNITTYPE UnitType { get; protected set; }
-        public MOVEDIRECTIONTYPE MoveDirectionerType { get; protected set; }
         #endregion
 
         public Kimboko(int ID, Player ownerPlayer, UNITTYPE UnitType, MOVEDIRECTIONTYPE MoveDirectionerType)

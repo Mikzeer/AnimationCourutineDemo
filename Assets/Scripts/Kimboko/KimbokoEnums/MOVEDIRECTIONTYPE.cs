@@ -5,6 +5,7 @@
         CROSSLEFT,
         CROSSRIGHT,
         DIAGONAL,
-        MULTI
+        MULTI,
+        NONE
     }
 }

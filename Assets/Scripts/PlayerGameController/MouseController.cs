@@ -19,6 +19,8 @@ public class MouseController : PlayerRealWorldController
 
     public override Tile GetTile()
     {
+        if (Helper.IsMouseOverUI() == true) return null;
+
         if (board2DManager != null && cam != null)
         {
             Tile TileObject = board2DManager.GetGridObject(Helper.GetMouseWorldPosition(cam));
@@ -29,15 +31,6 @@ public class MouseController : PlayerRealWorldController
             else
             {
                 return null;
-            }
-        }
-
-        if (Helper.IsMouseOverUIWithIgnores() == false)
-        {
-            Tile TileObject = GameCreator.Instance.board2D.GetGridObject(Helper.GetMouseWorldPosition(GameCreator.Instance.cam));
-            if (TileObject != null)
-            {
-                return TileObject;
             }
         }
 

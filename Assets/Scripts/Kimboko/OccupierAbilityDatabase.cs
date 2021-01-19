@@ -13,5 +13,13 @@ namespace PositionerDemo
             Abilities.Add(takeCardAbility.AbilityType, takeCardAbility);
             return Abilities;
         }
+
+        public static Dictionary<ABILITYTYPE, IAbility> CreateKimbokoAbilities(Kimboko kimboko)
+        {
+            Dictionary<ABILITYTYPE, IAbility> Abilities = new Dictionary<ABILITYTYPE, IAbility>();
+            MoveAbility moveAbility = new MoveAbility(kimboko);
+            Abilities.Add(moveAbility.AbilityType, moveAbility);
+            return Abilities;
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace PositionerDemo
         OCUPPIERTYPE OccupierType { get; }
         Dictionary<STATTYPE, Stat> Stats { get; }
         Dictionary<ABILITYTYPE, IAbility> Abilities { get; }
+        MOVEDIRECTIONTYPE MoveDirectionerType { get; }
         bool IsAlly { get; }
         int GetCurrentActionPoints();
         void ResetActionPoints(int amount);

@@ -49,11 +49,7 @@ namespace PositionerDemo
                     OnTileSelection(tileP1, true);
                     if (keyBoardController.Select() == true)
                     {
-                        if (tileP1 != null)
-                        {
-                            onTileSelected?.Invoke(tileP1);
-                            //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
-                        }
+                        onTileSelected?.Invoke(tileP1);
                     }
                     break;
                 case PLAYERWCONTROLLERTYPE.TOUCH:
@@ -64,13 +60,8 @@ namespace PositionerDemo
                     OnTileSelection(tileP1, true);
                     if (mouseController.Select() == true)
                     {
-                        if (tileP1 != null)
-                        {
-                            onTileSelected?.Invoke(tileP1);
-                            //Debug.Log("SELECT TILE " + tileP1.PosY + "/" + tileP1.PosX);
-                        }
+                        onTileSelected?.Invoke(tileP1);
                     }
-                    //mouseController.SpecialSelection();
                     break;
                 default:
                     break;
@@ -137,7 +128,6 @@ namespace PositionerDemo
                 }
                 else
                 {
-                    //Debug.Log("LLEGUE");
                     if (SelectedTilePlayerTwo != null)
                     {
                         tileSelectionFramePlayerTwo.SetActive(false);

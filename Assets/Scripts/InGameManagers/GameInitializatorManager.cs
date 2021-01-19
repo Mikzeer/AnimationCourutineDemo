@@ -16,6 +16,18 @@ namespace PositionerDemo
         int withd = 7;
         int height = 5;
 
+
+        //  ESTO LO DEBERIA PASAR A UN STATE
+        //  DEBERIA SER EL INITIALIZATION STATE
+        //  VOLVEMOS A LO DE ANTES XD XD XD XD
+
+
+
+
+
+
+
+
         private void Start()
         {
             StartCoroutine(InitializeGame());

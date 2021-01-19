@@ -463,7 +463,7 @@ public class AnimotionHandler : MonoBehaviour
         */
     }
 
-    private void UpdateControllerOne()
+    private void UpdateControllerSimpleAttackSimpleMove()
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
@@ -541,7 +541,7 @@ public class AnimotionHandler : MonoBehaviour
         }
     }
 
-    private void UpdateControllerTwo()
+    private void UpdateControllerTwoCombineMove()
     {
         if (Input.GetMouseButtonDown(0))
         {

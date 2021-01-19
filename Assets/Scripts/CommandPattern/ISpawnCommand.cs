@@ -1,4 +1,6 @@
 ﻿using PositionerDemo;
+using UnityEngine;
+
 namespace CommandPatternActions
 {
     public class ISpawnCommand : ICommand
@@ -6,56 +8,67 @@ namespace CommandPatternActions
         public COMMANDEXECUTINSTATE executionState { get; set; }
         public bool logInsert { get; set; }
 
-        Tile TileObject;
-        Player player;
+        SpawnAbilityEventInfo spawnInfo;
+        GameObject kimbokoGO;
         Kimboko kimboko;
-        public ISpawnCommand(Tile TileObject, Player player, Kimboko kimboko)
+        IGame game;
+
+        public ISpawnCommand(SpawnAbilityEventInfo spawnInfo, GameObject kimbokoGO, IGame game)
         {
             logInsert = true;
-            this.TileObject = TileObject;
-            this.player = player;
-            this.kimboko = kimboko;            
+            this.spawnInfo = spawnInfo;
+            this.kimbokoGO = kimbokoGO;
+            this.game = game;
         }
 
         public void Execute()
         {
-            TileObject.OcupyTile(kimboko);
-            player.AddUnit(kimboko);
+            kimboko = GetNewKimboko(spawnInfo);
+            kimboko.SetGoAnimContainer(new GameObjectAnimatorContainer(kimbokoGO, kimbokoGO.GetComponent<Animator>()));
+            spawnInfo.spawnTile.OcupyTile(kimboko);
+            spawnInfo.spawnerPlayer.AddUnit(kimboko);
+
+            PositionerDemo.Position pos = new PositionerDemo.Position(spawnInfo.spawnTile.position.posX, spawnInfo.spawnTile.position.posY);
+            game.board2DManager.AddModifyOccupierPosition(kimboko, pos);
+
             executionState = COMMANDEXECUTINSTATE.FINISH;
         }
 
         public void Unexecute()
         {
-            TileObject.Vacate();
-            player.RemoveUnit(kimboko);
+            spawnInfo.spawnTile.Vacate();
+            spawnInfo.spawnerPlayer.RemoveUnit(kimboko);
             kimboko.goAnimContainer.DestroyPrefab();
-        }
-    }
 
-    public class ICombineCommand : ICommand
-    {
-        public COMMANDEXECUTINSTATE executionState { get; set; }
-        public bool logInsert { get; set; }
-
-        Player player;
-        Kimboko kimboko;
-        public ICombineCommand(Player player, Kimboko kimboko)
-        {
-            logInsert = true;
-            this.player = player;
-            this.kimboko = kimboko;
+            game.board2DManager.RemoveOccupierPosition(kimboko);
         }
 
-        public void Execute()
+        private Kimboko GetNewKimboko(SpawnAbilityEventInfo spawnInfo)
         {
-            player.AddUnit(kimboko);
-            executionState = COMMANDEXECUTINSTATE.FINISH;
-        }
+            Kimboko kimboko = null;
+            switch (spawnInfo.spawnUnitType)
+            {
+                case UNITTYPE.X:
+                    KimbokoXFactory kimbokoXFac = new KimbokoXFactory();
+                    kimboko = kimbokoXFac.CreateKimboko(spawnInfo.spawnIndexID, spawnInfo.spawnerPlayer);
+                    break;
+                case UNITTYPE.Y:
+                    KimbokoYFactory kimbokoYFac = new KimbokoYFactory();
+                    kimboko = kimbokoYFac.CreateKimboko(spawnInfo.spawnIndexID, spawnInfo.spawnerPlayer);
+                    break;
+                case UNITTYPE.Z:
+                    KimbokoZFactory kimbokoZFac = new KimbokoZFactory();
+                    kimboko = kimbokoZFac.CreateKimboko(spawnInfo.spawnIndexID, spawnInfo.spawnerPlayer);
+                    break;
+                case UNITTYPE.COMBINE:
+                    break;
+                case UNITTYPE.FUSION:
+                    break;
+                default:
+                    break;
+            }
 
-        public void Unexecute()
-        {
-            player.RemoveUnit(kimboko);
-            kimboko.goAnimContainer.DestroyPrefab();
+            return kimboko;
         }
     }
 }

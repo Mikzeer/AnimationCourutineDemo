@@ -13,12 +13,12 @@ public class InGameCardCollectionManager
     private HelperUserCardCollectionFirebaseKimboko helperUserCardCollectionFirebaseKimboko;
     private HelperGameCardCollectionFirebaseKimboko helperGameCardCollectionFirebaseKimboko;
     private HelperCardCollectionJsonKimboko helperCardCollectionJsonKimboko;
-    private GameInitializatorManager gameMenuManager;
+    private MonoBehaviour gameMenuManager;
     private Action OnCardCollectionLoad;
     private bool gameCollectionLoaded = false;
     private bool userCollectionLoaded = false;
 
-    public InGameCardCollectionManager(GameInitializatorManager owner, Action OnCardCollectionLoad)
+    public InGameCardCollectionManager(MonoBehaviour owner, Action OnCardCollectionLoad)
     {
         this.gameMenuManager = owner;
         this.OnCardCollectionLoad = OnCardCollectionLoad;
