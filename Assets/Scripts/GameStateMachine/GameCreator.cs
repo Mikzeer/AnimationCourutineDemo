@@ -41,6 +41,8 @@ public class GameCreator : GameStateMachine, IGame
     public Board2DManager board2DManager => throw new NotImplementedException();
     public CombineManager combineManager => throw new NotImplementedException();
     public MovementManager movementManager { get; private set; }
+    public TurnController turnController => throw new NotImplementedException();
+    public PlayerManager playerManager { get; private set; }
 
     public Player[] players;
     public Camera cam;
@@ -53,7 +55,10 @@ public class GameCreator : GameStateMachine, IGame
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
 
-    public CardManager cardManager;
+    public CardManager cardManager { get; set; }
+
+    CardController IGame.cardManager => throw new NotImplementedException();
+
     public GameObject cardUIPrefab;
     public RectTransform cardHolderP1;
     public RectTransform cardHolderP2;

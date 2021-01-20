@@ -600,7 +600,7 @@ public class AnimotionHandler : MonoBehaviour
         }
     }
 
-    private void UpdateControllerThree()
+    private void UpdateControllerThreeSimpleSpawn()
     {
         // Necesitamos que los Transform reconozcan un input
         if (Input.GetMouseButtonDown(0))
@@ -933,7 +933,7 @@ public class AnimotionHandler : MonoBehaviour
         }
     }
 
-    private void UpdateControllerSeven()
+    private void UpdateControllerSevenSpawnCombineWithCheck()
     {
         // Necesitamos que los Transform reconozcan un input
         if (Input.GetMouseButtonDown(0))

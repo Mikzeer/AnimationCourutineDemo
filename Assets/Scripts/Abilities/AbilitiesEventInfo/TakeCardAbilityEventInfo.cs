@@ -4,11 +4,12 @@
     {             
         public Card card { get; set; } // QUE CARD TOMO
         public Player cardTaker; // QUIEN TOMO LA CARD
-
-        public TakeCardAbilityEventInfo(Player cardTaker, Card card)
+        public int cardIndex;
+        public TakeCardAbilityEventInfo(Player cardTaker, Card card, int cardIndex)
         {
             this.cardTaker = cardTaker;
             this.card = card;
+            this.cardIndex = cardIndex;
         }
     }
 

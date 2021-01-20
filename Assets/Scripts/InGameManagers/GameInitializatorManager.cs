@@ -21,19 +21,12 @@ namespace PositionerDemo
         //  DEBERIA SER EL INITIALIZATION STATE
         //  VOLVEMOS A LO DE ANTES XD XD XD XD
 
-
-
-
-
-
-
-
         private void Start()
         {
             StartCoroutine(InitializeGame());
         }
 
-        public IEnumerator InitializeGame()
+        private IEnumerator InitializeGame()
         {
             // DATOS FIEBASE RT HELPER
             // INGAMECARDCOLLECTION
@@ -68,6 +61,17 @@ namespace PositionerDemo
             players[0] = playerOne;
             players[1] = playerTwo;
 
+            UserDB userOne = cnfDat.user;
+            UserDB userTestJson = new UserDB("ppp");
+            userTestJson.ID = "ppp";
+            UserDB userTwo = cnfDat.user;
+            UserDB[] users = new UserDB[2];
+            users[0] = userOne;
+            //users[1] = userTwo;
+            users[1] = userTestJson;
+ 
+            
+            
             // 2- ASIGNAR LOS PLAYER AL TURN MANAGER
             turnManager = new TurnManager(players);
 
@@ -78,17 +82,10 @@ namespace PositionerDemo
 
 
 
+
+
             // 3- CARGAR LA GAME COLLECTION
             inGameCardCollectionManager = new InGameCardCollectionManager(this, OnCardCollectionLoadComplete);
-
-            UserDB userOne = cnfDat.user;
-            UserDB userTestJson = new UserDB("ppp");
-            userTestJson.ID = "ppp";
-            UserDB userTwo = cnfDat.user;
-            UserDB[] users = new UserDB[2];
-            users[0] = userOne;
-            //users[1] = userTwo;
-            users[1] = userTestJson;
             //inGameCardCollectionManager.LoadAllCollection(users);// REACTIVAR CUANDO FUNCIONE BIEN LA DB
             inGameCardCollectionManager.LoadAllCollectionJson(users);
             while (isCardCollectionLoaded == false)
@@ -139,12 +136,12 @@ namespace PositionerDemo
             Debug.Log("DB LOADED");
         }
 
-        public void OnCardCollectionLoadComplete()
+        private void OnCardCollectionLoadComplete()
         {
             isCardCollectionLoaded = true;
         }
 
-        public void OnBoardLoadComplete()
+        private void OnBoardLoadComplete()
         {
             isBoardLoaded = true;
         }

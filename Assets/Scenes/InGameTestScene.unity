@@ -463,8 +463,9 @@ MonoBehaviour:
   spawnManagerUI: {fileID: 813764119}
   moveManagerUI: {fileID: 1747211383}
   board2DManagerUI: {fileID: 1014192262}
-  tileSelectionManagerUI: {fileID: 879840800}
   toggleController: {fileID: 1440741926}
+  tileSelectionManagerUI: {fileID: 879840800}
+  cardManagerUI: {fileID: 919613746}
 --- !u!4 &752617730
 Transform:
   m_ObjectHideFlags: 0
@@ -752,6 +753,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &919613745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 919613747}
+  - component: {fileID: 919613746}
+  m_Layer: 0
+  m_Name: CardManagerUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &919613746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919613745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f760d3d840d29340a393e777b2143ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardUIPrefab: {fileID: 0}
+  cardHolderP1: {fileID: 0}
+  cardHolderP2: {fileID: 0}
+  canvasRootTransform: {fileID: 0}
+  infoPanel: {fileID: 0}
+  playerOneGraveyardLogo: {fileID: 0}
+  playerOneGraveyard: {fileID: 0}
+  playerTwoGraveyardLogo: {fileID: 0}
+  playerTwoGraveyard: {fileID: 0}
+  cardWaitPosition: {fileID: 0}
+--- !u!4 &919613747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919613745}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1014192261
 GameObject:
