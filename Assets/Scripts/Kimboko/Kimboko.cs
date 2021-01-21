@@ -18,11 +18,5 @@ namespace PositionerDemo
             this.UnitType = UnitType;
             this.MoveDirectionerType = MoveDirectionerType;
         }
-
-        public override void OnSelect(bool isSelected, int playerID)
-        {
-            Debug.Log("KIMBOKO SELECTED");
-        }
-
     }
 }

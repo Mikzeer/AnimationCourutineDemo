@@ -1,4 +1,5 @@
 ﻿using PositionerDemo;
+using System.Collections.Generic;
 
 namespace MikzeerGame
 {
@@ -7,11 +8,11 @@ namespace MikzeerGame
         public class SpawnAbilityButtonExecution : SpecificAbilityExecution
         {
             IOcuppy actualOccupier;
-            IGame gameCreator;
+            IGame game;
             public string name { get; private set; } = "SPAWN";
             public SpawnAbilityButtonExecution(IOcuppy actualOccupier, IGame gameCreator)
             {
-                this.gameCreator = gameCreator;
+                this.game = gameCreator;
                 this.actualOccupier = actualOccupier;
             }
 
@@ -19,12 +20,19 @@ namespace MikzeerGame
             {
                 if (actualOccupier == null) return;
 
-                //gameCreator.spawnManager.OnTrySpawn()
-                //actualUnit.moveAbility.Set(gameCreator);
-                //if (actualUnit.moveAbility.OnTryExecute())
-                //{
-                //    gameCreator.ChangeState(new GameStateMachine.MoveState(actualUnit, gameCreator, gameCreator.currentState));
-                //}
+                Player player = (Player)actualOccupier;
+
+                if (player == null) return;
+
+                if (game.spawnManager.CanIEnterSpawnState(player))
+                {
+                    // CREO LA LISTA/DICCTIONARY DE LAS POSIBLES TILES A SPAWNEAR / SPAWN COMBINAR CON SU HIGHLIGHT CORRESPONDIENTE
+
+                    // CREO EL SELECTION STATE
+
+                    // CAMBIO AL NUEVO STATE
+                    //    gameCreator.ChangeState(new GameStateMachine.MoveState(actualUnit, gameCreator, gameCreator.currentState));
+                }
             }
         }
 

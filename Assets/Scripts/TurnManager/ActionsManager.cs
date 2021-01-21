@@ -6,7 +6,7 @@ public class ActionsManager
 
     public void IncrementPlayerActions(Player player, int acAmount)
     {
-        acAmount = 1;
+        //acAmount = 1;
         //  LE DOY UN PUNTO AL PLAYER
         player.ResetActionPoints(acAmount);
         //  RESETEO TODAS SUS HABILIDADES PARA QUE LAS PUEDA EJECUTAR

@@ -9,10 +9,11 @@ namespace PositionerDemo
         Dictionary<STATTYPE, Stat> Stats { get; }
         Dictionary<ABILITYTYPE, IAbility> Abilities { get; }
         MOVEDIRECTIONTYPE MoveDirectionerType { get; }
+        Position actualPosition { get; }
         bool IsAlly { get; }
         int GetCurrentActionPoints();
         void ResetActionPoints(int amount);
-        void OnSelect(bool isSelected, int playerID);
         int OwnerPlayerID { get; }
+        void SetPosition(Position pos);
     }
 }

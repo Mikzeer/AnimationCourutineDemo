@@ -4,10 +4,32 @@ using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class GameTestController : GameMachine
+    public class GameTestController : GameMachine, IStateMachineHandler
     {
         private void Start()
         {
+            StartCoroutine(InitializeGame());
+        }
+   
+        private void OnBoardComplete()
+        {
+            Debug.Log("BOARD SE TERMINO DE CREAR");
+            isBoardLoaded = true;
+        }
+
+        public IEnumerator InitializeGame()
+        {
+            // ACA DEBERIA RECIBIR LA CONFIGURATION DATA DE CADA UNO
+            // UNA VEZ QUE MIRROR ME DIGA "OK HERMANO", LOS DOS JUGADORES MANDARON SU CONFIGURATION DATA
+            // ENTONCES AHI PUEDO VENIR A INITIALIZE GAME Y COMPROBAR LA PARTE DE FIREBASE Y SUS CONEXIONES
+            // 0- CHEQUEAR QUE LOS DOS JUGADORES ESTEN EN LINEA Y LISTOS PARA JUGAR.
+            // 0b- CHEQUEAR QUE LOS DOS JUGADORES EXISTAN
+            // 0c- SEGUN EL JUGADOR QUE HAYA CREADO LA PARTIDA ESE SERA EL PLAYER ONE, NO SIGNIFICA QUE VA A EMPEZAR PRIMERO
+
+            // 0d- CHEQUEAR QUE LA BASE DE DATOS ESTE INITIALIZED
+            //yield return WaitForDatabaseToLoad(); // REACTIVAR CUANDO FUNCIONE BIEN LA DB
+
+
             // 1 - CREAR PLAYERS Y USERS
             playerManager = new PlayerManager();
 
@@ -39,29 +61,14 @@ namespace PositionerDemo
 
 
 
-            tileSelectionManagerUI.onTileSelected += ExecuteActions;
+            //tileSelectionManagerUI.onTileSelected += ExecuteActions;
 
-            StartCoroutine(InitializeGame());
 
-        }
-   
-        private void OnBoardComplete()
-        {
-            Debug.Log("BOARD SE TERMINO DE CREAR");
-            isBoardLoaded = true;
-        }
 
-        public IEnumerator InitializeGame()
-        {
-            // ACA DEBERIA RECIBIR LA CONFIGURATION DATA DE CADA UNO
-            // UNA VEZ QUE MIRROR ME DIGA "OK HERMANO", LOS DOS JUGADORES MANDARON SU CONFIGURATION DATA
-            // ENTONCES AHI PUEDO VENIR A INITIALIZE GAME Y COMPROBAR LA PARTE DE FIREBASE Y SUS CONEXIONES
-            // 0- CHEQUEAR QUE LOS DOS JUGADORES ESTEN EN LINEA Y LISTOS PARA JUGAR.
-            // 0b- CHEQUEAR QUE LOS DOS JUGADORES EXISTAN
-            // 0c- SEGUN EL JUGADOR QUE HAYA CREADO LA PARTIDA ESE SERA EL PLAYER ONE, NO SIGNIFICA QUE VA A EMPEZAR PRIMERO
 
-            // 0d- CHEQUEAR QUE LA BASE DE DATOS ESTE INITIALIZED
-            //yield return WaitForDatabaseToLoad(); // REACTIVAR CUANDO FUNCIONE BIEN LA DB
+
+
+
 
             yield return null;
             // 3- CARGAR LA GAME COLLECTION
@@ -96,6 +103,20 @@ namespace PositionerDemo
             mouseController = new MouseController(0, board2DManager, Camera.main);
             keyBoardController = new KeyBoardController(0, board2DManager, Camera.main);
             tileSelectionManagerUI.SetController(board2DManager, mouseController, keyBoardController);
+
+
+            // CREAMOS LOS STATES INICIALES
+            Statee initialAdminStateA = new AdministrationStatee(40, this, 4);
+            Statee initialAdminStateB = new AdministrationStatee(20, this, 2);
+            Statee initialAdminStateC = new AdministrationStatee(20, this, 2);
+            Statee initialAdminStateD = new AdministrationStatee(40, this, 4);
+
+            baseStateMachine = new BaseStateMachine(this);
+
+            baseStateMachine.PushState(initialAdminStateA, true);
+            baseStateMachine.PushState(initialAdminStateB, true);
+            baseStateMachine.PushState(initialAdminStateC, true);
+            baseStateMachine.PushState(initialAdminStateD, true);
         }
 
         private void OnCardCollectionLoadComplete()

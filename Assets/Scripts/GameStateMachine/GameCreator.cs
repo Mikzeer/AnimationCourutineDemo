@@ -43,6 +43,8 @@ public class GameCreator : GameStateMachine, IGame
     public MovementManager movementManager { get; private set; }
     public TurnController turnController => throw new NotImplementedException();
     public PlayerManager playerManager { get; private set; }
+    public BaseStateMachine baseStateMachine { get; protected set; }
+    public ActionsManager actionsManager { get; protected set; }
 
     public Player[] players;
     public Camera cam;

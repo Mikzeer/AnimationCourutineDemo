@@ -31,11 +31,6 @@ namespace PositionerDemo
             PlayersHands = new List<Card>();
             Graveyard = new List<Card>();
         }
-
-        public override void OnSelect(bool isSelected, int playerID)
-        {
-            Debug.Log("PLAYER SELECTED");
-        }
        
         public void SetStatsAndAbilities(Dictionary<ABILITYTYPE, IAbility> Ability, Dictionary<STATTYPE, Stat> Sttats)
         {

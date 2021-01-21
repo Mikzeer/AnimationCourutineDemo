@@ -15,7 +15,7 @@ namespace PositionerDemo
             this.game = game;
         }
 
-        public void OnTrySpawn(Tile TileObject, Player player)
+        public bool CanIEnterSpawnState(Player player)
         {
             // 6- SI ESTOY ONLINE TENGO QUE PREGUNTARLE AL SERVER SI ES UN MOVIMIENTO VALIDO
             //    SINO CHEQUEO TODO NORMALMENTE
@@ -23,9 +23,38 @@ namespace PositionerDemo
             // SI EL PLAYER ES VALIDO Y ES SU TURNO
             // Y SI EL LUGAR PARA SPAWNEAR ES UN LUGAR VALIDO
             // ENTONCES EL SERVER TE DICE SI, PODES SPAWNEAR MANDA EL CMD SPAWN A LOS DOS JUGADORES
+
+            // SI EL PLAYER ESTA EN SU TURNO
+            if (player != game.turnController.CurrentPlayerTurn)
+            {
+                return false;
+            }
+
+            if (player.Abilities.ContainsKey(ABILITYTYPE.SPAWN) == false)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
+                return false;
+            }
+            SpawnAbility spw = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
+            if (spw == null)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
+                return false;
+            }
+
+            return true;
+        }
+
+        public void OnTrySpawn(Tile TileObject, Player player)
+        {
+            if (CanIEnterSpawnState(player) == false)
+            {
+                return;
+            }
+
             if (TileObject == null)
             {
-                if(debugOn) Debug.Log("No Tile Object");
+                if (debugOn) Debug.Log("No Tile Object");
                 return;
             }
             if (!IsLegalSpawn(TileObject, player))
@@ -33,11 +62,7 @@ namespace PositionerDemo
                 if (debugOn) Debug.Log("Ilegal Spawn");
                 return;
             }
-            if (player.Abilities.ContainsKey(ABILITYTYPE.SPAWN) == false)
-            {
-                if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
-                return;
-            }
+
             SpawnAbility spw = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
             if (spw == null)
             {
@@ -47,6 +72,7 @@ namespace PositionerDemo
 
             SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject, spawnIndexID);
             spw.SetRequireGameData(spwInf);
+
             StartPerform(spw);
 
             if (spw.CanIExecute() == false)

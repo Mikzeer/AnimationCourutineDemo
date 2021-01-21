@@ -22,6 +22,7 @@ namespace CommandPatternActions
             movInfo.endPosition.OcupyTile(movInfo.moveOccupy);
             PositionerDemo.Position pos = new PositionerDemo.Position(movInfo.endPosition.position.posX, movInfo.endPosition.position.posY);
             game.board2DManager.AddModifyOccupierPosition(movInfo.moveOccupy, pos);
+            movInfo.moveOccupy.SetPosition(pos);
         }
 
         public void Unexecute()

@@ -30,7 +30,7 @@ namespace CommandPatternActions
 
             PositionerDemo.Position pos = new PositionerDemo.Position(spawnInfo.spawnTile.position.posX, spawnInfo.spawnTile.position.posY);
             game.board2DManager.AddModifyOccupierPosition(kimboko, pos);
-
+            kimboko.SetPosition(pos);
             executionState = COMMANDEXECUTINSTATE.FINISH;
         }
 

@@ -1,6 +1,6 @@
 ﻿using PositionerDemo;
 using UnityEngine;
-
+using UIButtonPattern;
 public class AdministrationState : TimeConditionState
 {
     private const string name = "ADMINISTRATION";
@@ -14,8 +14,8 @@ public class AdministrationState : TimeConditionState
     public override void Enter()
     {
         base.Enter();
-        gameCreator.TakeCardAvailable(true);
         // ACA TENGO QUE PRENDER EL BOTON DE CARD
+        gameCreator.TakeCardAvailable(true);
         //Debug.Log("Enter Administration State Player " + GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID);
     }
 

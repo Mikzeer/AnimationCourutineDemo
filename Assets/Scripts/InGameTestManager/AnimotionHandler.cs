@@ -1282,7 +1282,6 @@ public class AnimotionHandler : MonoBehaviour
             string infoText = "IS OCCUPPY ";
             //Debug.Log(infoText);
             kimbokoInfoPanel.SetText(true, infoText);
-            tileObject.GetOcuppy().OnSelect(true, 0);
         }
         else
         {

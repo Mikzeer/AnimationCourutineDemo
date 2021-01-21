@@ -10,6 +10,8 @@ namespace PositionerDemo
         public int columnsWidht { get; private set; }
         public int rowsHeight { get; private set; }
         public Dictionary<IOcuppy, Position> occupierPositions { get; set; }
+        public IOcuppy[,] ocuppiersByTile { get; set; }
+
         private Vector3 originPosition;
         private float tileSize;
         private Board2DManagerUI board2DManagerUI;
@@ -23,10 +25,13 @@ namespace PositionerDemo
             // le sumamos 4 para el espacio de la base del jugado 1 y del jugador 2
             this.columnsWidht = columnsWidht + 4;
             this.rowsHeight = rowsHeight;
+
+
+
             tileSize = 4;
             originPosition = board2DManagerUI.LoadSizeAndGetOriginPosition(this.rowsHeight, this.columnsWidht);
             GridArray = new Tile[this.columnsWidht, this.rowsHeight];
-
+            ocuppiersByTile = new IOcuppy[this.columnsWidht, this.rowsHeight];
             board2DCreator = new Board2DCreator(board2DManagerUI, this, this.rowsHeight, this.columnsWidht);
         }
 
@@ -107,6 +112,16 @@ namespace PositionerDemo
 
         public void AddModifyOccupierPosition(IOcuppy ocuppier, Position position)
         {
+            if (GetGridObject(position.posX, position.posY) == null)
+            {
+                return;
+            }
+            else
+            {
+                ocuppiersByTile[position.posX, position.posY] = ocuppier;
+            }
+
+
             if (occupierPositions.ContainsKey(ocuppier))
             {
                 occupierPositions[ocuppier] = position;
@@ -119,16 +134,80 @@ namespace PositionerDemo
 
         public void RemoveOccupierPosition(IOcuppy ocuppier)
         {
+            if (ocuppiersByTile[ocuppier.actualPosition.posX, ocuppier.actualPosition.posY] == ocuppier)
+            {
+                ocuppiersByTile[ocuppier.actualPosition.posX, ocuppier.actualPosition.posY] = null;
+            }
+
             if (occupierPositions.ContainsKey(ocuppier))
             {
                 occupierPositions.Remove(ocuppier);
             }
         }
 
+        public void MoveOccupier(IOcuppy ocuppier, Position position)
+        {
+            RemoveOccupierPosition(ocuppier);
+            AddModifyOccupierPosition(ocuppier, position);
+        }
+
         public Tile GetUnitPosition(IOcuppy ocuppier)
         {
             if (occupierPositions.ContainsKey(ocuppier)) return GetGridObject(occupierPositions[ocuppier].posX, occupierPositions[ocuppier].posY);
             return null;
+        }
+
+        public bool IsThereAPosibleSpawneableTile(int playerID)
+        {
+            int columnIndex = 3;
+
+            if (playerID == 1)
+            {
+                columnIndex = 9;
+            }
+
+            for (int i = 0; i < rowsHeight; i++)
+            {
+                if (GridArray[i, columnIndex].IsOccupied() == false)
+                {
+                    return true;
+                }
+                else
+                {
+                    Kimboko auxKimb = (Kimboko)GridArray[i, columnIndex].GetOcuppy();
+                    if (auxKimb.OwnerPlayerID == playerID)
+                    {
+                        if (CombineKimbokoRules.CanICombineAndEvolveWithUnitType(auxKimb, UNITTYPE.X))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool IsThereAPosibleAttackableEnemyInBase(int playerID)
+        {
+            int columnIndex = 3;
+
+            if (playerID == 1)
+            {
+                columnIndex = 9;
+            }
+
+            for (int i = 0; i < rowsHeight; i++)
+            {
+                if (GridArray[i, columnIndex].IsOccupied())
+                {
+                    if (GridArray[i, columnIndex].GetOcuppy().OwnerPlayerID != playerID)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

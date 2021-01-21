@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace PositionerDemo
 {
@@ -11,6 +12,8 @@ namespace PositionerDemo
         TurnController turnController { get; }
         PlayerManager playerManager { get; }
         CardController cardManager { get; }
+        BaseStateMachine baseStateMachine { get; }
+        ActionsManager actionsManager { get; }
     }
 
     public class GameMachine : MonoBehaviour, IGame
@@ -30,7 +33,7 @@ namespace PositionerDemo
         protected MouseController mouseController;
         protected KeyBoardController keyBoardController;
         [Header("TILE SELECTION MANAGER UI")]
-        [SerializeField] protected TileSelectionManagerUI tileSelectionManagerUI = default;
+        public TileSelectionManagerUI tileSelectionManagerUI = default;
         [Header("CARD MANAGER UI")]
         [SerializeField] protected CardManagerUI cardManagerUI = default;
 
@@ -38,9 +41,11 @@ namespace PositionerDemo
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }
         public CardController cardManager { get; protected set; }
-
+        public BaseStateMachine baseStateMachine { get; protected set; }
+        public ActionsManager actionsManager { get; protected set; }
         protected bool isCardCollectionLoaded = false;
         protected bool isBoardLoaded = false;
+
         #endregion
 
 

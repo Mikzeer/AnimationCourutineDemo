@@ -13,18 +13,10 @@ namespace PositionerDemo
         public bool IsAlly { get; protected set; }
         public int ID { get; protected set; }
         public int OwnerPlayerID { get; protected set; }
-
+        public Position actualPosition { get; protected set; }
         public virtual IOcuppy GetOcuppy()
         {
             return this;
-        }
-        /// <summary>
-        ///  Se Dispara al seleccionar un Occupier de alguna manera para mostrar alguna informacion especifica de el.
-        /// </summary>
-        /// <param name="isSelected"></param>
-        /// <param name="playerID"></param>
-        public virtual void OnSelect(bool isSelected, int playerID)
-        {            
         }
 
         public int GetCurrentActionPoints()
@@ -54,6 +46,11 @@ namespace PositionerDemo
         public void SetGoAnimContainer(GameObjectAnimatorContainer goAnimCon)
         {
             goAnimContainer = goAnimCon;
+        }
+
+        public void SetPosition(Position newPosition)
+        {
+            actualPosition = newPosition;
         }
     }
 }

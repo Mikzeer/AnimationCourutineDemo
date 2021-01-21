@@ -5,8 +5,8 @@ namespace UIButtonPattern
     public class SpecificCardButtonExecution : SpecificButtonExecution
     {
         Player player;
-        CardManager cardManager;
-        public SpecificCardButtonExecution(Player player, CardManager cardManager)
+        CardController cardManager;
+        public SpecificCardButtonExecution(Player player, CardController cardManager)
         {
             this.player = player;
             this.cardManager = cardManager;

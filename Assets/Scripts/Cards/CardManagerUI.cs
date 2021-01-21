@@ -17,6 +17,12 @@ namespace PositionerDemo
         [SerializeField] private RectTransform playerTwoGraveyardLogo = default;
         [SerializeField] private RectTransform playerTwoGraveyard = default;
         [SerializeField] private Transform cardWaitPosition = default;
+        [SerializeField] private Button btnTakeCard = default;
+
+        public void SetActiveTakeCardButton(bool isActive)
+        {
+            btnTakeCard.gameObject.SetActive(isActive);
+        }
 
         public Motion AddCard(GameObject createdCardGameObject, int PlayerID)
         {                     
