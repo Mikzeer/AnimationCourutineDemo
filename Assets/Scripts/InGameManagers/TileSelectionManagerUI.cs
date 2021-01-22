@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-
 namespace PositionerDemo
 {
     public class TileSelectionManagerUI : MonoBehaviour
@@ -13,6 +12,7 @@ namespace PositionerDemo
         GameObject tileSelectionFramePlayerOne;
         GameObject tileSelectionFramePlayerTwo;
         private Vector2 normalSize;
+        private Vector2 spawnZise = new Vector2(2.1f, 5.8f);
         Board2DManager board2D;
         public PLAYERWCONTROLLERTYPE controlerType = PLAYERWCONTROLLERTYPE.MOUSE;
         public Action<Tile> onTileSelected;
@@ -117,7 +117,6 @@ namespace PositionerDemo
             }
             else
             {
-
                 if (isPlayerOne)
                 {
                     if (SelectedTilePlayerOne != null)
@@ -135,6 +134,80 @@ namespace PositionerDemo
                     }
                 }
             }
+        }
+
+        public void ChangeTileSelectionPosition(bool isPlayerOne, Vector3 newPosition)
+        {
+            GameObject goAux;
+            if (isPlayerOne)
+            {
+                goAux = tileSelectionFramePlayerOne;
+            }
+            else
+            {
+                goAux = tileSelectionFramePlayerTwo;
+            }
+
+            goAux.transform.position = newPosition;
+        }
+
+        public Vector3 GetTilePosition(Tile TileObject, bool isPlayerOne)
+        {
+            switch (TileObject.tileType)
+            {
+                case TILETYPE.BASENEXO:
+                    // HARDCODE
+                    if (TileObject.GetRealWorldLocation().x < 0)
+                    {
+                        return board2D.GetPlayerNexusWorldPosition(true);
+                    }
+                    return board2D.GetPlayerNexusWorldPosition(false);
+                case TILETYPE.SPAWN:
+                case TILETYPE.BATTLEFILED:
+                    return TileObject.GetRealWorldLocation();
+                default:
+                    return Vector3.zero;
+            }
+        }
+
+        public void ChangeTileSelectionLocalScale(Tile TileObject, bool isPlayerOne)
+        {
+            GameObject goAux;
+            if (isPlayerOne)
+            {
+                goAux = tileSelectionFramePlayerOne;
+            }
+            else
+            {
+                goAux = tileSelectionFramePlayerTwo;
+            }
+
+            switch (TileObject.tileType)
+            {
+                case TILETYPE.BASENEXO:
+                    goAux.transform.localScale = spawnZise;
+                    break;
+                case TILETYPE.SPAWN:
+                case TILETYPE.BATTLEFILED:
+                    goAux.transform.localScale = normalSize;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void SetActiveTileSelectionPosition(bool isPlayerOne, bool isActive)
+        {
+            GameObject goAux;
+            if (isPlayerOne)
+            {
+                goAux = tileSelectionFramePlayerOne;
+            }
+            else
+            {
+                goAux = tileSelectionFramePlayerTwo;
+            }
+            goAux.SetActive(isActive);
         }
 
         private Vector3 GetTilePositionAndScale(Tile TileObject, bool isPlayerOne)
@@ -167,6 +240,7 @@ namespace PositionerDemo
                 default:
                     return Vector3.zero;
             }
-        } 
+        }
+
     }
 }

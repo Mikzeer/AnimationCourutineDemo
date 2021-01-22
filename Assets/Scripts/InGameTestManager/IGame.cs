@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using StateMachinePattern;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -16,7 +16,7 @@ namespace PositionerDemo
         ActionsManager actionsManager { get; }
     }
 
-    public class GameMachine : MonoBehaviour, IGame
+    public class GameMachine : MonoBehaviour, IGame, IStateMachineHandler
     {
         #region VARIABLES
         [Header("SPAWN MANAGER UI")]
@@ -36,7 +36,8 @@ namespace PositionerDemo
         public TileSelectionManagerUI tileSelectionManagerUI = default;
         [Header("CARD MANAGER UI")]
         [SerializeField] protected CardManagerUI cardManagerUI = default;
-
+        [Header("ABILITY SELECTION MANAGER UI")]
+        public AbilitySelectionManagerUI abilitySelectionManagerUI = default;
         public CombineManager combineManager { get; protected set; }
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }
@@ -48,47 +49,14 @@ namespace PositionerDemo
 
         #endregion
 
-
-        public State currentState;
-
-        public void Initialize(State states)
+        public GameObject GetGameObject()
         {
-            currentState = states;
-            currentState.Enter();
+            return gameObject;
         }
 
         public void Update()
         {
-            if (currentState != null)
-            {
-                State nextState = currentState.Update();
-                ChangeState(nextState);
-            }
-            else
-            {
-                //Debug.Log("No hay State para Ejecutar");
-            }
-
-        }
-
-        public void ChangeState(State nextState)
-        {
-            if (nextState != null)
-            {
-                currentState.Exit();
-                nextState.Enter();
-                currentState = nextState;
-            }
-        }
-
-        public void GetBack(State previousState)
-        {
-            if (previousState != null)
-            {
-                currentState.Exit();
-                previousState.GetBack();
-                currentState = previousState;
-            }
+            baseStateMachine.Update();
         }
     }
 }

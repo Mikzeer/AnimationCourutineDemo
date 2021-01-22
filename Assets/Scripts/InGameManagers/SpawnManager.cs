@@ -1,4 +1,5 @@
 ﻿using CommandPatternActions;
+using StateMachinePattern;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -8,8 +9,8 @@ namespace PositionerDemo
         SpawnManagerUI spawnManagerUI;
         int spawnIndexID = 0;
         bool debugOn = false;
-        IGame game;
-        public SpawnManager(SpawnManagerUI spawnManagerUI, IGame game)
+        GameMachine game;
+        public SpawnManager(SpawnManagerUI spawnManagerUI, GameMachine game)
         {
             this.spawnManagerUI = spawnManagerUI;
             this.game = game;
@@ -43,6 +44,13 @@ namespace PositionerDemo
             }
 
             return true;
+        }
+
+        public void OnEnterSpawnState(Player player)
+        {
+            // CREO LA LISTA/DICCTIONARY DE LAS POSIBLES TILES A SPAWNEAR / SPAWN COMBINAR CON SU HIGHLIGHT CORRESPONDIENTE
+            SpawnState spawn = new SpawnState(game, game.baseStateMachine.currentState);
+            game.baseStateMachine.ChangeAndEnterState(spawn);
         }
 
         public void OnTrySpawn(Tile TileObject, Player player)

@@ -10,11 +10,26 @@ public class GameTimer
 
     public bool running { get; private set; }
 
+    public GameTimer()
+    {
+
+    }
+
+    public GameTimer(int actualTime)
+    {
+        this.actualTime = actualTime;
+    }
+
     public void Start(int actualTime)
     {
         // ACA COMENZAMOS A RESTAR EL TIEMPO
-        GameCreator.Instance.SetTimer();
+        //GameCreator.Instance.SetTimer();
         this.actualTime = actualTime;
+        running = true;
+    }
+
+    public void Start()
+    {
         running = true;
     }
 

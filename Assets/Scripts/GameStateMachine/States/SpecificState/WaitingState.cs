@@ -1,4 +1,5 @@
-﻿using PositionerDemo;
+﻿using CommandPatternActions;
+using PositionerDemo;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public class WaitingState : TimeConditionState
     }
 
     public override bool MeetCondition()
-    {
+    {        
         for (int i = 0; i < UnfinishActions.Count; i++)
         {
             if (UnfinishActions[i].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)

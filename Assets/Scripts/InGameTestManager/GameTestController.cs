@@ -1,22 +1,17 @@
 ﻿using CommandPatternActions;
+using StateMachinePattern;
 using System.Collections;
 using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class GameTestController : GameMachine, IStateMachineHandler
+    public class GameTestController : GameMachine
     {
         private void Start()
         {
             StartCoroutine(InitializeGame());
         }
    
-        private void OnBoardComplete()
-        {
-            Debug.Log("BOARD SE TERMINO DE CREAR");
-            isBoardLoaded = true;
-        }
-
         public IEnumerator InitializeGame()
         {
             // ACA DEBERIA RECIBIR LA CONFIGURATION DATA DE CADA UNO
@@ -30,6 +25,8 @@ namespace PositionerDemo
             //yield return WaitForDatabaseToLoad(); // REACTIVAR CUANDO FUNCIONE BIEN LA DB
 
 
+            // CREATE PLAYERS STATE
+
             // 1 - CREAR PLAYERS Y USERS
             playerManager = new PlayerManager();
 
@@ -37,6 +34,9 @@ namespace PositionerDemo
             playerManager.CreatePlayers();
             playerManager.CreateNewUser(null);
 
+
+
+            // CREATE BOARD STATE
 
             // 3- IR CREANDO EL BOARD
             board2DManager = new Board2DManager(board2DManagerUI, 5, 7);
@@ -47,12 +47,25 @@ namespace PositionerDemo
             InvokerMotion.StartExecution(this);
 
 
+
+
+            // CREATE TURNS STATE
+
+
             // 2- ASIGNAR LOS PLAYER AL TURN MANAGER
             turnController = new TurnController(playerManager.GetPlayer());
 
             /////////
             // 2b - DECIDIR QUE PLAYER COMIENZA PRIMERO
             turnController.DecideStarterPlayer();
+
+
+
+
+
+
+            // CREATE MANAGER STATE
+
 
             // 3b - Inicializar los managers generales  ESTOS LOS VA A TENER EL GAME... ASI QUE SEGURO LO HAGAMOS DESDE AHI
             spawnManager = new SpawnManager(spawnManagerUI, this);
@@ -64,13 +77,13 @@ namespace PositionerDemo
             //tileSelectionManagerUI.onTileSelected += ExecuteActions;
 
 
-
-
-
-
-
-
             yield return null;
+
+
+
+            // LOADCOLLECTIONSTATE
+
+
             // 3- CARGAR LA GAME COLLECTION
             InGameCardCollectionManager inGameCardCollectionManager = new InGameCardCollectionManager(this, OnCardCollectionLoadComplete);
             //inGameCardCollectionManager.LoadAllCollection(users);// REACTIVAR CUANDO FUNCIONE BIEN LA DB
@@ -87,6 +100,12 @@ namespace PositionerDemo
             // 4b- CHEQUEAR QUE SEA UN DECK VALIDO
 
             // 4c- SI ES INVALIDO SACAMOS TODO A LA MIERDA, SI ES VALID CREAMOS LOS DECKS DE CADA PLAYER
+
+
+
+            // CREATEDECKSTATE
+
+
             cardManager = new CardController(inGameCardCollectionManager, cardManagerUI);
 
             cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[0], playerManager.playerConfigurationData);
@@ -99,24 +118,28 @@ namespace PositionerDemo
             }
 
 
+            // INITIALIZECONTROLLERSTATE
+
             // 5 - INICIALIZAMOS LOS CONTROLES
             mouseController = new MouseController(0, board2DManager, Camera.main);
             keyBoardController = new KeyBoardController(0, board2DManager, Camera.main);
             tileSelectionManagerUI.SetController(board2DManager, mouseController, keyBoardController);
 
 
-            // CREAMOS LOS STATES INICIALES
-            Statee initialAdminStateA = new AdministrationStatee(40, this, 4);
-            Statee initialAdminStateB = new AdministrationStatee(20, this, 2);
-            Statee initialAdminStateC = new AdministrationStatee(20, this, 2);
-            Statee initialAdminStateD = new AdministrationStatee(40, this, 4);
 
+            // STARTGAMESTATE
+
+            // CREAMOS EL STATE INICIAL
+            IState initialAdminStateA = new InitialAdministrationStateA(40, this, 4);
             baseStateMachine = new BaseStateMachine(this);
-
             baseStateMachine.PushState(initialAdminStateA, true);
-            baseStateMachine.PushState(initialAdminStateB, true);
-            baseStateMachine.PushState(initialAdminStateC, true);
-            baseStateMachine.PushState(initialAdminStateD, true);
+            baseStateMachine.Initialize();
+        }
+
+        private void OnBoardComplete()
+        {
+            Debug.Log("BOARD SE TERMINO DE CREAR");
+            isBoardLoaded = true;
         }
 
         private void OnCardCollectionLoadComplete()
@@ -152,5 +175,6 @@ namespace PositionerDemo
             Invoker.ExecuteCommands();
             InvokerMotion.StartExecution(this);
         }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PositionerDemo;
+using StateMachinePattern;
 using System.Collections.Generic;
 
 namespace MikzeerGame
@@ -26,12 +27,7 @@ namespace MikzeerGame
 
                 if (game.spawnManager.CanIEnterSpawnState(player))
                 {
-                    // CREO LA LISTA/DICCTIONARY DE LAS POSIBLES TILES A SPAWNEAR / SPAWN COMBINAR CON SU HIGHLIGHT CORRESPONDIENTE
-
-                    // CREO EL SELECTION STATE
-
-                    // CAMBIO AL NUEVO STATE
-                    //    gameCreator.ChangeState(new GameStateMachine.MoveState(actualUnit, gameCreator, gameCreator.currentState));
+                    game.spawnManager.OnEnterSpawnState(player);
                 }
             }
         }
