@@ -134,7 +134,6 @@ namespace PositionerDemo
             Debug.Log("Se disparo el ON CARD USE");
             if (allCards.ContainsKey(cardUI.ID))
             {
-                allCards[cardUI.ID].CheckPosibleTargets();
             }
             else
             {

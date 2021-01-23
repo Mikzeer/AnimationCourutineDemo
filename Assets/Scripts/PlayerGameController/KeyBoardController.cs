@@ -11,21 +11,6 @@ public class KeyBoardController : PlayerRealWorldController
 
     Board2DManager board2DManager;
 
-    public KeyBoardController(int playerID) : base(playerID)
-    {
-        controllerType = PLAYERWCONTROLLERTYPE.JOYSTICK;
-        controllerScheme = PLAYERWCONTROLLERSCHEME.INGAME;
-
-        actualPosX = GameCreator.Instance.board2D.GridArray.GetLength(0);
-        actualPosY = GameCreator.Instance.board2D.GridArray.GetLength(1);
-        width = GameCreator.Instance.board2D.GridArray.GetLength(0);
-        height = GameCreator.Instance.board2D.GridArray.GetLength(1);
-
-        //actualPosX = Mathf.FloorToInt(actualPosX / 2);
-        actualPosX = width - 2;
-        actualPosY = Mathf.FloorToInt(actualPosY / 2);
-    }
-
     public KeyBoardController(int playerID, Board2DManager board2DManager, Camera cam) : base(playerID)
     {
         controllerType = PLAYERWCONTROLLERTYPE.JOYSTICK;

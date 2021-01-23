@@ -1,122 +1,135 @@
-﻿using UIButtonPattern;
+﻿using PositionerDemo;
+using System.Collections.Generic;
+using UIButtonPattern;
 
-public class TurnState : TimeConditionState
+namespace StateMachinePattern
 {
-    private const string name = "TURN STATE";
-    //SelectInputIClickeable selectInput;
-    //SelectionEmptyTile selectionEmptyTile;
-    //SelectionPlayer selectionPlayer;
-    //SelectionUnit selectionUnit;
-    //HighLightUnitMenu highLightUnitMenu;
-    //UIInputActionPattern uiInputActions;
-
-    public TurnState(int duration, GameCreator gameCreator) : base(duration, gameCreator, name)
+    public class TurnState : ActionState<Tile>
     {
-    }
-
-    public override void Enter()
-    {
-        //base.Enter();
-        //CreateSelectionControl();
-        //CreateButtonSelectionControl();
-        //selectInput.Suscribe();
-        //uiInputActions.Suscribe();
-        //for (int i = 0; i < gameCreator.actualPlayerTurn.units.Count; i++)
-        //{
-        //    gameCreator.actualPlayerTurn.units[i].SetActionPoints(2);
-        //    gameCreator.actualPlayerTurn.units[i].attackAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
-        //    gameCreator.actualPlayerTurn.units[i].moveAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
-        //    gameCreator.actualPlayerTurn.units[i].defendAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
-        //}
-        ////Debug.Log("Enter Turn State Player " + gameCreator.actualPlayerTurn.ID);
-    }
-
-    public override void Exit()
-    {
-        //selectInput.Unsuscribe();
-        //uiInputActions.Unsuscribe();
-        //highLightUnitMenu.Unexecute();
-    }
-
-    public void CreateSelectionControl()
-    {
-        //// LEFT CLICK INPUT EN EL CASO DE ESTAR USANDO UNA COMPUTADORA
-        //InputAction leftClickInputAction = new Controls().PlayerSelection.Select;
-        //InputEventSelection leftClickSelectionCmd = new ISelectIClickeableByMousePositionCommand();
-        //InputPartners leftClickPartners = new InputPartners(leftClickInputAction, leftClickSelectionCmd);
-        //InputActionPattern leftClickInputPattern = new InputActionPattern(leftClickPartners);
-
-        //// KEYBOARD INPUT.. AHORA ES SPACEBAR PARA CANCELAR TODAS LAS ACCIONES YA QUE MANDA UN TRANSFORM NULL, 
-        //// DESPUES SE PODRIA AGREGAR WASD + FLECHITAS PARA MOVERSE POR LAS TILES VA A SER DIFICIL YA QUE EN LA BASE SI SELECCIONAMOS UNA TILA SPAWNEAMOS EN ADM STATE....
-        //InputAction spacebarInputAction = new Controls().PlayerSelection.KeyBoardSelect;
-        //InputEventSelection keyboardSelection = new ISelectIClickeableByKeyboardCommand();
-        //InputPartners spaceBarPartners = new InputPartners(spacebarInputAction, keyboardSelection);
-        //InputActionPattern spaceBarInputPattern = new InputActionPattern(spaceBarPartners);
+        private const string name = "TURN";
+        private int managmentPoints;
 
 
-        //InputAction leftClickHoldInputAction = new Controls().PlayerSelection.HoldSelect;
-        //InputEventSelection LefClickHoldSelection = new ISelectIClickeableCardByMousePositionCommand(gameCreator.m_EventSystem, gameCreator.m_Raycaster);
-        //InputPartners HoldLeftClikcPartners = new InputPartners(leftClickHoldInputAction, LefClickHoldSelection);
-        //InputActionPattern HoldLeftClikcPattern = new InputActionPattern(HoldLeftClikcPartners);
+        UIInputButtonPattern uiInputButtonPattern;
+        protected GameMachine gmMachine;
+        public TurnState(int duration, GameMachine game, int managmentPoints) : base(game, duration)
+        {
+            this.managmentPoints = managmentPoints;
+            this.gmMachine = game;
+        }
+
+        public override void OnEnter()
+        {
+            // 1 - SUSCRIBIRSE AL EVENTO DE SELECCION
+            gmMachine.tileSelectionManagerUI.onTileSelected += ExecuteAction;
+
+            // 2 - TENGO QUE SETEAR LOS ACTIONS POINTS PARA ESTE JUGADOR
+            game.actionsManager.IncrementPlayerUnitsActions(game.turnController.CurrentPlayerTurn, 2);
+
+            // COMENZAMOS EL CONTADOR DE TIEMPO
+            base.OnEnter();
+
+            //selectInput.Suscribe();
+            //uiInputActions.Suscribe();
+            //for (int i = 0; i < gameCreator.actualPlayerTurn.units.Count; i++)
+            //{
+            //    gameCreator.actualPlayerTurn.units[i].SetActionPoints(2);
+            //    gameCreator.actualPlayerTurn.units[i].attackAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
+            //    gameCreator.actualPlayerTurn.units[i].moveAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
+            //    gameCreator.actualPlayerTurn.units[i].defendAbility.actionStatus = MikzeerGameNotas.ACTIONEXECUTIONSTATUS.WAIT;
+            //}
+            ////Debug.Log("Enter Turn State Player " + gameCreator.actualPlayerTurn.ID);
+
+            //game.tileSelectionManagerUI.onTileSelected += ExecuteAction;
+            // ACA TENGO QUE PRENDER EL BOTON DE CARD
+            //CreateButtonSelectionControl();
+            //uiInputButtonPattern.Suscribe();
+            //gameCreator.TakeCardAvailable(true);
+            //Debug.Log("Enter Administration State Player " + GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID);
+        }
+
+        public override void OnExit()
+        {
+            // 1 - DESUSCRIBIRSE AL EVENTO DE SELECCION
+            gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
 
 
-        //// ESTA ES LA LISTA DE TODO LO QUE VA A DEVOLVER UN TRANSFORM
-        //List<InputActionPattern> inputPattern = new List<InputActionPattern>();
-        //inputPattern.Add(leftClickInputPattern);
-        //inputPattern.Add(spaceBarInputPattern);
-        //inputPattern.Add(HoldLeftClikcPattern);
+            // ACA TENGO QUE APAGAR EL BOTON DE CARD
+            //gameCreator.TakeCardAvailable(false);
+            // DETENEMOS EL TIEMPO
+            base.OnExit();
 
+            //uiInputButtonPattern.Unsuscribe();
 
-        //// RECIBE EL TRANSFORM Y ENVIA EL ICLICKEABLE A TODOS LOS QUE ESTEN ESCUCHANDO EL EVENTO
-        //selectInput = new SelectInputIClickeable(inputPattern, gameCreator);
+            // RESTAMOS LAS ACCIONES DEL PLAYER PARA QUE NO PUEDE HACER NADA MAS
+            //game.actionsManager.RestPlayerActions(game.turnController.CurrentPlayerTurn);
 
-        //// SON LAS DIFERENTES MANERAS EN QUE SE ADMINISTRA ESE ICLICKEABLE QUE NOS ENVIA EL SELECTINPUTICLICKEABLE
-        //selectionEmptyTile = new SelectionEmptyTile(selectInput, gameCreator);
-        //selectionPlayer = new SelectionPlayer(selectInput, gameCreator);
-        //selectionUnit = new SelectionUnit(selectInput, gameCreator);
-        //highLightUnitMenu = new HighLightUnitMenu(selectInput, gameCreator, selectionUnit, selectionEmptyTile);
-    }
+            // CAMBIAMOS EL TURNO AL OTRO JUGADOR
+            game.turnController.ChangeCurrentRound();
+        }
 
-    public void CreateButtonSelectionControl()
-    {
-        //EndTurnButtonEventFire EndTurnButtonEvent = new EndTurnButtonEventFire();
-        //SpecificEndTurnButtonExecution EndTurnButtonExecution = new SpecificEndTurnButtonExecution(this);
+        public override bool HaveReachCondition()
+        {
+            //// SIN ACTION POINTS A UTILIZAR
+            //if (game.turnController.CurrentPlayerTurn.GetCurrentActionPoints() <= 0)
+            //{
+            //    return true;
+            //}
 
-        //ButtonPartners cardButtonPartners = new ButtonPartners(EndTurnButtonEvent, EndTurnButtonExecution);
+            //// SIN ACCIONES A EJECUTAR
+            //if (game.actionsManager.DoesThePlayerHaveActionToExecute(game.turnController.CurrentPlayerTurn) == false)
+            //{
+            //    return true;
+            //}
 
-        //List<ButtonPartners> buttonPartners = new List<ButtonPartners>();
-        //buttonPartners.Add(cardButtonPartners);
+            // END TIME
+            if (gameTimer.running == false)
+            {
+                return true;
+            }
 
-        //uiInputActions = new UIInputActionPattern(buttonPartners);
-    }
+            // CHEQUEO ESPECIAL, SI NO TENGO CARDS, NI HAY UN ENEMIGO EN BASE, NI HAY UNA TILE POSIBLE PARA SPAWNEAR
+            bool havaCardsInDeck = game.turnController.CurrentPlayerTurn.Deck.Count > 0;
+            bool isAnEnemyInBase = game.board2DManager.IsThereAPosibleAttackableEnemyInBase(game.turnController.CurrentPlayerTurn.PlayerID);
+            bool isThereAPosibleSpawnTile = game.board2DManager.IsThereAPosibleSpawneableTile(game.turnController.CurrentPlayerTurn.PlayerID); ;
 
-    public override void GetBack()
-    {
-        //base.GetBack();
-        ////Debug.Log("REENTER Turn State Player " + gameCreator.actualPlayerTurn.ID);
-        //selectInput.Suscribe();
-        //uiInputActions.Suscribe();
-    }
+            if (!havaCardsInDeck && !isAnEnemyInBase && !isThereAPosibleSpawnTile)
+            {
+                return true;
+            }
 
-    public override State Update()
-    {
-        //if (endState)
-        //{
-        //    Debug.Log("Turn State ENDS");
-        //    gameCreator.ChangeTurn();
-        //    return new AdministrationState(15, gameCreator, 1);
-        //}
-        //if (RestTime())
-        //{
-        //    //Debug.Log("Turn State InGame");
-        //    return null;
-        //}
-        //else
-        //{
-        //    //Debug.Log("Turn State ENDS");
-        //    gameCreator.ChangeTurn();
-        //    return new AdministrationState(15, gameCreator, 1);
-        //}
-        return null;
+            return false;
+        }
+
+        public override void OnUpdate()
+        {
+            // UPDATEO EL TIEMPO... PODRIA TENER ESTO EN UN MONO BEHAVIOUR PEEEEEEROOOOOO.... NO SE
+            base.OnUpdate();
+
+            if (HaveReachCondition())
+            {
+                AdministrationState adminState = new AdministrationState(20, gmMachine, 1);
+                OnNextState(adminState);
+            }
+        }
+
+        public void CreateButtonSelectionControl()
+        {
+            //CardButtonEventFire cardButtonEvent = new CardButtonEventFire();
+            //SpecificCardButtonExecution cardButtonExecution = new SpecificCardButtonExecution(game.turnController.CurrentPlayerTurn, game.cardManager);
+            //ButtonAndEventContainer cardButtonPartners = new ButtonAndEventContainer(cardButtonEvent, cardButtonExecution);
+            EndTurnButtonEventFire EndTurnButtonEvent = new EndTurnButtonEventFire();
+            SpecificEndTurnButtonExecution EndTurnButtonExecution = new SpecificEndTurnButtonExecution(game.turnController);
+            ButtonAndEventContainer cardButtonPartners = new ButtonAndEventContainer(EndTurnButtonEvent, EndTurnButtonExecution);
+
+            List<ButtonAndEventContainer> buttonPartners = new List<ButtonAndEventContainer>();
+            buttonPartners.Add(cardButtonPartners);
+            uiInputButtonPattern = new UIInputButtonPattern(buttonPartners);
+        }
+
+        public override void ExecuteAction(Tile action)
+        {
+            gmMachine.abilityButtonCreationUI.SetTile(action);
+        }
     }
 }

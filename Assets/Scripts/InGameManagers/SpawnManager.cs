@@ -1,5 +1,7 @@
-﻿using CommandPatternActions;
+﻿using AbilitySelectionUI;
+using CommandPatternActions;
 using StateMachinePattern;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -28,6 +30,7 @@ namespace PositionerDemo
             // SI EL PLAYER ESTA EN SU TURNO
             if (player != game.turnController.CurrentPlayerTurn)
             {
+                if (debugOn) Debug.Log("NO ES EL TURNO DEL PLAYER");
                 return false;
             }
 
@@ -49,8 +52,11 @@ namespace PositionerDemo
         public void OnEnterSpawnState(Player player)
         {
             // CREO LA LISTA/DICCTIONARY DE LAS POSIBLES TILES A SPAWNEAR / SPAWN COMBINAR CON SU HIGHLIGHT CORRESPONDIENTE
-            SpawnState spawn = new SpawnState(game, game.baseStateMachine.currentState);
-            game.baseStateMachine.ChangeAndEnterState(spawn);
+            Dictionary<Tile, HIGHLIGHTUITYPE> tileHighlightTypesDictionary = CreateHighlightUIDictionary(player);
+            SpawnAbilitySelectionUIContainer spawnUIContainer = new SpawnAbilitySelectionUIContainer(tileHighlightTypesDictionary);
+            SpawnState spawn = new SpawnState(game, game.baseStateMachine.currentState, spawnUIContainer);
+            game.baseStateMachine.PopState(true);
+            game.baseStateMachine.PushState(spawn);
         }
 
         public void OnTrySpawn(Tile TileObject, Player player)
@@ -125,6 +131,7 @@ namespace PositionerDemo
             Vector3 spawnPosition = spwInf.spawnTile.GetRealWorldLocation();
             Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
             InvokerMotion.AddNewMotion(normalSpawnMotion);
+            InvokerMotion.StartExecution(spawnManagerUI);
         }
 
         private void SpecialSpawn(SpawnAbilityEventInfo spwInf)
@@ -189,6 +196,22 @@ namespace PositionerDemo
             // B - GENERAMOS UN DESTELLO O ALGO SIMILAR EN LA POSICION DE SPAWNEO
             // C - DESTRUIMOS LOS OBJETOS ACTUALES DE LOS KIMBOKOS
             // D - CREAMOS EL NUEVO KIMBOKO EVOLUCIONADO
+        }
+
+        private Dictionary<Tile, HIGHLIGHTUITYPE> CreateHighlightUIDictionary(Player player)
+        {
+            Dictionary<Tile, HIGHLIGHTUITYPE> tileHighlightTypesDictionary = new Dictionary<Tile, HIGHLIGHTUITYPE>();
+
+            List<SpawnTile> spawnTiles = game.board2DManager.GetPlayerSpawnTiles(player.PlayerID);
+
+            if (spawnTiles.Count <= 0) return tileHighlightTypesDictionary;
+
+            for (int i = 0; i < spawnTiles.Count; i++)
+            {
+                tileHighlightTypesDictionary.Add(spawnTiles[i], HIGHLIGHTUITYPE.SPAWN);
+            }
+
+            return tileHighlightTypesDictionary;
         }
     }
 }

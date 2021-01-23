@@ -13,7 +13,9 @@
         public STATMODIFIERTYPE statModifierType { get; private set; }
         int amountToModify;
 
-        public StatModification(IOcuppy unitToModify, Stat statToModify, int amountToModify, STATMODIFIERTYPE statModifierType)
+        bool notExcedMaxValue = false;
+
+        public StatModification(IOcuppy unitToModify, Stat statToModify, int amountToModify, STATMODIFIERTYPE statModifierType, bool notExcedMaxValue = false)
         {
             this.OcuppyToModify = unitToModify;
             this.statToModify = statToModify;
@@ -39,6 +41,14 @@
 
             statToModify.ActualStatValue += amountToModify;
             //  5 ++ 1 = 6 buff / 5 +- 1 = 4 nerf / 11 +- 8 = 3 change
+            if (notExcedMaxValue)
+            {
+                if (statToModify.ActualStatValue > statToModify.MaxStatValue)
+                {
+                    statToModify.ActualStatValue = statToModify.MaxStatValue;
+                }
+            }
+
             status = STATMODIFICATIONSTATUS.ExecuteSucceeded;
         }
 

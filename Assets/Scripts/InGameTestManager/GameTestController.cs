@@ -71,7 +71,7 @@ namespace PositionerDemo
             spawnManager = new SpawnManager(spawnManagerUI, this);
             combineManager = new CombineManager(this);
             movementManager = new MovementManager(this, moveManagerUI);
-
+            actionsManager = new ActionsManager();
 
 
             //tileSelectionManagerUI.onTileSelected += ExecuteActions;
@@ -158,23 +158,10 @@ namespace PositionerDemo
             Debug.Log("DB LOADED");
         }
 
-        private void ExecuteActions(Tile tile)
+        public void Update()
         {
-            switch (toggleController.StateType)
-            {
-                case ToggleController.STATETYPE.SPAWN:
-                    spawnManager.OnTrySpawn(tile, turnController.CurrentPlayerTurn);
-                    break;
-                case ToggleController.STATETYPE.MOVE:
-                    break;
-                case ToggleController.STATETYPE.ATTACK:
-                    break;
-                default:
-                    break;
-            }
-            Invoker.ExecuteCommands();
-            InvokerMotion.StartExecution(this);
+            if (baseStateMachine == null) return;
+            baseStateMachine.Update();
         }
-
     }
 }

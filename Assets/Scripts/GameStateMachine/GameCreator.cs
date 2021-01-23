@@ -6,51 +6,16 @@ using System;
 using System.Collections.Generic;
 using StateMachinePattern;
 
-public class GameCreator : GameStateMachine, IGame
+public class GameCreator : GameMachine
 {
-
-    #region SINGLETON
-
-    [SerializeField]
-    protected bool dontDestroy;
-
-    private static GameCreator instance;
-    public static GameCreator Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<GameCreator>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    instance = obj.AddComponent<GameCreator>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    #endregion
-
     #region VARIABLES
 
     public TurnManager turnManager { get; set; }
 
-    public SpawnManager spawnManager => throw new NotImplementedException();
-    public Board2DManager board2DManager => throw new NotImplementedException();
-    public CombineManager combineManager => throw new NotImplementedException();
-    public MovementManager movementManager { get; private set; }
-    public TurnController turnController => throw new NotImplementedException();
-    public PlayerManager playerManager { get; private set; }
-    public BaseStateMachine baseStateMachine { get; protected set; }
-    public ActionsManager actionsManager { get; protected set; }
-
     public Player[] players;
     public Camera cam;
 
-    public SpawnController spawnCotroller = new SpawnController();
+    //public SpawnController spawnCotroller = new SpawnController();
     public GameObject Crane;
     public Transform CraneEnd;
     public GameObject kimbokoPrefab;
@@ -58,17 +23,13 @@ public class GameCreator : GameStateMachine, IGame
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
 
-    public CardManager cardManager { get; set; }
-
-    CardController IGame.cardManager => throw new NotImplementedException();
-
     public GameObject cardUIPrefab;
     public RectTransform cardHolderP1;
     public RectTransform cardHolderP2;
 
     public Board2D board2D;
     public GameObject tileSelectionPrefab;
-    public HighLightTile highLightTile;
+    //public HighLightTile highLightTile;
     public RectTransform canvasRootTransform;
     public InfoPanel infoPanel;
 
@@ -83,24 +44,13 @@ public class GameCreator : GameStateMachine, IGame
     private void Awake()
     {
         cam = Camera.main;
-
         UIController.OnTakeCardActionClicked += AddCard;
         UIController.OnEndTurnActionClicked += EndTurn;
-
-        if (instance == null)
-        {
-            instance = this as GameCreator;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
     }
 
     void Start()
     {
-        highLightTile = new HighLightTile(tileSelectionPrefab);
+        //highLightTile = new HighLightTile(tileSelectionPrefab);
     }
 
     #endregion

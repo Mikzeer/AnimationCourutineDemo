@@ -9,12 +9,14 @@ namespace MikzeerGame
         public class SpawnAbilityButtonExecution : SpecificAbilityExecution
         {
             IOcuppy actualOccupier;
-            IGame game;
+            GameMachine game;
+            AbilityButtonCreationUI abilityButtonCreationUI;
             public string name { get; private set; } = "SPAWN";
-            public SpawnAbilityButtonExecution(IOcuppy actualOccupier, IGame gameCreator)
+            public SpawnAbilityButtonExecution(IOcuppy actualOccupier, GameMachine gameCreator, AbilityButtonCreationUI abilityButtonCreationUI)
             {
                 this.game = gameCreator;
                 this.actualOccupier = actualOccupier;
+                this.abilityButtonCreationUI = abilityButtonCreationUI;
             }
 
             public void Execute()
@@ -29,6 +31,8 @@ namespace MikzeerGame
                 {
                     game.spawnManager.OnEnterSpawnState(player);
                 }
+
+                abilityButtonCreationUI.ClearAbilityButtons();
             }
         }
 

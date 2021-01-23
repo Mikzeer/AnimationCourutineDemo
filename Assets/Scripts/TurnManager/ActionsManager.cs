@@ -64,7 +64,7 @@ public class ActionsManager
 
     public bool DoesThePlayerHaveActionToExecute(Player player)
     {
-        return player.GetCurrentActionPoints() <= 0;
+        return player.GetCurrentActionPoints() > 0;
     }
 
     public bool DoesThePlayerUnitsHaveActionsToExecute(Player player)

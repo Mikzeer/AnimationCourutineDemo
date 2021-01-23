@@ -53,9 +53,12 @@ namespace PositionerDemo
             UserDB userTestJson = new UserDB("ppp");
             userTestJson.ID = "ppp";
             UserDB userTwo = playerConfigurationData.user;
-            users[0] = userOne;
-            //users[1] = userTwo;
-            users[1] = userTestJson;
+            users.Add(userOne);
+            users.Add(userTestJson);
+
+            //users[0] = userOne;
+            ////users[1] = userTwo;
+            //users[1] = userTestJson;
         }
 
         public Player[] GetPlayer()

@@ -11,40 +11,36 @@ namespace MikzeerGame
         {
             [SerializeField] private Transform buttonParent = default;
             [SerializeField] private Button abilityButtonPrefab = default;
-            [Header("TILE SELECTION MANAGER UI")]
-            [SerializeField] private TileSelectionManagerUI tileSelectionManagerUI = default;
             List<AbilityButton> actualAbilityButtons;
-            IGame gameCreator;
+            GameMachine gameMachine;
             IOcuppy actualOccupier;
+            public bool isCreated { get; protected set; }
 
             private void Awake()
             {
-                gameCreator = FindObjectOfType<GameTestController>();
-                tileSelectionManagerUI.onTileSelected += SetUnit;
+                gameMachine = FindObjectOfType<GameMachine>();
             }
 
-            public void SetUnit(Tile selectedTile)
+            public void SetTile(Tile selectedTile)
             {
                 if (selectedTile == null)
                 {
                     ClearAbilityButtons();
-                    buttonParent.gameObject.SetActive(false);
-                    this.actualOccupier = null;
                     return;
                 }
                 IOcuppy actualOccupier = selectedTile.GetOcuppy();
+                SetUnit(actualOccupier);
+            }
+
+            public void SetUnit(IOcuppy actualOccupier)
+            {
                 if (actualOccupier == null)
                 {
                     ClearAbilityButtons();
-                    buttonParent.gameObject.SetActive(false);
-                    this.actualOccupier = null;
                     return;
                 }
-
                 if (this.actualOccupier == actualOccupier) return;
-
                 ClearAbilityButtons();
-
                 this.actualOccupier = actualOccupier;
                 buttonParent.gameObject.SetActive(true);
                 StartCreationOfButtons(actualOccupier);
@@ -52,6 +48,8 @@ namespace MikzeerGame
 
             public void ClearAbilityButtons()
             {
+                buttonParent.gameObject.SetActive(false);
+                actualOccupier = null;
                 if (actualAbilityButtons != null && actualAbilityButtons.Count > 0)
                 {
                     for (int i = 0; i < actualAbilityButtons.Count; i++)
@@ -61,12 +59,12 @@ namespace MikzeerGame
                     }
                     actualAbilityButtons.Clear();
                 }
+                isCreated = false;
             }
 
             public void StartCreationOfButtons(IOcuppy actualOccupier)
             {
                 actualAbilityButtons = new List<AbilityButton>();
-
                 foreach (KeyValuePair<ABILITYTYPE, IAbility> ab in actualOccupier.Abilities)
                 {
                     switch (ab.Key)
@@ -97,6 +95,7 @@ namespace MikzeerGame
                             break;
                     }
                 }
+                isCreated = true;
             }
 
             public void CreateButton(IOcuppy actualOccupier, ABILITYBUTTONTYPE abilityButtonType)
@@ -106,19 +105,19 @@ namespace MikzeerGame
                 switch (abilityButtonType)
                 {
                     case ABILITYBUTTONTYPE.MOVE:
-                        MoveAbilityButtonExecution moveAbilityBtnExe = new MoveAbilityButtonExecution(actualOccupier, gameCreator);
+                        MoveAbilityButtonExecution moveAbilityBtnExe = new MoveAbilityButtonExecution(actualOccupier, gameMachine, this);
                         AbilityButton btnMove = new AbilityButton(btnAbi, moveAbilityBtnExe, null);
                         btnMove.Suscribe();
                         actualAbilityButtons.Add(btnMove);
                         break;
                     case ABILITYBUTTONTYPE.ATTACK:
-                        AttackAbilityButtonExecution attackAbilityBtnExe = new AttackAbilityButtonExecution(actualOccupier, gameCreator);
+                        AttackAbilityButtonExecution attackAbilityBtnExe = new AttackAbilityButtonExecution(actualOccupier, gameMachine, this);
                         AbilityButton btnAttack = new AbilityButton(btnAbi, attackAbilityBtnExe, null);
                         btnAttack.Suscribe();
                         actualAbilityButtons.Add(btnAttack);
                         break;
                     case ABILITYBUTTONTYPE.DEFEND:
-                        DefenseAbilityButtonExecution defenseAbilityBtnExe = new DefenseAbilityButtonExecution(actualOccupier, gameCreator);
+                        DefenseAbilityButtonExecution defenseAbilityBtnExe = new DefenseAbilityButtonExecution(actualOccupier, gameMachine, this);
                         AbilityButton btnDefense = new AbilityButton(btnAbi, defenseAbilityBtnExe, null);
                         btnDefense.Suscribe();
                         actualAbilityButtons.Add(btnDefense);
@@ -132,7 +131,7 @@ namespace MikzeerGame
                     case ABILITYBUTTONTYPE.FUSION:
                         break;
                     case ABILITYBUTTONTYPE.SPAWN:
-                        SpawnAbilityButtonExecution spawnAbilityBtnExe = new SpawnAbilityButtonExecution(actualOccupier, gameCreator);
+                        SpawnAbilityButtonExecution spawnAbilityBtnExe = new SpawnAbilityButtonExecution(actualOccupier, gameMachine, this);
                         AbilityButton btnSpawn = new AbilityButton(btnAbi, spawnAbilityBtnExe, null);
                         btnSpawn.Suscribe();
                         actualAbilityButtons.Add(btnSpawn);

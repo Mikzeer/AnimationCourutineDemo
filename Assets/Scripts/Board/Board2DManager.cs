@@ -26,8 +26,6 @@ namespace PositionerDemo
             this.columnsWidht = columnsWidht + 4;
             this.rowsHeight = rowsHeight;
 
-
-
             tileSize = 4;
             originPosition = board2DManagerUI.LoadSizeAndGetOriginPosition(this.rowsHeight, this.columnsWidht);
             GridArray = new Tile[this.columnsWidht, this.rowsHeight];
@@ -159,29 +157,17 @@ namespace PositionerDemo
 
         public bool IsThereAPosibleSpawneableTile(int playerID)
         {
-            int columnIndex = 3;
-
-            if (playerID == 1)
-            {
-                columnIndex = 9;
-            }
-
+            int columnIndex = 2;
+            if (playerID == 1) columnIndex = 8;
             for (int i = 0; i < rowsHeight; i++)
             {
-                if (GridArray[i, columnIndex].IsOccupied() == false)
+                if (GridArray[columnIndex, i].IsOccupied() == false) return true;
+                if (GridArray[columnIndex, i].GetOcuppy() == null) return false;
+                if (GridArray[columnIndex, i].GetOcuppy().OccupierType != OCUPPIERTYPE.UNIT) return false;
+                Kimboko auxKimb = (Kimboko)GridArray[columnIndex, i].GetOcuppy();
+                if (auxKimb.OwnerPlayerID == playerID)
                 {
-                    return true;
-                }
-                else
-                {
-                    Kimboko auxKimb = (Kimboko)GridArray[i, columnIndex].GetOcuppy();
-                    if (auxKimb.OwnerPlayerID == playerID)
-                    {
-                        if (CombineKimbokoRules.CanICombineAndEvolveWithUnitType(auxKimb, UNITTYPE.X))
-                        {
-                            return true;
-                        }
-                    }
+                    if (CombineKimbokoRules.CanICombineAndEvolveWithUnitType(auxKimb, UNITTYPE.X)) return true;
                 }
             }
             return false;
@@ -190,24 +176,44 @@ namespace PositionerDemo
         public bool IsThereAPosibleAttackableEnemyInBase(int playerID)
         {
             int columnIndex = 3;
-
-            if (playerID == 1)
-            {
-                columnIndex = 9;
-            }
-
+            if (playerID == 1) columnIndex = 9;
             for (int i = 0; i < rowsHeight; i++)
             {
-                if (GridArray[i, columnIndex].IsOccupied())
+                if (GridArray[columnIndex, i].IsOccupied())
                 {
-                    if (GridArray[i, columnIndex].GetOcuppy().OwnerPlayerID != playerID)
+                    if (GridArray[columnIndex, i].GetOcuppy().OwnerPlayerID != playerID) return true;
+                }
+            }
+            return false;
+        }
+
+        public List<SpawnTile> GetPlayerSpawnTiles(int playerID)
+        {
+            List<SpawnTile> spawnTile = new List<SpawnTile>();
+            int columnIndex = 2;
+            if (playerID == 1) columnIndex = 8;
+            for (int i = 0; i < rowsHeight; i++)
+            {
+                if (GridArray[columnIndex, i].IsOccupied() == false)
+                {
+                    SpawnTile aux = (SpawnTile)GridArray[columnIndex, i];
+                    spawnTile.Add(aux);
+                }
+                if (GridArray[columnIndex, i].GetOcuppy() == null) continue;
+
+                if (GridArray[columnIndex, i].GetOcuppy().OccupierType != OCUPPIERTYPE.UNIT) continue;
+
+                Kimboko auxKimb = (Kimboko)GridArray[columnIndex, i].GetOcuppy();
+                if (auxKimb.OwnerPlayerID == playerID)
+                {
+                    if (CombineKimbokoRules.CanICombineAndEvolveWithUnitType(auxKimb, UNITTYPE.X))
                     {
-                        return true;
+                        SpawnTile aux = (SpawnTile)GridArray[columnIndex, i];
+                        spawnTile.Add(aux);
                     }
                 }
             }
-
-            return false;
+            return spawnTile;
         }
     }
 }

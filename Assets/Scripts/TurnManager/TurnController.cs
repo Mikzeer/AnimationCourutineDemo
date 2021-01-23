@@ -22,6 +22,14 @@ public class TurnController
         randomIndex = 0;
         StarterPlayer = Players[randomIndex];
         CurrentPlayerTurn = StarterPlayer;
+        if (randomIndex == Players.Length)
+        {
+            NextPlayerTurn = Players[0];
+        }
+        else
+        {
+            NextPlayerTurn = Players[1];
+        }
     }
 
     public void ChangeCurrentRound()

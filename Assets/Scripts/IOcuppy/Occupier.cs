@@ -35,7 +35,7 @@ namespace PositionerDemo
             {
                 if (Stats.ContainsKey(STATTYPE.ACTIONPOINTS))
                 {
-                    StatModification statModification = new StatModification(this, Stats[STATTYPE.ACTIONPOINTS], amount, STATMODIFIERTYPE.CHANGE);
+                    StatModification statModification = new StatModification(this, Stats[STATTYPE.ACTIONPOINTS], amount, STATMODIFIERTYPE.CHANGE, true);
                     Stats[STATTYPE.ACTIONPOINTS].AddStatModifier(statModification);
                     Stats[STATTYPE.ACTIONPOINTS].ApplyModifications();
                     return;

@@ -11,7 +11,7 @@ namespace PositionerDemo
             AttackPowerStat attackPow = new AttackPowerStat(2, 2);
             AttackRangeStat attackRan = new AttackRangeStat(1, 3);
             HealthStat healthStat = new HealthStat(2, 2);
-            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(0, 4);
 
             Stats.Add(attackPow.StatType, attackPow);
             Stats.Add(attackRan.StatType, attackRan);
@@ -27,7 +27,7 @@ namespace PositionerDemo
             AttackPowerStat attackPow = new AttackPowerStat(2, 2);
             AttackRangeStat attackRan = new AttackRangeStat(1, 3);
             HealthStat healthStat = new HealthStat(2, 2);
-            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(0, 2);
             MoveRangeStat moveRan = new MoveRangeStat(1, 3);
 
             Stats.Add(attackPow.StatType, attackPow);
@@ -45,7 +45,7 @@ namespace PositionerDemo
             AttackRangeStat attackRan = new AttackRangeStat(1, 3);
             MoveRangeStat moveRan = new MoveRangeStat(1, 3);
             HealthStat healthStat = new HealthStat(5, 5);
-            ActionPointStat actionPStat = new ActionPointStat(2, 2);
+            ActionPointStat actionPStat = new ActionPointStat(0, 2);
 
             Stats.Add(attackPow.StatType, attackPow);
             Stats.Add(attackRan.StatType, attackRan);
@@ -62,7 +62,7 @@ namespace PositionerDemo
             AttackRangeStat attackRan = new AttackRangeStat(1, 3);
             MoveRangeStat moveRan = new MoveRangeStat(1, 3);
             HealthStat healthStat = new HealthStat(11, 11);
-            ActionPointStat actionPStat = new ActionPointStat(1, 1);
+            ActionPointStat actionPStat = new ActionPointStat(0, 1);
 
             Stats.Add(attackPow.StatType, attackPow);
             Stats.Add(attackRan.StatType, attackRan);
@@ -140,12 +140,12 @@ namespace PositionerDemo
             int points = CombineKimbokoRules.PuntuateKimbokoList(combineKimbokos);
             if (points == 116 || points == 132)
             {
-                ActionPointStat actionPStat = new ActionPointStat(1, 1);
+                ActionPointStat actionPStat = new ActionPointStat(0, 1);
                 Stats.Add(actionPStat.StatType, actionPStat);
             }
             else
             {
-                ActionPointStat actionPStat = new ActionPointStat(2, 2);
+                ActionPointStat actionPStat = new ActionPointStat(0, 2);
                 Stats.Add(actionPStat.StatType, actionPStat);
             }      
             return Stats;

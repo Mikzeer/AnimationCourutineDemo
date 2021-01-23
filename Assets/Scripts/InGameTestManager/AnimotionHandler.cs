@@ -13,44 +13,6 @@ public class AnimotionHandler : MonoBehaviour
 
     #endregion
 
-    #region STATIC LAZY SINGLETON
-
-    [SerializeField]
-    protected bool dontDestroy;
-
-    private static AnimotionHandler instance;
-    public static AnimotionHandler Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<AnimotionHandler>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    instance = obj.AddComponent<AnimotionHandler>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this as AnimotionHandler;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
-
-    #endregion
-
     #region VARIABLES MOMENTANEAS
 
     public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT };
@@ -88,7 +50,7 @@ public class AnimotionHandler : MonoBehaviour
     Board2D board;
     public GameObject tilePrefab;
 
-    private SpawnController spawnCotroller = new SpawnController();
+    //private SpawnController spawnCotroller = new SpawnController();
     public GameObject Crane;
     public Transform CraneEnd;
     public GameObject kimbokoPrefab;
@@ -1213,7 +1175,7 @@ public class AnimotionHandler : MonoBehaviour
         {
             if (TileObject != null)
             {
-                spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
+                //spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
             }
         }
 
@@ -1321,7 +1283,7 @@ public class AnimotionHandler : MonoBehaviour
 
     public void AddCard()
     {
-        cardManager.AddCard(GetPlayer());
+        //cardManager.AddCard(GetPlayer());
 
         //if (motionControllerCardSpawn != null && motionControllerCardSpawn.isPerforming == false)
         //{

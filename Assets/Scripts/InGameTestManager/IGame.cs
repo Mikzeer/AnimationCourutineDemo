@@ -1,4 +1,5 @@
-﻿using StateMachinePattern;
+﻿using MikzeerGame.UI;
+using StateMachinePattern;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -28,8 +29,6 @@ namespace PositionerDemo
         [Header("BOARD MANAGER UI")]
         [SerializeField] protected Board2DManagerUI board2DManagerUI = default;
         public Board2DManager board2DManager { get; protected set; }
-        [Header("TOGGLE CONTROLLER")]
-        [SerializeField] protected ToggleController toggleController = default;
         protected MouseController mouseController;
         protected KeyBoardController keyBoardController;
         [Header("TILE SELECTION MANAGER UI")]
@@ -38,6 +37,8 @@ namespace PositionerDemo
         [SerializeField] protected CardManagerUI cardManagerUI = default;
         [Header("ABILITY SELECTION MANAGER UI")]
         public AbilitySelectionManagerUI abilitySelectionManagerUI = default;
+        [Header("ABILITY BUTTON CREATION UI")]
+        public AbilityButtonCreationUI abilityButtonCreationUI = default;
         public CombineManager combineManager { get; protected set; }
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }
@@ -54,9 +55,5 @@ namespace PositionerDemo
             return gameObject;
         }
 
-        public void Update()
-        {
-            baseStateMachine.Update();
-        }
     }
 }

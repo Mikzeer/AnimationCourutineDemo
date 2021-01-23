@@ -8,12 +8,14 @@ namespace MikzeerGame
         {
             public string name { get; private set; } = "DEFENSE";
             IOcuppy actualOccupier;
-            IGame gameCreator;
+            GameMachine gameCreator;
+            AbilityButtonCreationUI abilityButtonCreationUI;
 
-            public DefenseAbilityButtonExecution(IOcuppy actualOccupier, IGame gameCreator)
+            public DefenseAbilityButtonExecution(IOcuppy actualOccupier, GameMachine gameCreator, AbilityButtonCreationUI abilityButtonCreationUI)
             {
                 this.actualOccupier = actualOccupier;
                 this.gameCreator = gameCreator;
+                this.abilityButtonCreationUI = abilityButtonCreationUI;
             }
 
             public void Execute()
@@ -24,6 +26,8 @@ namespace MikzeerGame
                 //    //gameCreator.ChangeState(new GameStateMachine.AttackState(actualUnit, gameCreator, gameCreator.currentState));
                 //    actualUnit.defendAbility.Perform();
                 //}
+
+                abilityButtonCreationUI.ClearAbilityButtons();
             }
         }
 

@@ -7,13 +7,15 @@ namespace MikzeerGame
         public class AttackAbilityButtonExecution : SpecificAbilityExecution
         {
             IOcuppy actualOccupier;
-            IGame gameCreator;
+            GameMachine gameCreator;
+            AbilityButtonCreationUI abilityButtonCreationUI;
             public string name { get; private set; } = "ATTACK";
 
-            public AttackAbilityButtonExecution(IOcuppy actualOccupier, IGame gameCreator)
+            public AttackAbilityButtonExecution(IOcuppy actualOccupier, GameMachine gameCreator, AbilityButtonCreationUI abilityButtonCreationUI)
             {
                 this.actualOccupier = actualOccupier;
                 this.gameCreator = gameCreator;
+                this.abilityButtonCreationUI = abilityButtonCreationUI;
             }
 
             public void Execute()
@@ -29,6 +31,8 @@ namespace MikzeerGame
                 //{
                 //    gameCreator.ChangeState(new GameStateMachine.AttackState(actualUnit, gameCreator, gameCreator.currentState));
                 //}
+
+                abilityButtonCreationUI.ClearAbilityButtons();
             }
         }
 

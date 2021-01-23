@@ -108,10 +108,10 @@ namespace PositionerDemo
 
 
             //  ESTA ASIGNACION ES SOLAMENTE MOMENTANEA HASTA QUE VEA A DONDE VA A PARAR CADA INFORMACION O DE DONDE VIENE...
-            GameCreator.Instance.players = players;
-            GameCreator.Instance.turnManager = turnManager;
-            GameCreator.Instance.cardManager = cardManager;
-            GameCreator.Instance.board2D = board;
+            //GameCreator.Instance.players = players;
+            //GameCreator.Instance.turnManager = turnManager;
+            ////GameCreator.Instance.cardManager = cardManager;
+            //GameCreator.Instance.board2D = board;
 
             while (isBoardLoaded == false)
             {
@@ -121,8 +121,8 @@ namespace PositionerDemo
 
             Debug.Log("BOARD LOADED");
 
-            State nextState = new InitialAdministrationState(40, GameCreator.Instance, 4, 0);
-            GameCreator.Instance.Initialize(GameCreator.Instance.turnManager.ChangeTurnState(4, nextState));
+            //State nextState = new InitialAdministrationState(40, GameCreator.Instance, 4, 0);
+            //GameCreator.Instance.Initialize(GameCreator.Instance.turnManager.ChangeTurnState(4, nextState));
         }
 
         private IEnumerator WaitForDatabaseToLoad()
