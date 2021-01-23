@@ -5,20 +5,20 @@ namespace UIButtonPattern
     public class EndTurnButtonEventFire : ButtonEventFire
     {
         public override event Action OnButtonPress;
-
+        
         public override void Execute()
         {
             OnButtonPress?.Invoke();
         }
 
-        public override void Suscribe()
+        public override void Suscribe(Action toSub)
         {
-            UIController.OnEndTurnActionClicked += Execute;
+            toSub += Execute;
         }
 
-        public override void Unsuscribe()
+        public override void Unsuscribe(Action toSub)
         {
-            UIController.OnEndTurnActionClicked -= Execute;
+            toSub -= Execute;
         }
     }
 }

@@ -49,12 +49,9 @@ namespace PositionerDemo
 
 
 
-            // CREATE TURNS STATE
-
-
+            // CREATE TURNS STATE => ESTO LO DEBERIA HACER EL SERVER PARA QUE NO LO HAGA CADA JUGADOR Y SE PUEDE HACKEAR
             // 2- ASIGNAR LOS PLAYER AL TURN MANAGER
             turnController = new TurnController(playerManager.GetPlayer());
-
             /////////
             // 2b - DECIDIR QUE PLAYER COMIENZA PRIMERO
             turnController.DecideStarterPlayer();
@@ -65,7 +62,6 @@ namespace PositionerDemo
 
 
             // CREATE MANAGER STATE
-
 
             // 3b - Inicializar los managers generales  ESTOS LOS VA A TENER EL GAME... ASI QUE SEGURO LO HAGAMOS DESDE AHI
             spawnManager = new SpawnManager(spawnManagerUI, this);
@@ -81,7 +77,7 @@ namespace PositionerDemo
 
 
 
-            // LOADCOLLECTIONSTATE
+            // LOADCOLLECTIONSTATE  => LAS COLLECTION LAS DEBERIA TENER EL SERVER Y PASARSELAS A CADA JUGADOR
 
 
             // 3- CARGAR LA GAME COLLECTION
@@ -98,19 +94,18 @@ namespace PositionerDemo
 
             // 4- CARGAR EL DECK SELECCIONADO DE CADA JUGADOR
             // 4b- CHEQUEAR QUE SEA UN DECK VALIDO
-
             // 4c- SI ES INVALIDO SACAMOS TODO A LA MIERDA, SI ES VALID CREAMOS LOS DECKS DE CADA PLAYER
 
 
 
             // CREATEDECKSTATE
-
-
             cardManager = new CardController(inGameCardCollectionManager, cardManagerUI);
-
             cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[0], playerManager.playerConfigurationData);
             cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[1], playerManager.playerConfigurationData);
 
+
+
+            // WAIT FOR BOARD TO LOAD STATE
             while (isBoardLoaded == false)
             {
                 Debug.Log("WAITING FOR BOARD TO LOAD");
@@ -118,8 +113,9 @@ namespace PositionerDemo
             }
 
 
-            // INITIALIZECONTROLLERSTATE
 
+
+            // INITIALIZECONTROLLERSTATE
             // 5 - INICIALIZAMOS LOS CONTROLES
             mouseController = new MouseController(0, board2DManager, Camera.main);
             keyBoardController = new KeyBoardController(0, board2DManager, Camera.main);
@@ -127,12 +123,14 @@ namespace PositionerDemo
 
 
 
-            // STARTGAMESTATE
+            // STARTGAMESTATE => ACA DEBERIA MANDAR CADA JUGADOR QUE ESTA READY, Y AHI EL SERVER EMITIRIA EL NUEVO STATE PARA CADA UNO
 
             // CREAMOS EL STATE INICIAL
+            IState AdminState = new AdministrationState(20, this, 1);
             IState initialAdminStateA = new InitialAdministrationStateA(40, this, 4);
+            IState turnState = new TurnState(50, this);
             baseStateMachine = new BaseStateMachine(this);
-            baseStateMachine.PushState(initialAdminStateA, true);
+            baseStateMachine.PushState(AdminState, true);
             baseStateMachine.Initialize();
         }
 
@@ -158,10 +156,10 @@ namespace PositionerDemo
             Debug.Log("DB LOADED");
         }
 
-        public void Update()
-        {
-            if (baseStateMachine == null) return;
-            baseStateMachine.Update();
-        }
+        //public void Update()
+        //{
+        //    if (baseStateMachine == null || baseStateMachine.IsInitialized == false) return;
+        //    baseStateMachine.Update();
+        //}
     }
 }

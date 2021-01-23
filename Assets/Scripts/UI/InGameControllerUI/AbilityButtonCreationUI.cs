@@ -64,24 +64,35 @@ namespace MikzeerGame
 
             public void StartCreationOfButtons(IOcuppy actualOccupier)
             {
+                bool noCreation = true;
                 actualAbilityButtons = new List<AbilityButton>();
                 foreach (KeyValuePair<ABILITYTYPE, IAbility> ab in actualOccupier.Abilities)
                 {
+                    if (ab.Value.actionStatus == ABILITYEXECUTIONSTATUS.NONEXECUTABLE || ab.Value.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED)
+                    {
+                        continue;
+                    }
+
+
                     switch (ab.Key)
                     {
                         case ABILITYTYPE.SPAWN:
                             CreateButton(actualOccupier, ABILITYBUTTONTYPE.SPAWN);
+                            noCreation = false;
                             break;
                         case ABILITYTYPE.TAKEACARD:
                             break;
                         case ABILITYTYPE.MOVE:
                             CreateButton(actualOccupier, ABILITYBUTTONTYPE.MOVE);
+                            noCreation = false;
                             break;
                         case ABILITYTYPE.ATTACK:
                             CreateButton(actualOccupier, ABILITYBUTTONTYPE.ATTACK);
+                            noCreation = false;
                             break;
                         case ABILITYTYPE.DEFEND:
                             CreateButton(actualOccupier, ABILITYBUTTONTYPE.DEFEND);
+                            noCreation = false;
                             break;
                         case ABILITYTYPE.COMBINE:
                             break;
@@ -95,6 +106,12 @@ namespace MikzeerGame
                             break;
                     }
                 }
+                if (noCreation)
+                {
+                    ClearAbilityButtons();
+                    return;
+                }
+
                 isCreated = true;
             }
 

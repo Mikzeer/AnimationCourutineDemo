@@ -24,6 +24,10 @@ public class ActionsManager
             player.kimbokoUnits[i].ResetActionPoints(acAmount);
             foreach (KeyValuePair<ABILITYTYPE, IAbility> ab in player.kimbokoUnits[i].Abilities)
             {
+                if (ab.Key == ABILITYTYPE.DIE || ab.Key == ABILITYTYPE.TAKEDAMAGE)
+                {
+                    continue;
+                }
                 ab.Value.actionStatus = ABILITYEXECUTIONSTATUS.WAIT;
             }
         }

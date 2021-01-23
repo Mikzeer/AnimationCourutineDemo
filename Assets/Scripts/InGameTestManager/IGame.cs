@@ -39,6 +39,8 @@ namespace PositionerDemo
         public AbilitySelectionManagerUI abilitySelectionManagerUI = default;
         [Header("ABILITY BUTTON CREATION UI")]
         public AbilityButtonCreationUI abilityButtonCreationUI = default;
+        [Header("GENERAL MANAGER UI")]
+        public UIGeneralManagerInGame uiGeneralManagerInGame = default;
         public CombineManager combineManager { get; protected set; }
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }
@@ -55,5 +57,10 @@ namespace PositionerDemo
             return gameObject;
         }
 
+        public void Update()
+        {
+            if (baseStateMachine == null || baseStateMachine.IsInitialized == false) return;
+            baseStateMachine.Update();
+        }
     }
 }

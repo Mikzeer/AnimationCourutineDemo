@@ -66,27 +66,20 @@ namespace PositionerDemo
 
         public void Perform(IAbility ability)
         {
-            //if (ability.CanIExecute())
-            //{
-            //    //if (ability.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-            //    //ActionModifierCheck(ability, ABILITYMODIFIEREXECUTIONTIME.EARLY);
-            //    //if (ability.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-            //    //ability.OnStartExecute();
-            //    //if (ability.actionStatus == ABILITYEXECUTIONSTATUS.CANCELED) return;
-            //    ability.Execute();
-
-            //    // ACA DEBERIA GENERAR EL COMANDO DONDE SE EJECUTA LA HABILIDAD
-
-            //    // Y LUEGO APLICAR TODOS LOS END MODIFIERS PARA QUE TENGA SENTIDO
-
-            //    // Y LUEGO RESTAR LOS PUNTOS
-
-            //    // Y LUEGO EJECUTAR EL EVENTO DONDE INFORMO A TODOS LOS QUE NECESITEN QUE TERMINE DE EJECUTARME
-
-            //    //ActionModifierCheck(ability, ABILITYMODIFIEREXECUTIONTIME.LATE);
-            //    //RestActionPoints(ability.performerIOcuppy, ability.GetActionPointsRequiredToUseAbility());
-            //    //ability.OnEndExecute();
-            //}
+            switch (ability.AbilityType)
+            {
+                case ABILITYTYPE.MOVE:
+                case ABILITYTYPE.ATTACK:
+                case ABILITYTYPE.DEFEND:
+                case ABILITYTYPE.COMBINE:
+                case ABILITYTYPE.DECOMBINE:
+                case ABILITYTYPE.EVOLVE:
+                case ABILITYTYPE.FUSION:
+                    ability.actionStatus = ABILITYEXECUTIONSTATUS.NONEXECUTABLE;                        
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

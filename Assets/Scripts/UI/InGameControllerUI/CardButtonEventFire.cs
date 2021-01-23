@@ -11,14 +11,14 @@ namespace UIButtonPattern
             OnButtonPress?.Invoke();
         }
 
-        public override void Suscribe()
+        public override void Suscribe(Action toSub)
         {
-            UIController.OnTakeCardActionClicked += Execute;
+            toSub += Execute;
         }
 
-        public override void Unsuscribe()
+        public override void Unsuscribe(Action toSub)
         {
-            UIController.OnTakeCardActionClicked -= Execute;
+            toSub -= Execute;
         }
     }
 }

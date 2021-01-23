@@ -13,14 +13,6 @@ namespace UIButtonPattern
             this.specificButtonExecution = specificButtonExecution;
 
             buttonEventFire.SetEventAction(specificButtonExecution.Execute);
-        }
-
-        public ButtonAndEventContainer(ButtonEventFire buttonEventFire, Action specificButtonExecution)
-        {
-            this.buttonEventFire = buttonEventFire;
-            this.specificButtonExecution = null;
-
-            buttonEventFire.SetEventAction(specificButtonExecution);
-        }
+        }      
     }
 }

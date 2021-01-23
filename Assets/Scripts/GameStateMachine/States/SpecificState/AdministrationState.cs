@@ -26,8 +26,6 @@ namespace StateMachinePattern
             // COMENZAMOS EL CONTADOR DE TIEMPO
             base.OnEnter();
             gmMachine.abilityButtonCreationUI.SetUnit(game.turnController.CurrentPlayerTurn);
-            //gameCreator.TakeCardAvailable(true);
-            //Debug.Log("Enter Administration State Player " + GameCreator.Instance.turnManager.GetActualPlayerTurn().PlayerID);
         }
 
         public override void OnExit()
@@ -35,14 +33,16 @@ namespace StateMachinePattern
             Debug.Log("EXIT ADMIN STATE");
             // 1 - DESUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
-            // ACA TENGO QUE APAGAR EL BOTON DE CARD
-            //gameCreator.TakeCardAvailable(false);
             // DETENEMOS EL TIEMPO
             base.OnExit();
+
+            // POR LAS DUDAS SACAMOS EL MENU DE SELECCION
+            gmMachine.abilityButtonCreationUI.SetUnit(null);
+
             // RESTAMOS LAS ACCIONES DEL PLAYER PARA QUE NO PUEDE HACER NADA MAS
             game.actionsManager.RestPlayerActions(game.turnController.CurrentPlayerTurn);
-            // CAMBIAMOS EL TURNO AL OTRO JUGADOR
-            game.turnController.ChangeCurrentRound();
+            //// CAMBIAMOS EL TURNO AL OTRO JUGADOR
+            //game.turnController.ChangeCurrentRound();
         }
 
         public override bool HaveReachCondition()
@@ -76,15 +76,10 @@ namespace StateMachinePattern
         public override void OnUpdate()
         {
             base.OnUpdate();
-            //if (gmMachine.abilityButtonCreationUI.isCreated == false)
-            //{
-            //    gmMachine.abilityButtonCreationUI.SetUnit(game.turnController.CurrentPlayerTurn);
-            //}
-
             if (HaveReachCondition())
             {
-                AdministrationState adminState = new AdministrationState(20, gmMachine, 1);
-                OnNextState(adminState);
+                TurnState turnState = new TurnState(60, gmMachine);
+                OnNextState(turnState);
             }
         }
 

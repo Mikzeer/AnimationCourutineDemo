@@ -15,7 +15,7 @@ namespace UIButtonPattern
         {
             for (int i = 0; i < buttonPartners.Count; i++)
             {
-                buttonPartners[i].buttonEventFire.Suscribe();
+                //buttonPartners[i].buttonEventFire.Suscribe();
             }
         }
 
@@ -23,7 +23,7 @@ namespace UIButtonPattern
         {
             for (int i = 0; i < buttonPartners.Count; i++)
             {
-                buttonPartners[i].buttonEventFire.Unsuscribe();
+                //buttonPartners[i].buttonEventFire.Unsuscribe();
             }
         }
 

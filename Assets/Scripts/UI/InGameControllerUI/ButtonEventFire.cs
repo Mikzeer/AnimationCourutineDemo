@@ -5,8 +5,8 @@ namespace UIButtonPattern
     public abstract class ButtonEventFire
     {
         // EL EVENTO DEL BOTTON ESPECIFICO
-        public abstract void Suscribe();
-        public abstract void Unsuscribe();
+        public abstract void Suscribe(Action toSub);
+        public abstract void Unsuscribe(Action toSub);
         public abstract void Execute();
         public abstract event Action OnButtonPress;
 

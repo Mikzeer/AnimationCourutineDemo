@@ -65,7 +65,6 @@ namespace PositionerDemo
             {
                 return;
             }
-
             if (TileObject == null)
             {
                 if (debugOn) Debug.Log("No Tile Object");
@@ -76,26 +75,23 @@ namespace PositionerDemo
                 if (debugOn) Debug.Log("Ilegal Spawn");
                 return;
             }
-
-            SpawnAbility spw = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
-            if (spw == null)
+            SpawnAbility spawnAbility = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
+            if (spawnAbility == null)
             {
                 if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
                 return;
             }
-
-            SpawnAbilityEventInfo spwInf = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject, spawnIndexID);
-            spw.SetRequireGameData(spwInf);
-
-            StartPerform(spw);
-
-            if (spw.CanIExecute() == false)
+            SpawnAbilityEventInfo spawnInfo = new SpawnAbilityEventInfo(player, UNITTYPE.X, TileObject, spawnIndexID);
+            spawnAbility.SetRequireGameData(spawnInfo);
+            StartPerform(spawnAbility);
+            if (spawnAbility.CanIExecute() == false)
             {
                 if (debugOn) Debug.Log("SPAWN ABILITY NO SE PUEDE EJECUTAR");
                 return;
             }
-            Spawn(spwInf);
-            EndPerform(spw);
+            Spawn(spawnInfo);
+            Perform(spawnAbility);
+            EndPerform(spawnAbility);
             spawnIndexID++;
         }
 

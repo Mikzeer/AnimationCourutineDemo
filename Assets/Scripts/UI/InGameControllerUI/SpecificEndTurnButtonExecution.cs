@@ -1,19 +1,21 @@
-﻿namespace UIButtonPattern
+﻿using StateMachinePattern;
+
+namespace UIButtonPattern
 {
     public class SpecificEndTurnButtonExecution : SpecificButtonExecution
     {
         bool hasPresed;
-        TurnController turnController;
-        public SpecificEndTurnButtonExecution(TurnController turnController)
+        TurnState turnState;
+        public SpecificEndTurnButtonExecution(TurnState turnState)
         {
-            this.turnController = turnController;
+            this.turnState = turnState;
         }
-
+        
         public void Execute()
         {
             if (!hasPresed)
             {
-                turnController.ChangeCurrentRound();
+                turnState.abruptEnd = true;
                 hasPresed = true;
             }
         }
