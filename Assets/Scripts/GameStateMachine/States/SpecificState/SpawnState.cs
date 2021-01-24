@@ -33,7 +33,6 @@ namespace StateMachinePattern
                 if (item.Key == selection)
                 {
                     game.spawnManager.OnTrySpawn(selection, game.turnController.CurrentPlayerTurn);
-                    Debug.Log("ES IGUAL");
                     break;
                 }
             }

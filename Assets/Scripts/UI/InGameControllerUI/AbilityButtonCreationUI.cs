@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace MikzeerGame
 {
     namespace UI
@@ -72,8 +71,6 @@ namespace MikzeerGame
                     {
                         continue;
                     }
-
-
                     switch (ab.Key)
                     {
                         case ABILITYTYPE.SPAWN:
@@ -158,6 +155,5 @@ namespace MikzeerGame
                 }
             }
         }
-
     }
 }

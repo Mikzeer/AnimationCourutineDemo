@@ -7,7 +7,6 @@ namespace StateMachinePattern
     public abstract class SubSelectionState<T> : BaseState
     {
         public IState previousState;
-        List<T> posibleSelectionTargets;
         List<T> selectedTargets;
 
         public SubSelectionState(IGame game, IState previousState) : base(game)
@@ -24,7 +23,15 @@ namespace StateMachinePattern
 
         public override void OnUpdate()
         {
-            previousState.OnUpdate();
+            if (previousState.HaveReachCondition())
+            {
+                game.baseStateMachine.PopState();
+                game.baseStateMachine.PushState(previousState, true);
+            }
+            else
+            {
+                previousState.OnUpdate();
+            }
         }
 
         public override void OnNextState(IState nextState)

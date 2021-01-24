@@ -7,7 +7,7 @@ namespace PositionerDemo
     public class UIGeneralManagerInGame : MonoBehaviour
     {
         #region VARIABLES
-        //[SerializeField] private TimePanelUI timePanelUI = default;
+        [SerializeField] private TimePanelUI timePanelUI = default;
         [SerializeField] private Button btnEndTurn = default;
         public delegate void ClickEndTurnAction();
         public event ClickEndTurnAction OnEndTurnActionClicked = default;
@@ -17,25 +17,24 @@ namespace PositionerDemo
 
         private void Awake()
         {
-            btnEndTurn.onClick.AddListener(OnBtnEndTurnClick);
             btnEndTurn.gameObject.SetActive(false);
         }
 
-        private void OnDestroy()
+        private void OnEnable()
+        {
+            btnEndTurn.onClick.AddListener(OnBtnEndTurnClick);
+        }
+
+        private void OnDisable()
         {
             btnEndTurn.onClick.RemoveListener(OnBtnEndTurnClick);
         }
 
         #endregion
 
-        public void SetTimer()
+        public void UpdateTime(string actualTime)
         {
-            //GameTimer.OnTimeChange += UpdateTime;
-        }
-
-        private void UpdateTime(string obj)
-        {
-            //timePanelUI.SetTime(obj);
+            timePanelUI.SetTime(actualTime);
         }
 
         public void SetActiveEndTurnButton(bool isActive)

@@ -5,27 +5,13 @@ public class GameTimer
 {
     public float actualTime;
     string actualtime;
-    public static event Action<string> OnTimeChange;
+    public Action<string> OnTimePass;
     bool pause = false;
-
     public bool running { get; private set; }
-
-    public GameTimer()
-    {
-
-    }
 
     public GameTimer(int actualTime)
     {
         this.actualTime = actualTime;
-    }
-
-    public void Start(int actualTime)
-    {
-        // ACA COMENZAMOS A RESTAR EL TIEMPO
-        //GameCreator.Instance.SetTimer();
-        this.actualTime = actualTime;
-        running = true;
     }
 
     public void Start()
@@ -41,13 +27,11 @@ public class GameTimer
 
     public void Pause()
     {
-        //running = false;
         pause = true;
     }
 
     public void Resume()
     {
-        //running = true;
         pause = false;
     }
 
@@ -72,9 +56,8 @@ public class GameTimer
             {
                 var seconds = actualTime % 60;//Use the euclidean division for the seconds.
                 actualtime = string.Format("{0:00} : {1:00}", minutes, seconds);
-            }
-        
-            OnTimeChange?.Invoke(actualtime);
+            }        
+            OnTimePass?.Invoke(actualtime);
         }
 
         if (actualTime <= 0)

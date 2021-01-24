@@ -41,6 +41,8 @@ namespace PositionerDemo
         public AbilityButtonCreationUI abilityButtonCreationUI = default;
         [Header("GENERAL MANAGER UI")]
         public UIGeneralManagerInGame uiGeneralManagerInGame = default;
+        [Header("INFORMATION MANAGER UI")]
+        public InformationUIManager informationUIManager = default;
         public CombineManager combineManager { get; protected set; }
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }

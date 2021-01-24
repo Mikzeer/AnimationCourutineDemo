@@ -1,48 +1,48 @@
-﻿using PositionerDemo;
+﻿using CommandPatternActions;
+using PositionerDemo;
 using UIButtonPattern;
 
 namespace StateMachinePattern
 {
     public class TurnState : ActionState<Tile>
     {
-        private const string name = "TURN";
         public bool abruptEnd = false;
         ButtonAndEventContainer endTurnButtonPartners;
         protected GameMachine gmMachine;
         public TurnState(int duration, GameMachine game) : base(game, duration)
         {
             this.gmMachine = game;
+            stateName = "TURN STATE";
         }
 
         public override void OnEnter()
         {
             // 1 - SUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected += ExecuteAction;
-
             // 2 - TENGO QUE SETEAR LOS ACTIONS POINTS PARA ESTE JUGADOR
             game.actionsManager.IncrementPlayerUnitsActions(game.turnController.CurrentPlayerTurn, 2);
-
+            // SOLO EN TURN STATE PODEMOS TERMINAR EL TURNO Y PASAR AL SIGUIENTE JUGADOR
+            CreateAndSuscribeEndTurnButtonSelectionControl();
             // COMENZAMOS EL CONTADOR DE TIEMPO
             base.OnEnter();
-
-            CreateAndSuscribeEndTurnButtonSelectionControl();
+            // NOS SUSCRIBIMOS AL EVENTO DE CAMBIAR EL TIEMPO
+            gameTimer.OnTimePass += gmMachine.uiGeneralManagerInGame.UpdateTime;
         }
 
         public override void OnExit()
         {
             // 1 - DESUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
-
-            // DETENEMOS EL TIEMPO
-            base.OnExit();
-
+            // NOS DESUSCRIBIMOS AL BUTTON DEL END TURNO
             UnsuscribeEndTurnButtonSelectionControl();
-
             // RESTAMOS LAS ACCIONES DE LAS UNIDADES DEL PLAYER PARA QUE NO PUEDE HACER NADA MAS
             game.actionsManager.RestPlayerUnitsActions(game.turnController.CurrentPlayerTurn);
-
             // CAMBIAMOS EL TURNO AL OTRO JUGADOR
             game.turnController.ChangeCurrentRound();
+            // DETENEMOS EL TIEMPO
+            base.OnExit();
+            // NOS DESUSCRIBIMOS AL EVENTO DE CAMBIAR EL TIEMPO
+            gameTimer.OnTimePass += gmMachine.uiGeneralManagerInGame.UpdateTime;
         }
 
         public override bool HaveReachCondition()
@@ -58,27 +58,30 @@ namespace StateMachinePattern
                 return true;
             }
 
-            // CHEQUEO ESPECIAL, SI NO TENGO CARDS, NI HAY UN ENEMIGO EN BASE, NI HAY UNA TILE POSIBLE PARA SPAWNEAR
-            //bool havaCardsInDeck = game.turnController.CurrentPlayerTurn.Deck.Count > 0;
-            //bool isAnEnemyInBase = game.board2DManager.IsThereAPosibleAttackableEnemyInBase(game.turnController.CurrentPlayerTurn.PlayerID);
-            //bool isThereAPosibleSpawnTile = game.board2DManager.IsThereAPosibleSpawneableTile(game.turnController.CurrentPlayerTurn.PlayerID); ;
-
-            //if (!havaCardsInDeck && !isAnEnemyInBase && !isThereAPosibleSpawnTile)
-            //{
-            //    return true;
-            //}
+            // CHEQUEO ESPECIAL, SI NO TENGO CARDS  EN LA MANO, SI TENGO UNIDADES EN EL CAMPO
+            bool havaCardsInHand = game.turnController.CurrentPlayerTurn.PlayersHands.Count > 0;
+            bool haveUnits = game.turnController.CurrentPlayerTurn.kimbokoUnits.Count > 0;
+            if (!havaCardsInHand && !haveUnits)
+            {
+                return true;
+            }
 
             return false;
         }
 
         public override void OnUpdate()
         {
-            base.OnUpdate();
             if (HaveReachCondition())
             {
                 AdministrationState adminState = new AdministrationState(20, gmMachine, 1);
-                OnNextState(adminState);
+                Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(adminState.stateName, 0.5f);
+                InvokerMotion.AddNewMotion(bannerMotion);
+                InvokerMotion.StartExecution(gmMachine);
+                IState changePhaseState = new ChangePhaseState(gmMachine, adminState);
+                OnNextState(changePhaseState);
+                //OnNextState(adminState);
             }
+            base.OnUpdate();
         }
         
         public void CreateAndSuscribeEndTurnButtonSelectionControl()

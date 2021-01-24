@@ -41,7 +41,7 @@ public class UIController : MonoBehaviour
 
     public void SetTimer()
     {
-        GameTimer.OnTimeChange += UpdateTime;
+        //GameTimer.OnTimeChange += UpdateTime;
     }
 
     private void UpdateTime(string obj)

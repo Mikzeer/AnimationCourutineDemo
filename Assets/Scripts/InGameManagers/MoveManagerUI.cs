@@ -8,9 +8,7 @@ namespace PositionerDemo
         public Motion MoveMotion(GameObject goKimbok, Vector3 endPosition)
         {
             List<Motion> motionsMove = new List<Motion>();
-
             Animator animator = goKimbok.GetComponent<Animator>();
-
             Motion motionMove = new MoveMotion(this, animator, 1);
             motionsMove.Add(motionMove);
 
@@ -22,8 +20,6 @@ namespace PositionerDemo
                 {
                     Motion motionMoveSound = new SoundMotion(this, 1, GameSoundManager.Instance.audioSource, GameSoundManager.Instance.audioClips[4], false, true);
                     motionsMove.Add(motionMoveSound);
-
-
                     AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(GameSoundManager.Instance.audioSource);
                     StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion =
                         new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);

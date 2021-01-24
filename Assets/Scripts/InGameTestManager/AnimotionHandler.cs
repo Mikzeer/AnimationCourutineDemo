@@ -1,18 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using PositionerDemo;
-using UnityEngine.EventSystems;
-using System;
 
 public class AnimotionHandler : MonoBehaviour
 {
-    #region EVENTS
-
-    public static event Action OnChangeTurn;
-    public static event Action<int> OnResetActionPoints;
-
-    #endregion
-
     #region VARIABLES MOMENTANEAS
 
     public enum TUTORIALOPTION { ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT };
@@ -57,11 +48,6 @@ public class AnimotionHandler : MonoBehaviour
 
     public GameObject shieldPrefab;
 
-    MotionController motionControllerBanner = new MotionController();
-    MotionController motionControllerBannerTimmer = new MotionController();
-    public RectTransform bannerRect;
-    public RectTransform bannerRectTimer;
-
     public InfoPanel infoPanel;
     public KimbokoInfoPanel kimbokoInfoPanel;
 
@@ -78,7 +64,6 @@ public class AnimotionHandler : MonoBehaviour
     public AudioSource audioSource;
     UnitMovePositioner movePositioner;
     private GameObject[,] tiles;
-    Tile actualTileObject;
     Player[] players;
 
     #endregion
@@ -86,11 +71,7 @@ public class AnimotionHandler : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
-
-        //SetBoard();
-
         CreatePlayers();
-        CreateDeck();
         CreateNewBoard();
         switch (tutorialOption)
         {
@@ -103,52 +84,7 @@ public class AnimotionHandler : MonoBehaviour
             default:
                 break;
         }
-
-        SpawnAbility.OnActionEndExecute += SpawnInfoTest;
     }
-
-    #region PLAYER
-
-    Player actualPlayerTurn;
-
-    public void SetPlayerTurn(Player player)
-    {
-        actualPlayerTurn = player;
-    }
-
-    public Player GetPlayer()
-    {
-        return actualPlayerTurn;
-    }
-
-    public void ChangeTurn()
-    {
-        for (int i = 0; i < actualPlayerTurn.Abilities.Count; i++)
-        {
-            ABILITYTYPE abType = (ABILITYTYPE)i;
-            if (actualPlayerTurn.Abilities[abType].actionStatus == ABILITYEXECUTIONSTATUS.STARTED)
-            {
-                Debug.Log("Waiting for action to end");
-                return;
-            }
-        }
-
-        // TAMBIEN DEBERIAMOS RECORRER LA LISTA DE UNIDADES Y VERIFICAR SI NO TENEMOS NINGUNA ACCION EFECTUANDOSE
-
-        if (actualPlayerTurn == players[0])
-        {
-            actualPlayerTurn = players[1];
-        }
-        else
-        {
-            actualPlayerTurn = players[0];
-        }
-
-        OnChangeTurn?.Invoke();
-        OnResetActionPoints?.Invoke(actualPlayerTurn.PlayerID);
-    }
-
-    #endregion
 
     #region SETGAME
 
@@ -184,31 +120,8 @@ public class AnimotionHandler : MonoBehaviour
 
         CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCreateBoard);
 
-        List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
-        List<Configurable> configureAnimotion = new List<Configurable>();
-
-        Vector3 normalScale = bannerRect.localScale;
-        Vector3 finalScale = new Vector3(1.2f, 1.2f, 1);
-
-        // SE ACTIVA
-        SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 1);
-        configureAnimotion.Add(KimbokoActiveConfigAnimotion);
-
-        // REPRODUCE LA TWEEN
-        PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, bannerRect, 2, finalScale, 2);
-        motionsSpawn.Add(motionTweenScaleUp);
-        PositionerDemo.Motion motionTweenScaleDown = new ScaleRectTweenMotion(this, bannerRect, 3, normalScale, 2);
-        motionsSpawn.Add(motionTweenScaleDown);
-
-        // SE DESACTIVA
-        SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveFalseConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 4, true, false);
-        configureAnimotion.Add(KimbokoActiveFalseConfigAnimotion);
-
-        CombineMotion combinSecondMoveMotion = new CombineMotion(this, 2, motionsSpawn, configureAnimotion);
-
         List<PositionerDemo.Motion> motionsFinalCreateBoard = new List<PositionerDemo.Motion>();
         motionsFinalCreateBoard.Add(combinMoveMotion);
-        motionsFinalCreateBoard.Add(combinSecondMoveMotion);
 
         CombineMotion combinFinalMotion = new CombineMotion(this, 1, motionsFinalCreateBoard);
 
@@ -233,15 +146,6 @@ public class AnimotionHandler : MonoBehaviour
 
         players[0] = new Player(0);
         players[1] = new Player(1);
-
-
-        SetPlayerTurn(players[0]);
-    }
-
-    private void CreateDeck()
-    {
-        //cardManager.CreateDeck(players[0], playerOneCards);
-        //cardManager.CreateDeck(players[1], playerTwoCards);
     }
 
     private void CreateNewBoard()
@@ -387,123 +291,57 @@ public class AnimotionHandler : MonoBehaviour
 
     #region UPDATE
 
-    void Update()
+    private void UpdateControllerSimpleMove()
     {
-        NineTest();
-        /*
-        switch (tutorialOption)
+        if (motionControllerSimpleMove != null && motionControllerSimpleMove.IsPerforming == false)
         {
-            case TUTORIALOPTION.ONE:
-                UpdateControllerOne();
-                break;
-            case TUTORIALOPTION.TWO:
-                UpdateControllerTwo();
-                break;
-            case TUTORIALOPTION.THREE:
-                UpdateControllerThree();
-                break;
-            case TUTORIALOPTION.FOUR:
-                UpdateControllerFour();
-                break;
-            case TUTORIALOPTION.FIVE:
-                UpdateControllerFive();
-                break;
-            case TUTORIALOPTION.SIX:
-                UpdateControllerSix();
-                break;
-            case TUTORIALOPTION.SEVEN:
-                UpdateControllerSeven();
-                break;
-            //case TUTORIALOPTION.EIGHT:
-            //    UpdateControllerEight();
-            //    break;
-            default:
-                break;
-        }
+            startPosition = movingEnemy.transform.position;
 
-        UpdateControllerEight();
-        */
-    }
-
-    private void UpdateControllerSimpleAttackSimpleMove()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
+            Vector2 oldPosition = startPosition; // 5.96,-3.15
+            if (va)
             {
-                List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
-                PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
-                motions.Add(motionAttack);
-                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
-                motions.Add(motionAttackSound);
-
-                for (int i = 0; i < enemies.Count; i++)
-                {
-                    PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
-                    motions.Add(motionDamage);
-                }
-
-                PositionerDemo.Motion motionDamageSound = new SoundMotion(this, 1, audioSource, audioClips[2], true);
-                motions.Add(motionDamageSound);
-
-                CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
-                motionControllerAttack.SetUpMotion(combineAttackMotion);
-
-                motionControllerAttack.TryReproduceMotion();
+                endPostion = startPosition + new Vector2(0, 8); // 5.96,11.85
+                va = false;
             }
-
-            if (motionControllerSimpleMove != null && motionControllerSimpleMove.IsPerforming == false)
+            else
             {
-                startPosition = movingEnemy.transform.position;
-
-                Vector2 oldPosition = startPosition; // 5.96,-3.15
-                if (va)
-                {
-                    endPostion = startPosition + new Vector2(0, 8); // 5.96,11.85
-                    va = false;
-                }
-                else
-                {
-                    endPostion = startPosition + new Vector2(0, -8); // 5.96,11.85
-                    va = true;
-                }
-                finishPosition = endPostion;
-
-                List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
-                PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
-                motionsMove.Add(motionMove);
-
-                PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
-                motionsMove.Add(motionMoveSound);
-
-
-
-                List<PositionerDemo.Motion> motionsStopMove = new List<PositionerDemo.Motion>();
-                List<PositionerDemo.Configurable> configurables = new List<Configurable>();
-                PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
-                PositionerDemo.Motion motionIdlle = new IdlleMotion(this, movingEnemy.GetComponent<Animator>(), 2, true);
-                motionsStopMove.Add(motionTweenMove);
-                motionsStopMove.Add(motionIdlle);
-
-                AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
-                StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
-                configurables.Add(stopSoundConfigureAnimotion);
-
-                CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsStopMove, configurables);
-                motionsMove.Add(combineStopMotion);
-
-                CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
-
-                motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
-                motionControllerSimpleMove.TryReproduceMotion();
-
-                startPosition = endPostion;
-                endPostion = oldPosition;
+                endPostion = startPosition + new Vector2(0, -8); // 5.96,11.85
+                va = true;
             }
+            finishPosition = endPostion;
+
+            List<PositionerDemo.Motion> motionsMove = new List<PositionerDemo.Motion>();
+            PositionerDemo.Motion motionMove = new MoveMotion(this, movingEnemy.GetComponent<Animator>(), 1);
+            motionsMove.Add(motionMove);
+
+            PositionerDemo.Motion motionMoveSound = new SoundMotion(this, 1, audioSource, audioClips[4], false, true);
+            motionsMove.Add(motionMoveSound);
+
+            List<PositionerDemo.Motion> motionsStopMove = new List<PositionerDemo.Motion>();
+            List<PositionerDemo.Configurable> configurables = new List<Configurable>();
+            PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, movingEnemy.transform, 1, endPostion);
+            PositionerDemo.Motion motionIdlle = new IdlleMotion(this, movingEnemy.GetComponent<Animator>(), 2, true);
+            motionsStopMove.Add(motionTweenMove);
+            motionsStopMove.Add(motionIdlle);
+
+            AudioSourceGenericContainer audioContainer = new AudioSourceGenericContainer(audioSource);
+            StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform> stopSoundConfigureAnimotion = new StopSoundConfigureAnimotion<AudioSourceGenericContainer, Transform>(audioContainer, 2);
+            configurables.Add(stopSoundConfigureAnimotion);
+
+            CombineMotion combineStopMotion = new CombineMotion(this, 1, motionsStopMove, configurables);
+            motionsMove.Add(combineStopMotion);
+
+            CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsMove);
+
+            motionControllerSimpleMove.SetUpMotion(combinMoveMotion);
+            motionControllerSimpleMove.TryReproduceMotion();
+
+            startPosition = endPostion;
+            endPostion = oldPosition;
         }
     }
 
-    private void UpdateControllerTwoCombineMove()
+    private void UpdateControllerCombineMove()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -562,87 +400,79 @@ public class AnimotionHandler : MonoBehaviour
         }
     }
 
-    private void UpdateControllerThreeSimpleSpawn()
+    private void UpdateControllerSimpleAttack()
     {
-        // Necesitamos que los Transform reconozcan un input
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
-            if (heatMapGridObject != null)
+            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
             {
-                if (motionControllerSpawn != null && motionControllerSpawn.IsPerforming == false)
+                List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
+                PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
+                motions.Add(motionAttack);
+                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
+                motions.Add(motionAttackSound);
+
+                for (int i = 0; i < enemies.Count; i++)
                 {
-                    List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
-                    List<Configurable> configureAnimotion = new List<Configurable>();
-
-                    // TWEENCRANE / SPAWNCRANE / TWEEN KIMBOKO / TWEENBACKCRANE
-                    // KIMBOKO POSITION END CRANE / KIMBOKO SET ACTIVE TRUE / KIMBOKO IDLEE / CRANE IDLLE
-
-                    int craneTweenSpeedVelocity = 10;
-                    int kimbokoTweenSpeedVelocity = 10;
-
-                    // POSICION INICIAL Y FINAL DE LA GRUA PARA TWEENEAR
-                    Vector3 craneStartPosition;
-                    Vector3 craneEndPostion;
-                    //B TWEEN DESDE UNA POSICION ELEVADA SOBRE LA TILE DONDE SE INDICO SPAWNEAR HASTA MAS ABAJO ASI SE VE DESDE ARRIBA EN EL TABLERO SOBRE LA TILE
-                    craneStartPosition = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Crane.transform.position.y, 0);
-                    Crane.transform.position = craneStartPosition;
-                    craneEndPostion = new Vector3(heatMapGridObject.GetRealWorldLocation().x, Helper.GetCameraTopBorderYWorldPostion().y);
-
-                    //A CRANE//GRUA SET ACTIVE = TRUE // INSTANCIAMOS KIMBOKO SET ACTIVE FALSE
-                    Crane.SetActive(true);
-                    GameObject goKimbok = Instantiate(kimbokoPrefab);
-                    goKimbok.transform.position = CraneEnd.position;
-                    // ACTIVAMOS AL KIMBOKO SINO NO PUEDE OBTENER EL CURRENT ANIMATOR STATE INFO
-                    goKimbok.SetActive(true);
-
-                    // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
-                    PositionerDemo.Motion motionTweenMove = new MoveTweenMotion(this, Crane.transform, 1, craneEndPostion, craneTweenSpeedVelocity);
-                    motionsSpawn.Add(motionTweenMove);
-
-                    ////C ANIMATION CRANESPAWNING
-                    PositionerDemo.Motion motionCraneSpawn = new SpawnMotion(this, Crane.GetComponent<Animator>(), 2);
-                    motionsSpawn.Add(motionCraneSpawn);
-
-                    PositionerDemo.Motion motionSpawnSound = new SoundMotion(this, 2, audioSource, audioClips[3], false);
-                    motionsSpawn.Add(motionSpawnSound);
-
-
-                    KimbokoPositioConfigureAnimotion<Transform, Transform> KimbokoPositionConfigAnimotion = new KimbokoPositioConfigureAnimotion<Transform, Transform>(goKimbok.transform, CraneEnd, 3);
-                    configureAnimotion.Add(KimbokoPositionConfigAnimotion);
-                    SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(goKimbok.transform, 3);
-                    configureAnimotion.Add(KimbokoActiveConfigAnimotion);
-
-                    ////E TWEEN DESDE LA PUNTA DEL CRANE HASTA EL PISO, DE LA MISMA DURACION QUE LA ANIMACION DE SPAWN
-                    PositionerDemo.Motion motionKimbokoTweenMove = new MoveTweenMotion(this, goKimbok.transform, 4, heatMapGridObject.GetRealWorldLocation(), kimbokoTweenSpeedVelocity);
-                    motionsSpawn.Add(motionKimbokoTweenMove);
-                    //G TWEEN DE LA CRANE PARA QUE SALGA DEL MAPA
-                    PositionerDemo.Motion motionTweenBackCraneMove = new MoveTweenMotion(this, Crane.transform, 5, craneStartPosition, craneTweenSpeedVelocity);
-                    motionsSpawn.Add(motionTweenBackCraneMove);
-
-                    // FINISH //
-                    KimbokoIdlleConfigureAnimotion<Animator, Transform> kimbokoIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(goKimbok.GetComponent<Animator>(), 6);
-                    configureAnimotion.Add(kimbokoIdlleConfigureAnimotion);
-                    KimbokoIdlleConfigureAnimotion<Animator, Transform> craneIdlleConfigureAnimotion = new KimbokoIdlleConfigureAnimotion<Animator, Transform>(Crane.GetComponent<Animator>(), 6);
-                    configureAnimotion.Add(craneIdlleConfigureAnimotion);
-
-                    CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn, configureAnimotion);
-
-                    // LO DESACTIVO PARA QUE NO MOLESTE EN ESCENA ANTES DE "SPAWNEARSE"
-                    goKimbok.SetActive(false);
-
-                    motionControllerSpawn.SetUpMotion(combinMoveMotion);
-                    motionControllerSpawn.TryReproduceMotion();
+                    PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
+                    motions.Add(motionDamage);
                 }
-                else
-                {
-                    Debug.Log("Is Performing animation");
-                }
+
+                PositionerDemo.Motion motionDamageSound = new SoundMotion(this, 1, audioSource, audioClips[2], true);
+                motions.Add(motionDamageSound);
+
+                CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
+                motionControllerAttack.SetUpMotion(combineAttackMotion);
+
+                motionControllerAttack.TryReproduceMotion();
             }
         }
     }
 
-    private void UpdateControllerFour()
+    private void UpdateControllerFiveAttackWithShieldDefense()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
+            {
+                List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
+                List<Configurable> configureAnimotion = new List<Configurable>();
+
+                PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
+                motions.Add(motionAttack);
+                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
+                motions.Add(motionAttackSound);
+
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    GameObject shield = Instantiate(shieldPrefab, enemies[i].transform.position, Quaternion.identity);
+                    shield.SetActive(true);
+
+                    PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
+                    motions.Add(motionDamage);
+
+                    List<PositionerDemo.Motion> shieldMotions = new List<PositionerDemo.Motion>();
+
+                    PositionerDemo.Motion motionShieldDamage = new ShieldMotion(this, shield.GetComponent<Animator>(), 1);
+                    shieldMotions.Add(motionShieldDamage);
+                    DestroyGOConfigureAnimotion<Transform, Transform> ShieldDestroyConfigAnimotion = new DestroyGOConfigureAnimotion<Transform, Transform>(shield.transform, 2);
+                    configureAnimotion.Add(ShieldDestroyConfigAnimotion);
+
+                    CombineMotion combineShieldMotion = new CombineMotion(this, 1, shieldMotions, configureAnimotion);
+
+                    motions.Add(combineShieldMotion);
+                }
+
+                CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
+
+                motionControllerAttack.SetUpMotion(combineAttackMotion);
+                motionControllerAttack.TryReproduceMotion();
+            }
+
+        }
+    }
+
+    private void UpdateControllerFourAnotherCombineSpawn()
     {
         // Necesitamos que los Transform reconozcan un input
         if (Input.GetMouseButtonDown(0))
@@ -780,117 +610,6 @@ public class AnimotionHandler : MonoBehaviour
                 {
                     Debug.Log("Is Performing animation");
                 }
-            }
-        }
-    }
-
-    private void UpdateControllerFive()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (motionControllerAttack != null && motionControllerAttack.IsPerforming == false)
-            {
-                List<PositionerDemo.Motion> motions = new List<PositionerDemo.Motion>();
-                List<Configurable> configureAnimotion = new List<Configurable>();
-
-                PositionerDemo.Motion motionAttack = new AttackMotion(this, attackerEnemy.GetComponent<Animator>(), 1);
-                motions.Add(motionAttack);
-                PositionerDemo.Motion motionAttackSound = new SoundMotion(this, 1, audioSource, audioClips[0], true);
-                motions.Add(motionAttackSound);
-
-                for (int i = 0; i < enemies.Count; i++)
-                {
-                    GameObject shield = Instantiate(shieldPrefab, enemies[i].transform.position, Quaternion.identity);
-                    shield.SetActive(true);
-
-                    PositionerDemo.Motion motionDamage = new DamageMotion(this, enemies[i].animator, 1);
-                    motions.Add(motionDamage);
-
-                    List<PositionerDemo.Motion> shieldMotions = new List<PositionerDemo.Motion>();
-
-                    PositionerDemo.Motion motionShieldDamage = new ShieldMotion(this, shield.GetComponent<Animator>(), 1);
-                    shieldMotions.Add(motionShieldDamage);
-                    DestroyGOConfigureAnimotion<Transform, Transform> ShieldDestroyConfigAnimotion = new DestroyGOConfigureAnimotion<Transform, Transform>(shield.transform, 2);
-                    configureAnimotion.Add(ShieldDestroyConfigAnimotion);
-
-                    CombineMotion combineShieldMotion = new CombineMotion(this, 1, shieldMotions, configureAnimotion);
-
-                    motions.Add(combineShieldMotion);
-                }
-
-                CombineMotion combineAttackMotion = new CombineMotion(this, 1, motions);
-
-                motionControllerAttack.SetUpMotion(combineAttackMotion);
-                motionControllerAttack.TryReproduceMotion();
-            }
-
-        }
-    }
-
-    private void UpdateControllerSix()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (motionControllerBanner != null && motionControllerBanner.IsPerforming == false)
-            {
-                List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
-                List<Configurable> configureAnimotion = new List<Configurable>();
-
-                Vector3 normalScale = bannerRect.localScale;
-                Vector3 finalScale = new Vector3(1.2f, 1.2f, 1);
-
-                // SE ACTIVA
-                SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 1);
-                configureAnimotion.Add(KimbokoActiveConfigAnimotion);
-
-                // REPRODUCE LA TWEEN
-                PositionerDemo.Motion motionTweenScaleUp = new ScaleRectTweenMotion(this, bannerRect, 2, finalScale);
-                motionsSpawn.Add(motionTweenScaleUp);
-                PositionerDemo.Motion motionTweenScaleDown = new ScaleRectTweenMotion(this, bannerRect, 3, normalScale);
-                motionsSpawn.Add(motionTweenScaleDown);
-
-                // SE DESACTIVA
-                SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveFalseConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRect, 4, true, false);
-                configureAnimotion.Add(KimbokoActiveFalseConfigAnimotion);
-
-                CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn, configureAnimotion);
-
-                motionControllerBanner.SetUpMotion(combinMoveMotion);
-                motionControllerBanner.TryReproduceMotion();
-            }
-            else
-            {
-                Debug.Log("Is Performing animation");
-            }
-
-            if (motionControllerBannerTimmer != null && motionControllerBannerTimmer.IsPerforming == false)
-            {
-                List<PositionerDemo.Motion> motionsSpawn = new List<PositionerDemo.Motion>();
-                List<Configurable> configureAnimotion = new List<Configurable>();
-
-                Vector3 normalScale = bannerRectTimer.localScale;
-                Vector3 finalScale = new Vector3(1.2f, 1.2f, 1);
-
-                // SE ACTIVA
-                SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRectTimer, 1);
-                configureAnimotion.Add(KimbokoActiveConfigAnimotion);
-
-                // REPRODUCE LA TWEEN
-                PositionerDemo.Motion motionTimer = new TimeMotion(this, 2, 15f);
-                motionsSpawn.Add(motionTimer);
-
-                // SE DESACTIVA
-                SetActiveConfigureAnimotion<Transform, Transform> KimbokoActiveFalseConfigAnimotion = new SetActiveConfigureAnimotion<Transform, Transform>(bannerRectTimer, 4, true, false);
-                configureAnimotion.Add(KimbokoActiveFalseConfigAnimotion);
-
-                CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawn, configureAnimotion);
-
-                motionControllerBannerTimmer.SetUpMotion(combinMoveMotion);
-                motionControllerBannerTimmer.TryReproduceMotion();
-            }
-            else
-            {
-                Debug.Log("Is Performing animation");
             }
         }
     }
@@ -1106,9 +825,6 @@ public class AnimotionHandler : MonoBehaviour
                     motionControllerCombineSpawnWithCheck.SetUpMotion(combinMoveMotion);
                     motionControllerCombineSpawnWithCheck.TryReproduceMotion();
 
-                    // update del info de la tile
-                    UpdateKimbokoInfoPanel(heatMapGridObject);
-
                 }
                 else
                 {
@@ -1116,165 +832,6 @@ public class AnimotionHandler : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void UpdateControllerEight()
-    {
-        if (IsMouseOverUIWithIgnores())
-        {
-            return;
-        }
-
-        HeatMapGridObject heatMapGridObject = grid.GetGridObject(Helper.GetMouseWorldPosition(cam));
-
-        if (heatMapGridObject != null)
-        {
-            if (actualHeatMapGridObject != null)
-            {
-                if (actualHeatMapGridObject == heatMapGridObject)
-                {
-                    //UpdateUnitInfoPanel(actualHeatMapGridObject);
-                    return;
-                }
-                else if (actualHeatMapGridObject != heatMapGridObject)
-                {
-                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.green;
-                    actualHeatMapGridObject = heatMapGridObject;
-                    tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
-                    UpdateKimbokoInfoPanel(actualHeatMapGridObject);
-                }
-            }
-            else
-            {
-                actualHeatMapGridObject = heatMapGridObject;
-                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.blue;
-                UpdateKimbokoInfoPanel(actualHeatMapGridObject);
-            }
-        }
-        else
-        {
-            if (actualHeatMapGridObject != null)
-            {
-                tiles[actualHeatMapGridObject.x, actualHeatMapGridObject.y].GetComponent<SpriteRenderer>().color = Color.green;
-                actualHeatMapGridObject = null;
-                kimbokoInfoPanel.SetText(false);
-            }
-        }
-    }
-
-    private void NineTest()
-    {
-        if (IsMouseOverUIWithIgnores())
-        {
-            return;
-        }
-
-        Tile TileObject = board.GetGridObject(Helper.GetMouseWorldPosition(cam));
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (TileObject != null)
-            {
-                //spawnCotroller.OnTrySpawn(TileObject, actualPlayerTurn);
-            }
-        }
-
-        if (TileObject != null)
-        {
-            if (actualTileObject != null)
-            {
-                if (actualTileObject == TileObject)
-                {
-                    //UpdateKimbokoTileInfoPanel(actualTileObject);
-                    return;
-                }
-                else if (actualTileObject != TileObject)
-                {
-                    tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.green;
-                    actualTileObject = TileObject;
-                    tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.blue;
-                    UpdateKimbokoTileInfoPanel(actualTileObject);
-                }
-            }
-            else
-            {
-                actualTileObject = TileObject;
-                tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.blue;
-                UpdateKimbokoTileInfoPanel(actualTileObject);
-            }
-        }
-        else
-        {
-            if (actualTileObject != null)
-            {
-                tiles[actualTileObject.position.posX, actualTileObject.position.posY].GetComponent<SpriteRenderer>().color = Color.green;
-                actualTileObject = null;
-                kimbokoInfoPanel.SetText(false);
-            }
-        }
-
-    }
-
-    private void SpawnInfoTest(SpawnAbilityEventInfo spawnInfo)
-    {
-        Debug.Log("Me Spawneo el Player: " + spawnInfo.spawnerPlayer.PlayerID);
-        Debug.Log("Soy del tipo: " + spawnInfo.spawnUnitType);
-        Debug.Log("Estoy en la Posicion: " + spawnInfo.spawnTile.position.posX + "/" + spawnInfo.spawnTile.position.posY);
-    }
-
-    private void UpdateKimbokoInfoPanel(HeatMapGridObject heatMapGridObject)
-    {
-        if (heatMapGridObject.GetEnemies().Count > 0)
-        {
-            string infoText = "HAS ENEMIES " + heatMapGridObject.GetEnemies().Count;
-            //Debug.Log(infoText);
-            kimbokoInfoPanel.SetText(true, infoText);
-        }
-        else
-        {
-            Debug.Log("NO ENEMIES ");
-            kimbokoInfoPanel.SetText(false);
-        }
-    }
-
-    private void UpdateKimbokoTileInfoPanel(Tile tileObject)
-    {
-        if (tileObject.IsOccupied())
-        {
-            string infoText = "IS OCCUPPY ";
-            //Debug.Log(infoText);
-            kimbokoInfoPanel.SetText(true, infoText);
-        }
-        else
-        {
-            //Debug.Log("NO ENEMIES ");
-            kimbokoInfoPanel.SetText(false);
-        }
-    }
-
-    private bool IsMouseOverUI()
-    {
-        return EventSystem.current.IsPointerOverGameObject();
-    }
-
-    private bool IsMouseOverUIWithIgnores()
-    {
-        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = Input.mousePosition;
-
-        List<RaycastResult> raycastResultsList = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerEventData, raycastResultsList);
-
-        for (int i = 0; i < raycastResultsList.Count; i++)
-        {
-            if (raycastResultsList[i].gameObject.GetComponent<MouseUIClickThrough>() != null)
-            {
-                raycastResultsList.RemoveAt(i);
-                i--;
-            }
-        }
-
-        return raycastResultsList.Count > 0;
     }
 
     #endregion
@@ -1472,15 +1029,4 @@ public class AnimotionHandler : MonoBehaviour
     }
 
     #endregion
-
 }
-
-
-
-
-
-
-
-
-
-

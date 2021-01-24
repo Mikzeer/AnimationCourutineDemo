@@ -1,19 +1,18 @@
-﻿using PositionerDemo;
-using System.Collections.Generic;
-using UIButtonPattern;
+﻿using CommandPatternActions;
+using PositionerDemo;
 using UnityEngine;
 
 namespace StateMachinePattern
 {
     public class AdministrationState : ActionState<Tile>
     {
-        private const string name = "ADMINISTRATION";
         private int managmentPoints;
         protected GameMachine gmMachine;
         public AdministrationState(int duration, GameMachine game, int managmentPoints) : base(game, duration)
         {
             this.managmentPoints = managmentPoints;
             this.gmMachine = game;
+            stateName = "ADMINISTRATION STATE";
         }
 
         public override void OnEnter()
@@ -26,6 +25,8 @@ namespace StateMachinePattern
             // COMENZAMOS EL CONTADOR DE TIEMPO
             base.OnEnter();
             gmMachine.abilityButtonCreationUI.SetUnit(game.turnController.CurrentPlayerTurn);
+            // NOS SUSCRIBIMOS AL EVENTO DE CAMBIAR EL TIEMPO
+            gameTimer.OnTimePass += gmMachine.uiGeneralManagerInGame.UpdateTime;
         }
 
         public override void OnExit()
@@ -35,14 +36,12 @@ namespace StateMachinePattern
             gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
             // DETENEMOS EL TIEMPO
             base.OnExit();
-
             // POR LAS DUDAS SACAMOS EL MENU DE SELECCION
             gmMachine.abilityButtonCreationUI.SetUnit(null);
-
             // RESTAMOS LAS ACCIONES DEL PLAYER PARA QUE NO PUEDE HACER NADA MAS
             game.actionsManager.RestPlayerActions(game.turnController.CurrentPlayerTurn);
-            //// CAMBIAMOS EL TURNO AL OTRO JUGADOR
-            //game.turnController.ChangeCurrentRound();
+            // NOS DESUSCRIBIMOS AL EVENTO DE CAMBIAR EL TIEMPO
+            gameTimer.OnTimePass += gmMachine.uiGeneralManagerInGame.UpdateTime;
         }
 
         public override bool HaveReachCondition()
@@ -75,12 +74,16 @@ namespace StateMachinePattern
 
         public override void OnUpdate()
         {
-            base.OnUpdate();
             if (HaveReachCondition())
             {
+                PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner("TURN STATE", 0.5f);
+                InvokerMotion.AddNewMotion(bannerMotion);
+                InvokerMotion.StartExecution(gmMachine);
                 TurnState turnState = new TurnState(60, gmMachine);
-                OnNextState(turnState);
+                IState changePhaseState = new ChangePhaseState(gmMachine, turnState);
+                OnNextState(changePhaseState);
             }
+            base.OnUpdate();
         }
 
         public override void ExecuteAction(Tile action)
@@ -93,6 +96,7 @@ namespace StateMachinePattern
 
         public override void OnBack()
         {
+            Debug.Log("GET BACK ADMIN STATE");
             gmMachine.abilityButtonCreationUI.SetUnit(game.turnController.CurrentPlayerTurn);
         }
     }

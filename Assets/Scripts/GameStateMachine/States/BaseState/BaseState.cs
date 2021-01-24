@@ -6,7 +6,7 @@ namespace StateMachinePattern
     public abstract class BaseState : IState
     {
         protected IGame game { get; private set; }
-
+        public string stateName { get; protected set; }
         public BaseState(IGame game)
         {
             this.game = game;
@@ -19,17 +19,14 @@ namespace StateMachinePattern
 
         public virtual void OnClear()
         {
-
         }
 
         public virtual void OnEnter()
         {
-
         }
 
         public virtual void OnExit()
         {
-
         }
 
         public virtual void OnNextState(IState nextState)
@@ -49,12 +46,10 @@ namespace StateMachinePattern
 
         public virtual void OnUpdate()
         {
-
         }
 
         public virtual void OnBack()
         {
-
         }
     }
 }

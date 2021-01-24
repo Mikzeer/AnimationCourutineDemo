@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MikzeerGame.UI;
+using System;
 using UnityEngine;
 namespace PositionerDemo
 {
     public class TileSelectionManagerUI : MonoBehaviour
     {
+        [SerializeField] private OcuppierInformationPanel ocuppierInformationPanel = default;
         [SerializeField] private GameObject tileSelectionPrefab = default;
         MouseController mouseController;
         KeyBoardController keyBoardController;
@@ -22,9 +24,9 @@ namespace PositionerDemo
             tileSelectionFramePlayerOne = Instantiate(tileSelectionPrefab);
             tileSelectionFramePlayerTwo = Instantiate(tileSelectionPrefab);
             SpriteRenderer spOne = tileSelectionFramePlayerOne.GetComponent<SpriteRenderer>();
-            spOne.sortingOrder = 5;
+            spOne.sortingOrder = 4;
             SpriteRenderer sp = tileSelectionFramePlayerTwo.GetComponent<SpriteRenderer>();
-            sp.sortingOrder = 5;
+            sp.sortingOrder = 4;
             sp.color = Color.red;
             tileSelectionFramePlayerOne.SetActive(false);
             tileSelectionFramePlayerTwo.SetActive(false);
@@ -47,6 +49,15 @@ namespace PositionerDemo
                     if (keyBoardController == null) return;
                     Tile tileP1 = keyBoardController.GetTile();
                     OnTileSelection(tileP1, true);
+                    if (tileP1 != null)
+                    {
+                        CreateOcuppierInformationPanel(tileP1.GetOcuppy());
+                    }
+                    else
+                    {
+                        CreateOcuppierInformationPanel(null);
+                    }
+
                     if (keyBoardController.Select() == true)
                     {
                         onTileSelected?.Invoke(tileP1);
@@ -58,6 +69,14 @@ namespace PositionerDemo
                     if (mouseController == null) return;
                     tileP1 = mouseController.GetTile();
                     OnTileSelection(tileP1, true);
+                    if (tileP1 != null)
+                    {
+                        CreateOcuppierInformationPanel(tileP1.GetOcuppy());
+                    }
+                    else
+                    {
+                        CreateOcuppierInformationPanel(null);
+                    }
                     if (mouseController.Select() == true)
                     {
                         onTileSelected?.Invoke(tileP1);
@@ -242,5 +261,9 @@ namespace PositionerDemo
             }
         }
 
+        public void CreateOcuppierInformationPanel(IOcuppy ocuppier)
+        {
+            ocuppierInformationPanel.CreateOcuppierStatInformationPanel(ocuppier);
+        }
     }
 }
