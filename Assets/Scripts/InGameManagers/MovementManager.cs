@@ -1,4 +1,6 @@
-﻿using CommandPatternActions;
+﻿using AbilitySelectionUI;
+using CommandPatternActions;
+using StateMachinePattern;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,33 +8,99 @@ namespace PositionerDemo
 {
     public class MovementManager : AbilityManager
     {
-        IGame game;
+        GameMachine game;
         bool debugOn = false;
         public List<Tile> posibleMoveableTiles { get; private set; }
         public Tile selectedTileToMove;
         MoveManagerUI moveManagerUI;
 
-
-        public MovementManager(IGame game, MoveManagerUI moveManagerUI)
+        public MovementManager(GameMachine game, MoveManagerUI moveManagerUI)
         {
             this.game = game;
             this.moveManagerUI = moveManagerUI;
         }
 
+        public bool CanIEnterMoveState(IOcuppy occupier)
+        {
+            // 6- SI ESTOY ONLINE TENGO QUE PREGUNTARLE AL SERVER SI ES UN MOVIMIENTO VALIDO
+            // ES EL TURNO DEL PLAYER, Y SU UNIDAD TIENE AC Y LA LA HABILIDAD 
+
+            // SI EL PLAYER ESTA EN SU TURNO
+            if (occupier.OwnerPlayerID != game.turnController.CurrentPlayerTurn.OwnerPlayerID)
+            {
+                if (debugOn) Debug.Log("NO ES EL TURNO DEL PLAYER");
+                return false;
+            }
+
+            if (occupier.Abilities.ContainsKey(ABILITYTYPE.MOVE) == false)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD MOVE NO ENCONTRADA EN PLAYER");
+                return false;
+            }
+            MoveAbility moveAbility = (MoveAbility)occupier.Abilities[ABILITYTYPE.MOVE];
+            if (moveAbility == null)
+            {
+                if (debugOn) Debug.Log("ERROR HABILIDAD MOVE NO ENCONTRADA EN PLAYER");
+                return false;
+            }
+
+            return true;
+        }
+
+        public void OnEnterMoveState(IOcuppy occupier)
+        {
+            // CREO LA LISTA/DICCTIONARY DE LAS POSIBLES TILES A MOVERSE CON SU HIGHLIGHT CORRESPONDIENTE
+            Dictionary<Tile, HIGHLIGHTUITYPE> tileHighlightTypesDictionary = CreateHighlightUIDictionary(occupier);
+            MoveAbilitySelectionUIContainer moveUIContainer = new MoveAbilitySelectionUIContainer(tileHighlightTypesDictionary);
+            MoveState moveState = new MoveState(game, game.baseStateMachine.currentState, moveUIContainer, occupier);
+            game.baseStateMachine.PopState(true);
+            game.baseStateMachine.PushState(moveState);
+        }
+
+        private Dictionary<Tile, HIGHLIGHTUITYPE> CreateHighlightUIDictionary(IOcuppy occupier)
+        {
+            Dictionary<Tile, HIGHLIGHTUITYPE> tileHighlightTypesDictionary = new Dictionary<Tile, HIGHLIGHTUITYPE>();
+            int moveAmount = occupier.Stats[STATTYPE.MOVERANGE].ActualStatValue;
+            MOVEDIRECTIONTYPE movementType = occupier.MoveDirectionerType;
+            Tile fromTile = game.board2DManager.GetGridObject(occupier.actualPosition.posX, occupier.actualPosition.posY);
+
+            List<Tile> moveTiles = GetPosibleMoveableTiles(fromTile, movementType, moveAmount);
+
+            if (moveTiles.Count <= 0) return tileHighlightTypesDictionary;
+
+            for (int i = 0; i < moveTiles.Count; i++)
+            {
+                tileHighlightTypesDictionary.Add(moveTiles[i], HIGHLIGHTUITYPE.MOVE);
+            }
+
+            return tileHighlightTypesDictionary;
+        }
+
+        public List<Tile> GetPosibleMoveableTiles(Tile fromTile, MOVEDIRECTIONTYPE moveDirection, int movementAmount)
+        {
+            List<Tile> posibleMoveableTiles = new List<Tile>();
+            // Filtramos esas tiles y las ponemos en la lista
+            FilterMoveableWithBoardStrategyPattern filterMoveable = new FilterMoveableWithBoardStrategyPattern(fromTile, moveDirection, game.board2DManager.GridArray, movementAmount);
+            posibleMoveableTiles = filterMoveable.moveableTiles;
+            return posibleMoveableTiles;
+        }
+
         public void OnTryMove(IOcuppy occupier, Tile endPosition)
         {
+            if (CanIEnterMoveState(occupier) == false)
+            {
+                return;
+            }
+
             if (occupier == null || endPosition == null)
             {
                 if (debugOn) Debug.Log("No Tile Object or Ocuppier");
                 return;
             }
 
-
             /////////////////////////////////////////////////////////////////
 
-
             // CREAMOS POSIBLE MOVEABLE TILES, SOLO LA LISTA SIN PINTARLAS NI NADA
-
             // TILE EN DONDE ESTAMOS PARADOS
             Tile fromTile = game.board2DManager.GetUnitPosition(occupier);
             if (fromTile == null)
@@ -58,8 +126,6 @@ namespace PositionerDemo
 
             // 3 - QUE SEA UNA DISTANCIA VALIDA SEGUN MI RANGO DE MOVIMIENTO
             // CANTIDA DE CASILLA QUE PUEDO MOVERME DEBERIA RESTAR A LA POS INICIAL LA POS FINAL Y VER LA DIFERENCIA EN DISTANCIA
-
-
             // Filtramos esas tiles y las ponemos en la lista
             FilterMoveableWithBoardStrategyPattern filterMoveable = 
                 new FilterMoveableWithBoardStrategyPattern(fromTile, moveDirection, game.board2DManager.GridArray, movementAmount);
@@ -71,15 +137,7 @@ namespace PositionerDemo
                 return;
             }
 
-
-
             /////////////////////////////////////
-
-
-
-
-
-
 
             if (!IsLegalMovement(occupier, endPosition))
             {
@@ -101,13 +159,13 @@ namespace PositionerDemo
 
             moveAb.SetRequireGameData(movInfo);
             StartPerform(moveAb);
-
             if (moveAb.CanIExecute() == false)
             {
                 if (debugOn) Debug.Log("SPAWN ABILITY NO SE PUEDE EJECUTAR");
                 return;
             }
             Move(movInfo);
+            Perform(moveAb);
             EndPerform(moveAb);
         }
 
@@ -118,15 +176,17 @@ namespace PositionerDemo
 
         private void Move(MoveAbilityEventInfo movInfo)
         {
-            KimbokoCombine combien = (KimbokoCombine)movInfo.moveOccupy;
-            if (combien != null)
+            Kimboko kimb = (Kimboko)movInfo.moveOccupy;
+            if (kimb != null && kimb.UnitType == UNITTYPE.COMBINE)
             {
-                CombineMove(combien, movInfo);
+                KimbokoCombine combien = (KimbokoCombine)kimb;
+                if (combien != null)
+                {
+                    CombineMove(combien, movInfo);
+                    return;
+                }
             }
-            else
-            {
-                NormalMove(movInfo);
-            }
+            NormalMove(movInfo);
         }
 
         private void NormalMove(MoveAbilityEventInfo movInfo)
@@ -138,6 +198,7 @@ namespace PositionerDemo
             Vector3 endPosition = movInfo.endPosition.GetRealWorldLocation();
             Motion normalMoveMotion = moveManagerUI.MoveMotion(movInfo.moveOccupy.goAnimContainer.GetGameObject(), endPosition);
             InvokerMotion.AddNewMotion(normalMoveMotion);
+            InvokerMotion.StartExecution(game);
         }
 
         private void CombineMove(KimbokoCombine combien, MoveAbilityEventInfo movInfo)
@@ -157,25 +218,8 @@ namespace PositionerDemo
 
             Motion combineMoveMotion = moveManagerUI.CombineMoveMotion(startPosition, endPosition, goToMove);
             InvokerMotion.AddNewMotion(combineMoveMotion);
+            InvokerMotion.StartExecution(game);
         }
 
-        public void SetSelection(Tile selectedMoveableTile)
-        {
-            if (selectedMoveableTile == null)
-            {
-                return;
-            }
-
-            Position pos = new Position(selectedMoveableTile.position.posX, selectedMoveableTile.position.posY);
-
-            for (int i = 0; i < posibleMoveableTiles.Count; i++)
-            {
-                if (pos.posX == posibleMoveableTiles[i].position.posX && pos.posY == posibleMoveableTiles[i].position.posY)
-                {
-                    selectedTileToMove = selectedMoveableTile;
-                    return;
-                }
-            }
-        }
     }
 }

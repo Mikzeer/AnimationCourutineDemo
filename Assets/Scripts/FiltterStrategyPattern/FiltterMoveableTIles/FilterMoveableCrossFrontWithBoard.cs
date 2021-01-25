@@ -15,16 +15,16 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
         if (movementAmount == 0) return null;
 
         List<Tile> moveableTiles = new List<Tile>();
-
         PositionerDemo.Position fromPosition = new PositionerDemo.Position(from.position.posX, from.position.posY);
 
         int maxX = boardTiles.GetLength(0);
         int maxY = boardTiles.GetLength(1);
-
-        // posX + 1 = UP
-        // posX - 1 = DOWN
-        // posY + 1 = RIGHT
-        // posY - 1 = LEFT
+        //            GridArray = new Tile[this.columnsWidht, this.rowsHeight];
+        //              this.columnsWidht = columnsWidht + 4;   11 columnas
+        //           this.rowsHeight = rowsHeight;    5 filas
+        //
+        // maxX = 11;   x + 1 == right  x - 1 == left
+        // maxY = 5;     y + 1 == up   y - 1 == down
 
         for (int i = 1; i <= movementAmount; i++)
         {
@@ -35,11 +35,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
                 {
                     if (!blockRight)
                     {
-                        if (fromPosition.posY + i < maxY)
+                        if (fromPosition.posX + i < maxX)
                         {
-                            if (!boardTiles[fromPosition.posX, fromPosition.posY + i].IsOccupied())
+                            if (!boardTiles[fromPosition.posX + i, fromPosition.posY].IsOccupied())
                             {
-                                moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY + i]);
+                                moveableTiles.Add(boardTiles[fromPosition.posX + i, fromPosition.posY]);
                             }
                             else
                             {
@@ -50,11 +50,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
                 }
                 else
                 {
-                    if (fromPosition.posY + i < maxY)
+                    if (fromPosition.posX + i < maxX)
                     {
-                        if (!boardTiles[fromPosition.posX, fromPosition.posY + i].IsOccupied())
+                        if (!boardTiles[fromPosition.posX + i, fromPosition.posY].IsOccupied())
                         {
-                            moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY + i]);
+                            moveableTiles.Add(boardTiles[fromPosition.posX + i, fromPosition.posY]);
                         }
                     }
                 }
@@ -66,11 +66,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
                 {
                     if (!blockLeft)
                     {
-                        if (fromPosition.posY - i >= 0)
+                        if (fromPosition.posX - i >= 0)
                         {
-                            if (!boardTiles[fromPosition.posX, fromPosition.posY - i].IsOccupied())
+                            if (!boardTiles[fromPosition.posX - i, fromPosition.posY].IsOccupied())
                             {
-                                moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY - i]);
+                                moveableTiles.Add(boardTiles[fromPosition.posX - i, fromPosition.posY]);
                             }
                             else
                             {
@@ -81,11 +81,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
                 }
                 else
                 {
-                    if (fromPosition.posY - i >= 0)
+                    if (fromPosition.posX - i >= 0)
                     {
-                        if (!boardTiles[fromPosition.posX, fromPosition.posY - i].IsOccupied())
+                        if (!boardTiles[fromPosition.posX - i, fromPosition.posY].IsOccupied())
                         {
-                            moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY - i]);
+                            moveableTiles.Add(boardTiles[fromPosition.posX - i, fromPosition.posY]);
                         }
                     }
                 }
@@ -96,11 +96,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
             {
                 if (!blockUp)
                 {
-                    if (fromPosition.posX + i < maxX)
+                    if (fromPosition.posY + i < maxY)
                     {
-                        if (!boardTiles[fromPosition.posX + i, fromPosition.posY].IsOccupied())
+                        if (!boardTiles[fromPosition.posX, fromPosition.posY + i].IsOccupied())
                         {
-                            moveableTiles.Add(boardTiles[fromPosition.posX + i, fromPosition.posY]);
+                            moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY + i]);
                         }
                         else
                         {
@@ -111,11 +111,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
             }
             else
             {
-                if (fromPosition.posX + i < maxX)
+                if (fromPosition.posY + i < maxY)
                 {
-                    if (!boardTiles[fromPosition.posX + i, fromPosition.posY].IsOccupied())
+                    if (!boardTiles[fromPosition.posX, fromPosition.posY + i].IsOccupied())
                     {
-                        moveableTiles.Add(boardTiles[fromPosition.posX + i, fromPosition.posY]);
+                        moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY + i]);
                     }
                 }
             }
@@ -125,11 +125,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
             {
                 if (!blockDown)
                 {
-                    if (fromPosition.posX - i >= 0)
+                    if (fromPosition.posY - i >= 0)
                     {
-                        if (!boardTiles[fromPosition.posX - i, fromPosition.posY].IsOccupied())
+                        if (!boardTiles[fromPosition.posX, fromPosition.posY - i].IsOccupied())
                         {
-                            moveableTiles.Add(boardTiles[fromPosition.posX - i, fromPosition.posY]);
+                            moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY - i]);
                         }
                         else
                         {
@@ -140,11 +140,11 @@ public class FilterMoveableCrossFrontWithBoard : IFiltterMoveableTileWithBoardSt
             }
             else
             {
-                if (fromPosition.posX - i >= 0)
+                if (fromPosition.posY - i >= 0)
                 {
-                    if (!boardTiles[fromPosition.posX - i, fromPosition.posY].IsOccupied())
+                    if (!boardTiles[fromPosition.posX, fromPosition.posY - i].IsOccupied())
                     {
-                        moveableTiles.Add(boardTiles[fromPosition.posX - i, fromPosition.posY]);
+                        moveableTiles.Add(boardTiles[fromPosition.posX, fromPosition.posY - i]);
                     }
                 }
             }

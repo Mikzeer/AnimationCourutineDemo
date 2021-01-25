@@ -19,6 +19,8 @@ namespace PositionerDemo
             Dictionary<ABILITYTYPE, IAbility> Abilities = new Dictionary<ABILITYTYPE, IAbility>();
             MoveAbility moveAbility = new MoveAbility(kimboko);
             Abilities.Add(moveAbility.AbilityType, moveAbility);
+            CombineAbility combineAbility = new CombineAbility(kimboko);
+            Abilities.Add(combineAbility.AbilityType, combineAbility);
             return Abilities;
         }
     }

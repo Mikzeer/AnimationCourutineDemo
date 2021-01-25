@@ -96,24 +96,20 @@ namespace PositionerDemo
             return spawnMotion;
         }
 
-        public Motion CombineSpawn(Vector3 tileObjectRealWorldLocation, GameObject goKimbok)
+        public Motion CombineSpawn(Vector3 tileObjectRealWorldLocation, GameObject goKimbok, List<GameObject> kimbokos, GameMachine game)
         {
             List<Motion> motionsSpawnCombine = new List<Motion>();
-            List<Configurable> configureAnimotion = new List<Configurable>();
-
-            // ACA TENEMOS QUE VER SI HAY MAS DE UNA UNIDAD EN LA TILE
-            // MIENTRAS BAJA EL CRANE // UNIDADES EN LA TILE SE REPOSICIONAN A LOS COSTADOS
-            // ACA DEBERIA TENER UNA REFERENCIA AL COMBINE MANAGER
-
-            // ENTONCES CREAMOS UNA COMBINE MOTION CON ESTOS TRES 
             // A - MOVEMOS A LOS KIMBOKOS QUE OCUPEN LA TILE A LOS COSTADOS
-            // B - Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
-            // C - REPOSICIONAMOS A LOS KIMBOKO
+            motionsSpawnCombine.Add(game.combineManagerUI.MoveToSquarePosition(kimbokos, tileObjectRealWorldLocation));
+            // B - Motion normalSpawnMotion
+            motionsSpawnCombine.Add(NormalSpawn(tileObjectRealWorldLocation, goKimbok));
+            // C - REPOSICIONAMOS A TODOS LOS KIMBOKO
+            // AGREGO EL KIMBOKO SPAWNEADO A LA LISTA
+            kimbokos.Add(goKimbok);
+            motionsSpawnCombine.Add(game.combineManagerUI.RearangePositionAfterCombineMotion(kimbokos, tileObjectRealWorldLocation, 2));
 
-
-
-
-            return null;
+            CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsSpawnCombine);
+            return combinMoveMotion;
         }
     }
 }

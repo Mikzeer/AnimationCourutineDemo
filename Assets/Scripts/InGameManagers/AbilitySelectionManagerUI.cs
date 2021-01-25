@@ -14,6 +14,7 @@ namespace PositionerDemo
                 case HIGHLIGHTUITYPE.ATTACK:
                     break;
                 case HIGHLIGHTUITYPE.MOVE:
+                    HighlightSelection(tileObject, Color.cyan);
                     break;
                 case HIGHLIGHTUITYPE.COMBINE:
                     HighlightSelection(tileObject, Color.green);

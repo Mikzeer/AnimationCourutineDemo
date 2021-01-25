@@ -24,7 +24,7 @@ namespace PositionerDemo
         [SerializeField] protected SpawnManagerUI spawnManagerUI = default; // DEFAULT => EVITAMOS WARNING EN EL INSPECTOR
         public SpawnManager spawnManager { get; protected set; }
         [Header("MOVEMENT MANAGER UI")]
-        [SerializeField] protected MoveManagerUI moveManagerUI = default;
+        public MoveManagerUI moveManagerUI = default;
         public MovementManager movementManager { get; protected set; }
         [Header("BOARD MANAGER UI")]
         [SerializeField] protected Board2DManagerUI board2DManagerUI = default;
@@ -43,6 +43,8 @@ namespace PositionerDemo
         public UIGeneralManagerInGame uiGeneralManagerInGame = default;
         [Header("INFORMATION MANAGER UI")]
         public InformationUIManager informationUIManager = default;
+        [Header("COMBINE MANAGER UI")]
+        public CombineManagerUI combineManagerUI = default;
         public CombineManager combineManager { get; protected set; }
         public TurnController turnController { get; protected set; }
         public PlayerManager playerManager { get; protected set; }

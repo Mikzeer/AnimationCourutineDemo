@@ -202,7 +202,6 @@ namespace PositionerDemo
         public static List<Kimboko> GetCombineKimbokoOrder(List<Kimboko> combineKimbokos)
         {
             // CON ESTA FUNCION, ORDENAMOS A LOS KIMBOKOS SEGUN SU RANGO DE UNIDAD Y SU VIDA
-
             List<Kimboko> characterX = new List<Kimboko>();
             List<Kimboko> characterY = new List<Kimboko>();
             List<Kimboko> characterZ = new List<Kimboko>();
@@ -220,21 +219,39 @@ namespace PositionerDemo
                     case UNITTYPE.Z:
                         characterZ.Add(combineKimbokos[i]);
                         break;
+                    case UNITTYPE.COMBINE:
+                        KimbokoCombine combAux = (KimbokoCombine)combineKimbokos[i];
+                        if (combAux != null)
+                        {
+                            for (int x = 0; x < combAux.kimbokos.Count; x++)
+                            {
+                                switch (combAux.kimbokos[x].UnitType)
+                                {
+                                    case UNITTYPE.X:
+                                        characterX.Add(combAux.kimbokos[x]);
+                                        break;
+                                    case UNITTYPE.Y:
+                                        characterY.Add(combAux.kimbokos[x]);
+                                        break;
+                                    case UNITTYPE.Z:
+                                        characterZ.Add(combAux.kimbokos[x]);
+                                        break;
+                                }
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
             }
-
             List<Kimboko> finalList = new List<Kimboko>();
-
             characterZ.OrderBy(o => o.Stats[STATTYPE.HEALTH].ActualStatValue);
             finalList.AddRange(characterZ);
             characterY.OrderBy(o => o.Stats[STATTYPE.HEALTH].ActualStatValue);
             finalList.AddRange(characterY);
             characterX.OrderBy(o => o.Stats[STATTYPE.HEALTH].ActualStatValue);
             finalList.AddRange(characterX);
-
-            return combineKimbokos;
+            return finalList;
         }
     }
 }

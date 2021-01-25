@@ -46,7 +46,7 @@ namespace PositionerDemo
             // CREATE MANAGER STATE
             // 3b - Inicializar los managers generales  ESTOS LOS VA A TENER EL GAME... ASI QUE SEGURO LO HAGAMOS DESDE AHI
             spawnManager = new SpawnManager(spawnManagerUI, this);
-            combineManager = new CombineManager(this);
+            combineManager = new CombineManager(this, combineManagerUI);
             movementManager = new MovementManager(this, moveManagerUI);
             actionsManager = new ActionsManager();
             yield return null;
@@ -86,8 +86,9 @@ namespace PositionerDemo
 
             // STARTGAMESTATE => ACA DEBERIA MANDAR CADA JUGADOR QUE ESTA READY, Y AHI EL SERVER EMITIRIA EL NUEVO STATE PARA CADA UNO
             // CREAMOS EL STATE INICIAL
-            //IState AdminState = new AdministrationState(20, this, 1);
-            //IState turnState = new TurnState(50, this);
+            AdministrationState AdminState = new AdministrationState(10, this, 1);
+            TurnState turnState = new TurnState(50, this);
+
             InitialAdministrationStateA initialAdminStateA = new InitialAdministrationStateA(40, this, 4);
             Motion bannerMotion = informationUIManager.SetAndShowBanner(initialAdminStateA.stateName, 0.5f);
             InvokerMotion.AddNewMotion(bannerMotion);

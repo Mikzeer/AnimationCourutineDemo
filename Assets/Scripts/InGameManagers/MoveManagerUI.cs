@@ -29,7 +29,7 @@ namespace PositionerDemo
 
             List<Motion> motionsStopMove = new List<Motion>();
 
-            Motion motionTweenMove = new MoveTweenMotion(this, goKimbok.transform, 1, endPosition);
+            Motion motionTweenMove = new MoveTweenMotion(this, goKimbok.transform, 1, endPosition, 1);
             Motion motionIdlle = new IdlleMotion(this, animator, 2, true);
             motionsStopMove.Add(motionTweenMove);
             motionsStopMove.Add(motionIdlle);

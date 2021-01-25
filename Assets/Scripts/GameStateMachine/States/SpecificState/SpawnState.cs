@@ -32,7 +32,10 @@ namespace StateMachinePattern
             {
                 if (item.Key == selection)
                 {
-                    game.spawnManager.OnTrySpawn(selection, game.turnController.CurrentPlayerTurn);
+                    if (game.spawnManager.CanISpawn(selection, game.turnController.CurrentPlayerTurn))
+                    {
+                        game.spawnManager.OnSpawn(selection, game.turnController.CurrentPlayerTurn);
+                    }
                     break;
                 }
             }

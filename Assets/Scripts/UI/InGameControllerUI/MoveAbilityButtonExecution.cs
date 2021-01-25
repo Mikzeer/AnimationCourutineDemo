@@ -19,12 +19,12 @@ namespace MikzeerGame
 
             public void Execute()
             {
+                // NO DEBERIA RETURN Y PONER EN CLEAR LAS ABILITY BUTTON ???
                 if (actualOccupier == null) return;
-                //actualUnit.moveAbility.Set(gameCreator);
-                //if (actualUnit.moveAbility.OnTryExecute())
-                //{
-                //    gameCreator.ChangeState(new GameStateMachine.MoveState(actualUnit, gameCreator, gameCreator.currentState));
-                //}
+                if (gameCreator.movementManager.CanIEnterMoveState(actualOccupier))
+                {
+                    gameCreator.movementManager.OnEnterMoveState(actualOccupier);
+                }
 
                 abilityButtonCreationUI.ClearAbilityButtons();
             }

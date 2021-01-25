@@ -198,6 +198,7 @@ namespace PositionerDemo
                 {
                     SpawnTile aux = (SpawnTile)GridArray[columnIndex, i];
                     spawnTile.Add(aux);
+                    continue;
                 }
                 if (GridArray[columnIndex, i].GetOcuppy() == null) continue;
 
@@ -206,10 +207,18 @@ namespace PositionerDemo
                 Kimboko auxKimb = (Kimboko)GridArray[columnIndex, i].GetOcuppy();
                 if (auxKimb.OwnerPlayerID == playerID)
                 {
+                    if (CombineKimbokoRules.CanICombineWithUnitType(auxKimb, UNITTYPE.X))
+                    {
+                        SpawnTile aux = (SpawnTile)GridArray[columnIndex, i];
+                        spawnTile.Add(aux);
+                        continue;
+                    }
+
                     if (CombineKimbokoRules.CanICombineAndEvolveWithUnitType(auxKimb, UNITTYPE.X))
                     {
                         SpawnTile aux = (SpawnTile)GridArray[columnIndex, i];
                         spawnTile.Add(aux);
+                        continue;
                     }
                 }
             }
