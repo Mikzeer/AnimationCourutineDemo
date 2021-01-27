@@ -28,7 +28,7 @@ namespace MikzeerGame
         private Action<bool> onCardEnter;
         private Action<int> onCardDrop;
         public int ID;
-
+        
         public void Awake()
         {
             cardRectTansform = GetComponent<RectTransform>();
@@ -75,7 +75,7 @@ namespace MikzeerGame
             canvasGroup.blocksRaycasts = block;
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerEnter(PointerEventData eventData)  
         {
             if (isACardDraging) return;
 

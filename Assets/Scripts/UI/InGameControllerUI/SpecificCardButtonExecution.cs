@@ -14,7 +14,7 @@ namespace UIButtonPattern
 
         public void Execute()
         {
-            cardManager.OnTryTakeCard(player);
+            cardManager.OnTakeCard(player);
         }
     }
 }

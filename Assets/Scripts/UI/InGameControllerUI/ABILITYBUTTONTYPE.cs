@@ -11,7 +11,8 @@
             DECOMBINE,
             EVOLVE,
             FUSION,
-            SPAWN
+            SPAWN,
+            TAKECARD
         }
 
     }

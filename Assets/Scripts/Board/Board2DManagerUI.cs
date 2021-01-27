@@ -18,7 +18,7 @@ namespace PositionerDemo
         float playerTileWidth;
         float posInitXJug1;
         float posInitXJug2;
-
+        int newUpYOffset = 2;
         private void Awake()
         {
             tilePrefab = Resources.Load("TilePrefab/Tile", typeof(GameObject)) as GameObject;
@@ -48,7 +48,7 @@ namespace PositionerDemo
 
             float originPosX = 0 - totalWidth / 2;
             float originPosY = 0 - totalHeight / 2;
-            Vector3 originPosition = new Vector3(originPosX, originPosY, 0);
+            Vector3 originPosition = new Vector3(originPosX, originPosY + newUpYOffset, 0);
             return originPosition;
         }
 
@@ -92,7 +92,6 @@ namespace PositionerDemo
 
             // para las spawn tiles
             Vector2 yOffset = new Vector2(0, 10);
-
             Vector3 pOneNexusFinalPosition = board2D.GetPlayerNexusWorldPosition(true);
             tiles[0, 0].transform.position = new Vector3(pOneNexusFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y + yOffset.y, 0);
             Motion motionTweenNexusP1Move = new MoveTweenMotion(this, tiles[0, 0].transform, index, pOneNexusFinalPosition, 1);
@@ -134,11 +133,11 @@ namespace PositionerDemo
             Vector2 position = Vector2.zero;
             if (isPlayerOne)
             {
-                position = new Vector2(posInitXJug1, 0);
+                position = new Vector2(posInitXJug1, 0 + newUpYOffset);
             }
             else
             {
-                position = new Vector2(posInitXJug2, 0);
+                position = new Vector2(posInitXJug2, 0 + newUpYOffset);
             }
             GameObject goAuxTile = Instantiate(playerTilePrefab, position, Quaternion.identity);
             baseNexoTile.SetGoAnimContainer(new GameObjectAnimatorContainer(goAuxTile, goAuxTile.GetComponent<Animator>()));
@@ -146,8 +145,8 @@ namespace PositionerDemo
 
         public Vector3 GetPlayerNexusWorldPosition(bool isPlayerOne)
         {
-            if (isPlayerOne) return new Vector2(posInitXJug1, 0);
-            return new Vector2(posInitXJug2, 0);
+            if (isPlayerOne) return new Vector2(posInitXJug1, 0 + newUpYOffset);
+            return new Vector2(posInitXJug2, 0 + newUpYOffset);
         }
 
         public Vector3 GetNexusSpriteSize()

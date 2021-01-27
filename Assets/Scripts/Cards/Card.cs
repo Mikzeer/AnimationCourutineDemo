@@ -115,7 +115,7 @@ namespace PositionerDemo
     public class CardTargetManager
     {
         List<Tile> boardTiles;
-        public CardTargetManager(Board2D board2D)
+        public CardTargetManager(Board2DManager board2D)
         {
             boardTiles = new List<Tile>();
             // RECORREMOS LA LISTA DE TILES
@@ -202,13 +202,13 @@ namespace PositionerDemo
 
     public class CardTargetFiltterManager
     {
-        TurnManager turnManager;
+        TurnController turnController;
         CardTargetManager cardTargetManager;
         CardFiltterManager cardFiltterManager;
 
-        public CardTargetFiltterManager(TurnManager turnManager, Board2D board2D)
+        public CardTargetFiltterManager(TurnController turnController, Board2DManager board2D)
         {
-            this.turnManager = turnManager;
+            this.turnController = turnController;
             cardTargetManager = new CardTargetManager(board2D);
             cardFiltterManager = new CardFiltterManager();
         }
@@ -217,7 +217,7 @@ namespace PositionerDemo
         {
             // CHEQUEAR DE QUIEN ES EL TURNO
             // SI NO ES NUESTRO TURNO ENTONCES SOLO MOVEMOS LA CARTA PARA ACOMODARLA ASI QUE ACA NO PASA NADA
-            if (card.ownerPlayer != turnManager.GetActualPlayerTurn()) return null;
+            if (card.ownerPlayer != turnController.CurrentPlayerTurn) return null;
 
             List<ICardTarget> foundTargets = new List<ICardTarget>();
 

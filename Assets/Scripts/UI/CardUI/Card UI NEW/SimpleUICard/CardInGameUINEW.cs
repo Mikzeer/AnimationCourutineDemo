@@ -46,11 +46,19 @@ namespace PositionerDemo
         protected override void OnSuccesfulPointerEnter()
         {
             StartCoroutine(mouseOverToShowInfoPanel(uiRectTansform.position));
+
+            // NEW
+            startSiblingIndex = uiRectTansform.GetSiblingIndex();
+            //
+
             parentRectTransform.GetChild(parentRectTransform.childCount - 1).SetSiblingIndex(startSiblingIndex);
-            uiRectTansform.SetParent(parentRectTransform.parent.parent.transform);
-            Vector2 offset = new Vector2(80, 0);
-            uiRectTansform.anchoredPosition += offset;
+            //uiRectTansform.SetParent(parentRectTransform.parent.parent.transform);
+            uiRectTansform.SetParent(canvas.transform);
+
+            //Vector2 offset = new Vector2(80, 0);
+            //uiRectTansform.anchoredPosition += offset;
             isPointerOverCard = true;
+
         }
 
         IEnumerator mouseOverToShowInfoPanel(Vector3 cardPosition)
@@ -105,7 +113,7 @@ namespace PositionerDemo
                 Debug.Log("Hit " + result.gameObject.name);
                 if (onCardUse != null)
                 {
-                    onCardUse.Invoke(this);
+                    onCardUse?.Invoke(this);
                     onCardDrop?.Invoke(ID);
                     parentRectTransform.GetChild(startSiblingIndex).SetAsLastSibling();
                 }
@@ -155,5 +163,4 @@ namespace PositionerDemo
         }
 
     }
-
 }

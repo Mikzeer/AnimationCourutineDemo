@@ -78,6 +78,8 @@ namespace MikzeerGame
                             noCreation = false;
                             break;
                         case ABILITYTYPE.TAKEACARD:
+                            CreateButton(actualOccupier, ABILITYBUTTONTYPE.TAKECARD);
+                            noCreation = false;
                             break;
                         case ABILITYTYPE.MOVE:
                             CreateButton(actualOccupier, ABILITYBUTTONTYPE.MOVE);
@@ -138,7 +140,11 @@ namespace MikzeerGame
                         break;
                     case ABILITYBUTTONTYPE.COMBINE:
                         break;
-                    case ABILITYBUTTONTYPE.DECOMBINE:
+                    case ABILITYBUTTONTYPE.TAKECARD:
+                        TakeCardAbilityButtonExecution takeCardAbilityBtnExe = new TakeCardAbilityButtonExecution(actualOccupier, gameMachine, this);
+                        AbilityButton btnTakeCard = new AbilityButton(btnAbi, takeCardAbilityBtnExe, null);
+                        btnTakeCard.Suscribe();
+                        actualAbilityButtons.Add(btnTakeCard);
                         break;
                     case ABILITYBUTTONTYPE.EVOLVE:
                         break;

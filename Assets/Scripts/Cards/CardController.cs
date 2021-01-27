@@ -52,6 +52,30 @@ namespace PositionerDemo
             }
         }
 
+        public bool CanITakeACard(Player player)
+        {
+            if (!IsLegalTakeCard(player))
+            {
+                Debug.Log("Ilegal Take Card");
+                return false;
+            }
+
+            if (player.Abilities.ContainsKey(ABILITYTYPE.TAKEACARD) == false)
+            {
+                if (debugOn) Debug.Log("El Player no tiene la Take Card Ability");
+                return false;
+            }
+
+            TakeCardAbility takceCardAbility = (TakeCardAbility)player.Abilities[ABILITYTYPE.TAKEACARD];
+            if (takceCardAbility == null)
+            {
+                if (debugOn) Debug.Log("La ID de la TakeCard Ability puede estar mal no funciono el casteo");
+                return false;
+            }
+
+            return true;
+        }
+
         private bool IsLegalTakeCard(Player player)
         {
             // 2- SI ESTOY ONLINE TENGO QUE PREGUNTARLE AL SERVER SI ES UN MOVIMIENTO VALIDO
@@ -69,54 +93,33 @@ namespace PositionerDemo
             return card;
         }
 
-        public void OnTryTakeCard(Player player)
+        public void OnTakeCard(Player player)
         {
-            if (!IsLegalTakeCard(player))
-            {
-                Debug.Log("Ilegal Take Card");
-                return;
-            }
-
-            if (player.Abilities.ContainsKey(ABILITYTYPE.TAKEACARD) == false)
-            {
-                if (debugOn) Debug.Log("El Player no tiene la Take Card Ability");
-                return;
-            }
-
             TakeCardAbility takceCardAbility = (TakeCardAbility)player.Abilities[ABILITYTYPE.TAKEACARD];
-
-            if (takceCardAbility == null)
-            {
-                if (debugOn) Debug.Log("La ID de la TakeCard Ability puede estar mal no funciono el casteo");
-                return;
-            }
-
-
             TakeCardAbilityEventInfo tkeCardInfo = new TakeCardAbilityEventInfo(player, TakeCardFromDeck(player), cardIndex);
             takceCardAbility.SetRequireGameData(tkeCardInfo);
             StartPerform(takceCardAbility);
-
             if (takceCardAbility.CanIExecute() == false)
             {
                 if (debugOn) Debug.Log("SPAWN ABILITY NO SE PUEDE EJECUTAR");
                 return;
             }
-
             AddCard(tkeCardInfo);
+            Perform(takceCardAbility);
             EndPerform(takceCardAbility);
             cardIndex++;
         }
 
-        public void AddCard(TakeCardAbilityEventInfo tkeCardInfo)
+        private void AddCard(TakeCardAbilityEventInfo tkeCardInfo)
         {
-            GameObject cardGo = cardManagerUI.CreateNewCardPrefab(tkeCardInfo.card, tkeCardInfo.cardTaker.OwnerPlayerID, FireCardUITest, SetActiveInfoCard);
-
             IAddCardCommand addCardCmd = new IAddCardCommand(tkeCardInfo.cardTaker, tkeCardInfo.card);
             Invoker.AddNewCommand(addCardCmd);
             Invoker.ExecuteCommands();
 
+            GameObject cardGo = cardManagerUI.CreateNewCardPrefab(tkeCardInfo.card, tkeCardInfo.cardTaker.OwnerPlayerID, OnTryUseCard);
             Motion takeCardMotion = cardManagerUI.AddCard(cardGo, tkeCardInfo.cardTaker.PlayerID);
             InvokerMotion.AddNewMotion(takeCardMotion);
+            InvokerMotion.StartExecution(cardManagerUI);
         }
 
         public void SendCardToGraveyard(TakeCardAbilityEventInfo tkeCardInfo, RectTransform cardRect)
@@ -127,31 +130,19 @@ namespace PositionerDemo
 
             Motion sendToGraveyardMotion = cardManagerUI.OnCardSendToGraveyard(cardRect, tkeCardInfo.cardTaker.PlayerID);
             InvokerMotion.AddNewMotion(sendToGraveyardMotion);
+            InvokerMotion.StartExecution(cardManagerUI);
         }
 
-        public void FireCardUITest(MikzeerGame.CardUI cardUI)
+        public void OnCardWaitForTargetSelection(Transform cardTransform)
         {
-            Debug.Log("Se disparo el ON CARD USE");
-            if (allCards.ContainsKey(cardUI.ID))
-            {
-            }
-            else
-            {
-                Debug.Log("No esta en el dictionary");
-            }
+            Motion twaitMotion = cardManagerUI.OnCardWaitingTarget(cardTransform);
+            InvokerMotion.AddNewMotion(twaitMotion);
+            InvokerMotion.StartExecution(cardManagerUI);
         }
 
-        public void SetActiveInfoCard(bool isActive)
+        public void OnTryUseCard(CardInGameUINEW toUseCard)
         {
-            if (isActive)
-            {
-                //Debug.Log("Animacion Card Apareciendo");
-            }
-            else
-            {
-                //Debug.Log("Animacion Card SE Va");
-            }
+            Debug.Log("I TRY TO USE CARD " + toUseCard.gameObject.name);
         }
     }
-
 }

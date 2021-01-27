@@ -17,12 +17,6 @@ namespace PositionerDemo
         [SerializeField] private RectTransform playerTwoGraveyardLogo = default;
         [SerializeField] private RectTransform playerTwoGraveyard = default;
         [SerializeField] private Transform cardWaitPosition = default;
-        [SerializeField] private Button btnTakeCard = default;
-
-        public void SetActiveTakeCardButton(bool isActive)
-        {
-            btnTakeCard.gameObject.SetActive(isActive);
-        }
 
         public Motion AddCard(GameObject createdCardGameObject, int PlayerID)
         {                     
@@ -112,12 +106,9 @@ namespace PositionerDemo
             SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = 
                 new SetParentConfigureAnimotion<Transform, Transform>(cardRect, parentTransform, 3);
             configurables.Add(cardHandSetParentConfigAnimotion);
-
             //SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion 
             //    = new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, GameCreator.Instance.playerOneGraveyard, 4);
             //configurables.Add(blockRayCastConfigAnimotion);
-
-
             CombineMotion combineSendToGraveyardMotion = new CombineMotion(this, 1, motionsWaitToGraveyard, configurables);
             return combineSendToGraveyardMotion;
         }
@@ -127,7 +118,7 @@ namespace PositionerDemo
             return new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
         }
 
-        public GameObject CreateNewCardPrefab(Card newCard, int PlayerID, Action<MikzeerGame.CardUI> FireCardUITest, Action<bool> SetActiveInfoCard)
+        public GameObject CreateNewCardPrefab(Card newCard, int PlayerID, Action<CardInGameUINEW> OnUseAction)
         {
             // instanciar el prefab de la card y ponerle como parent el canvas
             // ponerlo en el centro de la pantalla
@@ -135,35 +126,37 @@ namespace PositionerDemo
             GameObject createdCardGameObject = Instantiate(cardUIPrefab, screenCenter, Quaternion.identity, canvasRootTransform);
 
             createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
-            MikzeerGame.CardUI cardUI = createdCardGameObject.GetComponent<MikzeerGame.CardUI>();
             MikzeerGame.CardDisplay cardDisplay = createdCardGameObject.GetComponent<MikzeerGame.CardDisplay>();
 
-            createdCardGameObject.name = "CARD N " + newCard.IDInGame;
+            createdCardGameObject.name = "CARD N " + newCard.IDInGame + "/" + newCard.CardData.CardName;
 
             if (cardDisplay != null)
             {
                 cardDisplay.Initialized(newCard);
             }
 
-            if (cardUI != null)
+            CardInGameUINEW cardInGameUI = createdCardGameObject.AddComponent<CardInGameUINEW>();
+            if (cardInGameUI != null)
             {
                 if (PlayerID == 0)
                 {
-                    cardUI.SetPlayerHandTransform(cardHolderP1, FireCardUITest, infoPanel.SetText, SetActiveInfoCard);
+                    cardInGameUI.SetPlayerHandTransform(cardHolderP1, OnUseAction, infoPanel.SetText, SetActiveInfoCard);
                 }
                 else
                 {
-                    cardUI.SetPlayerHandTransform(cardHolderP2, FireCardUITest, infoPanel.SetText, SetActiveInfoCard);
+                    cardInGameUI.SetPlayerHandTransform(cardHolderP2, OnUseAction, infoPanel.SetText, SetActiveInfoCard);
                 }
 
-                cardUI.SetRealCardDrop(newCard.OnDropCard, newCard.IDInGame);
-
-                // generar una action que se active cuando dropeas la carta en la zona DropeableArea
-                // la Action<CardUI> es la que vamos a disparar desde el AnimotionHandler
-                // CardUI dropea, si hitea con dropeable es ahi donde disparamos el EVENT
+                cardInGameUI.SetRealCardDrop(newCard.OnDropCard, newCard.IDInGame);
             }
 
+
             return createdCardGameObject;
+        }
+
+        public void SetActiveInfoCard(bool isActive)
+        {
+            Debug.Log("SE DISPAROR EL IS ACTIVE DESDE LA CARD IS ACTIVE ==" + isActive);
         }
     }     
 }

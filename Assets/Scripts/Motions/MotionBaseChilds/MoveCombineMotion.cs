@@ -12,17 +12,17 @@ namespace PositionerDemo
         private Tween[] movingTween;
         //private Ease ease = Ease.Linear;
 
-        public List<Enemy> enemies;
+        public List<Transform> enemies;
         private Vector3 endPostion;
         private Vector3 actualPosition;
 
-        Dictionary<Enemy, Vector3[]> enmiesAndPathToMove;
+        Dictionary<Transform, Vector3[]> enmiesAndPathToMove;
         UnitMovePositioner movePositioner;
         private float cellSize;
         private Vector3 finalPosition;
         private Vector3 startPosition;
 
-        public MoveCombineMotion(MonoBehaviour coroutineMono, Vector3 startPosition, Vector3 finalPosition, List<Enemy> enemies, float cellSize) : base(coroutineMono, 1)
+        public MoveCombineMotion(MonoBehaviour coroutineMono, Vector3 startPosition, Vector3 finalPosition, List<Transform> enemies, float cellSize) : base(coroutineMono, 1)
         {
             this.cellSize = cellSize;
             movePositioner = new UnitMovePositioner(this.cellSize);

@@ -1,18 +1,16 @@
 ﻿using PositionerDemo;
-using StateMachinePattern;
-using System.Collections.Generic;
 
 namespace MikzeerGame
 {
     namespace UI
     {
-        public class SpawnAbilityButtonExecution : SpecificAbilityExecution
+        public class TakeCardAbilityButtonExecution : SpecificAbilityExecution
         {
             IOcuppy actualOccupier;
             GameMachine game;
             AbilityButtonCreationUI abilityButtonCreationUI;
-            public string name { get; private set; } = "SPAWN";
-            public SpawnAbilityButtonExecution(IOcuppy actualOccupier, GameMachine gameCreator, AbilityButtonCreationUI abilityButtonCreationUI)
+            public string name { get; private set; } = "TAKE CARD";
+            public TakeCardAbilityButtonExecution(IOcuppy actualOccupier, GameMachine gameCreator, AbilityButtonCreationUI abilityButtonCreationUI)
             {
                 this.game = gameCreator;
                 this.actualOccupier = actualOccupier;
@@ -27,12 +25,13 @@ namespace MikzeerGame
 
                 if (player == null) return;
 
-                if (game.spawnManager.CanIEnterSpawnState(player))
+                if (game.cardManager.CanITakeACard(player))
                 {
-                    game.spawnManager.OnEnterSpawnState(player);
+                    game.cardManager.OnTakeCard(player);
                 }
 
-                abilityButtonCreationUI.ClearAbilityButtons();
+                //abilityButtonCreationUI.ClearAbilityButtons();
+                abilityButtonCreationUI.SetUnit(player);
             }
         }
     }

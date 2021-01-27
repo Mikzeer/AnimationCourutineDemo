@@ -38,11 +38,6 @@ namespace PositionerDemo
             this.Stats = Sttats;
         }
 
-        public void SetDeck(Stack<Card> Deck)
-        {
-            this.Deck = Deck;
-        }        
-
         public void AddUnit(Kimboko kimbokoUnit)
         {
             kimbokoUnits.Add(kimbokoUnit);
