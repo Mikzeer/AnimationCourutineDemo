@@ -15,7 +15,7 @@ namespace StateMachinePattern
 
         public override void OnEnter()
         {
-            Debug.Log("ENTER CHANGE PHASE STATE");
+            if (logOn) Debug.Log("ENTER CHANGE PHASE STATE");
             if (InvokerMotion.IsExecuting())
             {
                 //Debug.Log("Invoker Motion Is Executing");
@@ -26,7 +26,7 @@ namespace StateMachinePattern
 
         public override void OnExit()
         {
-            Debug.Log("EXIT CHANGE PHASE STATE");
+            if (logOn) Debug.Log("EXIT CHANGE PHASE STATE");
         }
 
 

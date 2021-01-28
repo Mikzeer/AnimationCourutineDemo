@@ -7,6 +7,7 @@ namespace StateMachinePattern
     {
         protected IGame game { get; private set; }
         public string stateName { get; protected set; }
+        protected bool logOn = false;
         public BaseState(IGame game)
         {
             this.game = game;

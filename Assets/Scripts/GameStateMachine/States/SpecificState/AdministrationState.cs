@@ -17,7 +17,7 @@ namespace StateMachinePattern
 
         public override void OnEnter()
         {
-            Debug.Log("ENTER ADMIN STATE");
+            if(logOn) Debug.Log("ENTER ADMIN STATE");
             // 1 - SUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected += ExecuteAction;
             // 2 - TENGO QUE SETEAR LOS ACTIONS POINTS PARA ESTE JUGADOR
@@ -31,7 +31,7 @@ namespace StateMachinePattern
 
         public override void OnExit()
         {
-            Debug.Log("EXIT ADMIN STATE");
+            if (logOn) Debug.Log("EXIT ADMIN STATE");
             // 1 - DESUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
             // DETENEMOS EL TIEMPO
@@ -96,7 +96,7 @@ namespace StateMachinePattern
 
         public override void OnBack()
         {
-            Debug.Log("GET BACK ADMIN STATE");
+            if (logOn) Debug.Log("GET BACK ADMIN STATE");
             gmMachine.abilityButtonCreationUI.SetUnit(game.turnController.CurrentPlayerTurn);
         }
     }

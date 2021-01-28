@@ -33,11 +33,25 @@ namespace PositionerDemo
             Vector3 finalCardPosition = Vector3.zero;
             if (PlayerID == 0)
             {
-                finalCardPosition = cardHolderP1.GetChild(cardHolderP1.childCount - 1).position;
+                if (cardHolderP1.transform.childCount > 0)
+                {
+                    finalCardPosition = cardHolderP1.GetChild(cardHolderP1.childCount - 1).position;
+                }
+                else
+                {
+                    finalCardPosition = cardHolderP1.position;
+                }
             }
             else
             {
-                finalCardPosition = cardHolderP2.GetChild(cardHolderP2.childCount - 1).position;
+                if (cardHolderP2.transform.childCount > 0)
+                {
+                    finalCardPosition = cardHolderP2.GetChild(cardHolderP2.childCount - 1).position;
+                }
+                else
+                {
+                    finalCardPosition = cardHolderP2.position;
+                }
             }
 
             Motion motionTweenSpawn = new SpawnCardTweenMotion(this, createdCardGameObject.transform, 1, finalCardPosition, 2);
@@ -135,7 +149,7 @@ namespace PositionerDemo
                 cardDisplay.Initialized(newCard);
             }
 
-            CardInGameUINEW cardInGameUI = createdCardGameObject.AddComponent<CardInGameUINEW>();
+            CardInGameUINEW cardInGameUI = createdCardGameObject.GetComponent<CardInGameUINEW>();
             if (cardInGameUI != null)
             {
                 if (PlayerID == 0)
@@ -156,7 +170,8 @@ namespace PositionerDemo
 
         public void SetActiveInfoCard(bool isActive)
         {
-            Debug.Log("SE DISPAROR EL IS ACTIVE DESDE LA CARD IS ACTIVE ==" + isActive);
+            infoPanel.SetActive(isActive);
+            //Debug.Log("SE DISPAROR EL IS ACTIVE DESDE LA CARD IS ACTIVE ==" + isActive);
         }
     }     
 }

@@ -76,7 +76,7 @@ namespace PositionerDemo
             eventData.useDragThreshold = false;
         }
 
-        public void OnDrag(PointerEventData eventData)
+        public virtual void OnDrag(PointerEventData eventData)
         {
             // eventData.delta = the amount the mouse move since the last frame
             uiRectTansform.anchoredPosition += eventData.delta / canvas.scaleFactor;

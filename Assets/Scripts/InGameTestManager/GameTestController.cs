@@ -7,6 +7,7 @@ namespace PositionerDemo
 {
     public class GameTestController : GameMachine
     {
+        bool logOn = false;
         private void Start()
         {
             StartCoroutine(InitializeGame());
@@ -58,10 +59,10 @@ namespace PositionerDemo
             inGameCardCollectionManager.LoadAllCollectionJson(playerManager.GetUsers().ToArray());
             while (isCardCollectionLoaded == false)
             {
-                Debug.Log("WAITING FOR CARD COLLECTION TO LOAD");
+                if (logOn) Debug.Log("WAITING FOR CARD COLLECTION TO LOAD");
                 yield return null;
             }
-            Debug.Log("GAME CARD COLLECTION LOADED");
+            if (logOn) Debug.Log("GAME CARD COLLECTION LOADED");
             // 4- CARGAR EL DECK SELECCIONADO DE CADA JUGADOR
             // 4b- CHEQUEAR QUE SEA UN DECK VALIDO
             // 4c- SI ES INVALIDO SACAMOS TODO A LA MIERDA, SI ES VALID CREAMOS LOS DECKS DE CADA PLAYER
@@ -74,7 +75,7 @@ namespace PositionerDemo
             // WAIT FOR BOARD TO LOAD STATE
             while (isBoardLoaded == false)
             {
-                Debug.Log("WAITING FOR BOARD TO LOAD");
+                if (logOn) Debug.Log("WAITING FOR BOARD TO LOAD");
                 yield return null;
             }
 
@@ -101,7 +102,7 @@ namespace PositionerDemo
 
         private void OnBoardComplete()
         {
-            Debug.Log("BOARD SE TERMINO DE CREAR");
+            if (logOn) Debug.Log("BOARD SE TERMINO DE CREAR");
             isBoardLoaded = true;
         }
 
@@ -114,10 +115,10 @@ namespace PositionerDemo
         {
             while (DatosFirebaseRTHelper.Instance.isInit == false)
             {
-                Debug.Log("WAITING FOR DATABASE TO LOAD");
+                if (logOn) Debug.Log("WAITING FOR DATABASE TO LOAD");
                 yield return null;
             }
-            Debug.Log("DB LOADED");
+            if (logOn) Debug.Log("DB LOADED");
         }
     }
 }

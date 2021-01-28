@@ -17,7 +17,7 @@ public class InGameCardCollectionManager
     private Action OnCardCollectionLoad;
     private bool gameCollectionLoaded = false;
     private bool userCollectionLoaded = false;
-
+    bool logOn = false;
     public InGameCardCollectionManager(MonoBehaviour owner, Action OnCardCollectionLoad)
     {
         this.gameMenuManager = owner;
@@ -72,7 +72,7 @@ public class InGameCardCollectionManager
         {
             yield return null;
         }
-        Debug.Log("ALL LOADED");
+        if (logOn) Debug.Log("ALL LOADED");
         OnCardCollectionLoad?.Invoke();
     }
 

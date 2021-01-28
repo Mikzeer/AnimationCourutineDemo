@@ -47,7 +47,7 @@ namespace CommandPatternActions
                 // SI ESTA EJECUTANDO ENTONCES ESPERAMOS
                 if (motionController.IsPerforming)
                 {
-                    Debug.Log("IS PERFORMING");
+                    if(logOn) Debug.Log("IS PERFORMING");
                     yield return null;
                 }
                 else

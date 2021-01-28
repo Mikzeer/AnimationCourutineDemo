@@ -32,6 +32,8 @@ public class InfoPanel : MonoBehaviour
         Vector2 paddingSize = new Vector2(8, 8);
         infoRect.sizeDelta = textSize + paddingSize;
         rectTransform.anchoredPosition = position;
+
+
     }
 
     public void SetActive(bool isActive)

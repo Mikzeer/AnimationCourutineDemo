@@ -13,7 +13,7 @@ namespace StateMachinePattern
 
         public override void OnExit()
         {
-            Debug.Log("EXIT ADMIN STATE");
+            if (logOn) Debug.Log("EXIT ADMIN STATE");
             // 1 - DESUSCRIBIRSE AL EVENTO DE SELECCION
             gmMachine.tileSelectionManagerUI.onTileSelected -= ExecuteAction;
             // DETENEMOS EL TIEMPO
@@ -30,7 +30,7 @@ namespace StateMachinePattern
 
         public override void OnUpdate()
         {
-            Debug.Log("IN STATE " + stateName);
+            if (logOn) Debug.Log("IN STATE " + stateName);
             if (HaveReachCondition())
             {
                 PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(nextState.stateName, 0.5f);

@@ -25,7 +25,7 @@ namespace StateMachinePattern
         {
             if (InvokerMotion.IsExecuting())
             {
-                Debug.Log("Waiting For The End Of Animation");
+                if (logOn) Debug.Log("Waiting For The End Of Animation");
                 return false;
             }
             return true;
