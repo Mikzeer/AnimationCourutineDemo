@@ -420,7 +420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   placeholderPrefab: {fileID: 8747359786404835664, guid: b0fccf4d4763c59438093e2c14e8d524,
     type: 3}
-  ID: 0
+  cardFrontRect: {fileID: 1099748316226475524}
 --- !u!1 &1486206258196919979
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,11 +11,16 @@ namespace PositionerDemo
         InGameCardCollectionManager inGameCardCollectionManager;
         bool debugOn = false;
         CardManagerUI cardManagerUI;
-
-        public CardController(InGameCardCollectionManager cardCollectionManager, CardManagerUI cardManagerUI)
+        CardTargetFiltterManager cardTargetFiltterManager;
+        CardEffectManager cardEffectManager;
+        public CardController(InGameCardCollectionManager cardCollectionManager, CardManagerUI cardManagerUI, GameMachine game)
         {
             this.inGameCardCollectionManager = cardCollectionManager;
             this.cardManagerUI = cardManagerUI;
+            cardTargetFiltterManager = new CardTargetFiltterManager(game.turnController, game.board2DManager);
+            cardEffectManager = new CardEffectManager();
+
+            CardPropertiesDatabase.GetCardSubClassByReflection();
         }
 
         public void LoadDeckFromConfigurationData(Player player, ConfigurationData cnfDat)
@@ -38,6 +43,34 @@ namespace PositionerDemo
             // ACA DEBERIAMOS CHEQUEAR QUE NUESTRO MAZO SEA VALIDO 
             Shuffle(cardsOnDeck);
             player.Deck = new Stack<Card>(cardsOnDeck);
+        }
+
+        public void LoadDeckTest(Player player)
+        {
+            List<Card> cardsOnDeck = new List<Card>();
+            CardData buffUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID1");
+            Card buffUnitCard = CardPropertiesDatabase.GetCardFromID(buffUnitCardData.ID);
+            buffUnitCard.InitializeCard(cardIndex, player, buffUnitCardData);
+            cardsOnDeck.Add(buffUnitCard);
+            cardIndex++;
+
+            CardData nerUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID8");
+            Card nerfUnitCard = CardPropertiesDatabase.GetCardFromID(nerUnitCardData.ID);
+            nerfUnitCard.InitializeCard(cardIndex, player, nerUnitCardData);
+            cardsOnDeck.Add(nerfUnitCard);
+            cardIndex++;
+
+            CardData healUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID4");
+            Card healUnitCard = CardPropertiesDatabase.GetCardFromID(healUnitCardData.ID);
+            healUnitCard.InitializeCard(cardIndex, player, healUnitCardData);
+            cardsOnDeck.Add(healUnitCard);
+            cardIndex++;
+
+
+            // ACA DEBERIAMOS CHEQUEAR QUE NUESTRO MAZO SEA VALIDO 
+            Shuffle(cardsOnDeck);
+            player.Deck = new Stack<Card>(cardsOnDeck);
+
         }
 
         private void Shuffle(List<Card> deck)
@@ -73,6 +106,12 @@ namespace PositionerDemo
                 return false;
             }
 
+            if (player.Deck.Count <= 0)
+            {
+                if (debugOn) Debug.Log("No Cards In Deck");
+                return false;
+            }
+
             return true;
         }
 
@@ -88,15 +127,29 @@ namespace PositionerDemo
         // ESTO VA A SER UN COMMAND
         private Card TakeCardFromDeck(Player player)
         {
+            if (player.Deck.Count <= 0)
+            {
+                return null;
+            }
             Card card = player.Deck.Pop();
             allCards.Add(card.IDInGame, card);
+            return card;
+        }
+
+        private Card PeekCardFromDeck(Player player)
+        {
+            if (player.Deck.Count <= 0)
+            {
+                return null;
+            }
+            Card card = player.Deck.Peek();
             return card;
         }
 
         public void OnTakeCard(Player player)
         {
             TakeCardAbility takceCardAbility = (TakeCardAbility)player.Abilities[ABILITYTYPE.TAKEACARD];
-            TakeCardAbilityEventInfo tkeCardInfo = new TakeCardAbilityEventInfo(player, TakeCardFromDeck(player), cardIndex);
+            TakeCardAbilityEventInfo tkeCardInfo = new TakeCardAbilityEventInfo(player, PeekCardFromDeck(player), cardIndex);
             takceCardAbility.SetRequireGameData(tkeCardInfo);
             StartPerform(takceCardAbility);
             if (takceCardAbility.CanIExecute() == false)
@@ -104,6 +157,7 @@ namespace PositionerDemo
                 if (debugOn) Debug.Log("SPAWN ABILITY NO SE PUEDE EJECUTAR");
                 return;
             }
+            tkeCardInfo.card = TakeCardFromDeck(player);
             AddCard(tkeCardInfo);
             Perform(takceCardAbility);
             EndPerform(takceCardAbility);
@@ -116,7 +170,7 @@ namespace PositionerDemo
             Invoker.AddNewCommand(addCardCmd);
             Invoker.ExecuteCommands();
 
-            GameObject cardGo = cardManagerUI.CreateNewCardPrefab(tkeCardInfo.card, tkeCardInfo.cardTaker.OwnerPlayerID, OnTryUseCard);
+            GameObject cardGo = cardManagerUI.CreateNewCardPrefab(tkeCardInfo.card, tkeCardInfo.cardTaker.OwnerPlayerID, this);
             Motion takeCardMotion = cardManagerUI.AddCard(cardGo, tkeCardInfo.cardTaker.PlayerID);
             InvokerMotion.AddNewMotion(takeCardMotion);
             InvokerMotion.StartExecution(cardManagerUI);
@@ -140,9 +194,9 @@ namespace PositionerDemo
             InvokerMotion.StartExecution(cardManagerUI);
         }
 
-        public void OnTryUseCard(CardInGameUINEW toUseCard)
+        public void OnTryUseCard(CardData toUseCard)
         {
-            Debug.Log("I TRY TO USE CARD " + toUseCard.gameObject.name);
+            Debug.Log("I TRY TO USE CARD " + toUseCard.CardName);
         }
     }
 }

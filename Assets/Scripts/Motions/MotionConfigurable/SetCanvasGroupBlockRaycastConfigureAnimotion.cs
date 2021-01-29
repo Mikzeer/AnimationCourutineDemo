@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 namespace PositionerDemo
 {
-    public class SetCanvasGroupBlockRaycastConfigureAnimotion<T, O> : ConfigureAnimotion<T, O> where T : MikzeerGame.CardUI where O : Transform
+    public class SetCanvasGroupBlockRaycastConfigureAnimotion<T, O> : ConfigureAnimotion<T, O> where T : CardInGameUINEW where O : Transform
     {
         private bool active;
 

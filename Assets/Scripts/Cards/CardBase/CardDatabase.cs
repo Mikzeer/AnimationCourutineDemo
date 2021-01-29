@@ -10,10 +10,13 @@ namespace PositionerDemo
     {
         private static bool isAbilityModifierListGenerate = false;
         private static bool isFiltterListGenerate = false;
+        private static bool isCardListGenerate = false;
         public static int maxAmountOfCardsPerDeck { get; private set; }
         public static Dictionary<CardRarity, int> maxAmountPerRarityDictionary = new Dictionary<CardRarity, int>();
         private static Dictionary<int, CardFiltter> cardsFiltterDictionary = new Dictionary<int, CardFiltter>();
         private static Dictionary<int, AbilityModifier> cardsAbilityModifierDictionary = new Dictionary<int, AbilityModifier>();
+        private static Dictionary<int, Card> cardDictionary = new Dictionary<int, Card>();
+
 
         public static void SetCardDataLimits(CardDataLimit pcDataLimit)
         {
@@ -180,5 +183,66 @@ namespace PositionerDemo
             isAbilityModifierListGenerate = true;
         }
 
+        public static void GetCardSubClassByReflection()
+        {
+            cardDictionary = new Dictionary<int, Card>();
+
+            // QUE TIPO ESTAMOS BUSCANDO
+            Type parentType = typeof(Card);
+            // OBTENEMOS EL ASSEMBLY ACTUAL
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            // OBTENEMOS TODOS LOS TYPES QUE TIENE EL ASSEMBLY ACTUAL (MES DE 700 SEGURO)
+            Type[] types = assembly.GetTypes();
+
+            //IEnumerable<Type> subclasses = types.Where(t => t.IsSubclassOf(parentType));
+            //foreach (Type type in subclasses)
+            //{
+            //    Debug.Log(type.Name);
+            //}
+
+            // VAMOS A BUSCAR EN TYPES QUE SON TODOS LOS TIPOS/CLASES/INTERFACES/ETC QUE EXISTEN EN ESTE ASSEMBLY
+            var instances = from typ in types
+                            // DONDE LA BASE SEA EL PARENT CARD
+                            where typ.BaseType == parentType 
+                            &&
+                            // Y QUE SEA UNA SUBCLASE DE PARENT CARD
+                            typ.IsSubclassOf(parentType) 
+                            &&
+                            // Y QUE SEA UNA CLASE... POR LAS DUDAS DE QUE NO ME TRAIGA UNA INTERFACE
+                            typ.IsClass 
+                            && 
+                            // Y QUE NO SEA DE TIPO ABSTRACTO
+                            !typ.IsAbstract 
+                            // CON ESTO ULTIMO HACEMSO QUE LO QUE ESTAMOS SELECCIONADO SEA UNA NUEVA INSTANCIA "new Card(int ID)"
+                            select Activator.CreateInstance(typ) as Card;
+
+            //object instance = Activator.CreateInstance(someTypeObject);
+            //((ISomeInterface)instance).Initialize(your, specific, parameters, here);
+
+            foreach (var instance in instances)
+            {
+                if (cardDictionary.ContainsKey(instance.ID) == false)
+                {
+                    cardDictionary.Add(instance.ID, instance);
+                }
+            }
+
+            isCardListGenerate = true;
+        }
+
+        public static Card GetCardFromID(int cardAID)
+        {
+            if (isCardListGenerate == false)
+            {
+                GetCardSubClassByReflection();
+            }
+            Card card = null;
+            if (cardDictionary.ContainsKey(cardAID))
+            {
+                card = cardDictionary[cardAID];
+            }
+
+            return card;
+        }
     }
 }

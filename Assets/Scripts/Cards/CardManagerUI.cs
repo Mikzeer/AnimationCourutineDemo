@@ -8,8 +8,8 @@ namespace PositionerDemo
     public class CardManagerUI : MonoBehaviour
     {
         [SerializeField] private GameObject cardUIPrefab = default;
-        [SerializeField] private RectTransform cardHolderP1 = default;
-        [SerializeField] private RectTransform cardHolderP2 = default;
+        [SerializeField] private RectTransform cardHolderPlayerLeft = default;
+        [SerializeField] private RectTransform cardHolderPlayerRight = default;
         [SerializeField] private RectTransform canvasRootTransform = default;
         [SerializeField] private InfoPanel infoPanel = default; // INFORMACION SOBRE HABILIDADES ESPECIALES DE LAS CARDS 
         [SerializeField] private RectTransform playerOneGraveyardLogo = default;
@@ -33,24 +33,24 @@ namespace PositionerDemo
             Vector3 finalCardPosition = Vector3.zero;
             if (PlayerID == 0)
             {
-                if (cardHolderP1.transform.childCount > 0)
+                if (cardHolderPlayerLeft.transform.childCount > 0)
                 {
-                    finalCardPosition = cardHolderP1.GetChild(cardHolderP1.childCount - 1).position;
+                    finalCardPosition = cardHolderPlayerLeft.GetChild(cardHolderPlayerLeft.childCount - 1).position;
                 }
                 else
                 {
-                    finalCardPosition = cardHolderP1.position;
+                    finalCardPosition = cardHolderPlayerLeft.position;
                 }
             }
             else
             {
-                if (cardHolderP2.transform.childCount > 0)
+                if (cardHolderPlayerRight.transform.childCount > 0)
                 {
-                    finalCardPosition = cardHolderP2.GetChild(cardHolderP2.childCount - 1).position;
+                    finalCardPosition = cardHolderPlayerRight.GetChild(cardHolderPlayerRight.childCount - 1).position;
                 }
                 else
                 {
-                    finalCardPosition = cardHolderP2.position;
+                    finalCardPosition = cardHolderPlayerRight.position;
                 }
             }
 
@@ -63,17 +63,20 @@ namespace PositionerDemo
             SetParentConfigureAnimotion<Transform, Transform> cardHandSetParentConfigAnimotion = null;
             if (PlayerID == 0)
             {
-                cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, cardHolderP1, 3);
+                cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, cardHolderPlayerLeft, 3);
             }
             else
             {
-                cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, cardHolderP2, 3);
+                cardHandSetParentConfigAnimotion = new SetParentConfigureAnimotion<Transform, Transform>(createdCardGameObject.transform, cardHolderPlayerRight, 3);
             }
             configurables.Add(cardHandSetParentConfigAnimotion);
 
-            //SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform> blockRayCastConfigAnimotion = 
-            //    new SetCanvasGroupBlockRaycastConfigureAnimotion<MikzeerGame.CardUI, Transform>(cardUI, GameCreator.Instance.playerOneGraveyard, 4);
-            //configurables.Add(blockRayCastConfigAnimotion);
+            CardInGameUINEW cardInGameUI = createdCardGameObject.GetComponent<CardInGameUINEW>();
+
+            // activamos el canvas group para que pueda recibir raycast otra vez
+            SetCanvasGroupBlockRaycastConfigureAnimotion<CardInGameUINEW, Transform> blockRayCastConfigAnimotion =
+                new SetCanvasGroupBlockRaycastConfigureAnimotion<CardInGameUINEW, Transform>(cardInGameUI, null, 4);
+            configurables.Add(blockRayCastConfigAnimotion);
 
             //Motion motionTimer = new TimeMotion(this, 2, 2f);
             //motionsWaitToGraveyard.Add(motionTimer);
@@ -132,7 +135,7 @@ namespace PositionerDemo
             return new SpawnCardTweenMotion(this, cardUI.transform, 1, cardWaitPosition.position, 2);
         }
 
-        public GameObject CreateNewCardPrefab(Card newCard, int PlayerID, Action<CardInGameUINEW> OnUseAction)
+        public GameObject CreateNewCardPrefab(Card newCard, int PlayerID, CardController cardController)
         {
             // instanciar el prefab de la card y ponerle como parent el canvas
             // ponerlo en el centro de la pantalla
@@ -141,37 +144,35 @@ namespace PositionerDemo
 
             createdCardGameObject.GetComponentInChildren<Text>().text = createdCardGameObject.name;
             MikzeerGame.CardDisplay cardDisplay = createdCardGameObject.GetComponent<MikzeerGame.CardDisplay>();
-
             createdCardGameObject.name = "CARD N " + newCard.IDInGame + "/" + newCard.CardData.CardName;
 
             if (cardDisplay != null)
             {
                 cardDisplay.Initialized(newCard);
             }
-
             CardInGameUINEW cardInGameUI = createdCardGameObject.GetComponent<CardInGameUINEW>();
             if (cardInGameUI != null)
             {
                 if (PlayerID == 0)
                 {
-                    cardInGameUI.SetPlayerHandTransform(cardHolderP1, OnUseAction, infoPanel.SetText, SetActiveInfoCard);
+                    cardInGameUI.SetCardData(newCard.CardData, cardController, this, cardHolderPlayerLeft);
                 }
                 else
                 {
-                    cardInGameUI.SetPlayerHandTransform(cardHolderP2, OnUseAction, infoPanel.SetText, SetActiveInfoCard);
+                    cardInGameUI.SetCardData(newCard.CardData, cardController, this, cardHolderPlayerRight);
                 }
-
-                cardInGameUI.SetRealCardDrop(newCard.OnDropCard, newCard.IDInGame);
             }
-
-
             return createdCardGameObject;
         }
 
-        public void SetActiveInfoCard(bool isActive)
+        public void OnCardDescriptionPanelRequired(CardData cardData, Vector2 position)
         {
-            infoPanel.SetActive(isActive);
-            //Debug.Log("SE DISPAROR EL IS ACTIVE DESDE LA CARD IS ACTIVE ==" + isActive);
+            infoPanel.SetText(cardData.Description, position);
+        }
+
+        public void OnCardDescriptionPanelClose()
+        {
+            infoPanel.SetActive(false);
         }
     }     
 }

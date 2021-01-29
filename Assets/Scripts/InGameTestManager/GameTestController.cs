@@ -68,10 +68,12 @@ namespace PositionerDemo
             // 4c- SI ES INVALIDO SACAMOS TODO A LA MIERDA, SI ES VALID CREAMOS LOS DECKS DE CADA PLAYER
 
             // CREATEDECKSTATE
-            cardManager = new CardController(inGameCardCollectionManager, cardManagerUI);
-            cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[0], playerManager.playerConfigurationData);
-            cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[1], playerManager.playerConfigurationData);
-
+            cardManager = new CardController(inGameCardCollectionManager, cardManagerUI, this);
+            // VOLVER A ACTIVAR QUE ESTA ES LA FORMA DE CARGAR EL DECK SEGUN LA INFO DE LOS PLAYERS
+            //cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[0], playerManager.playerConfigurationData);
+            //cardManager.LoadDeckFromConfigurationData(playerManager.GetPlayer()[1], playerManager.playerConfigurationData);
+            cardManager.LoadDeckTest(playerManager.GetPlayer()[0]);
+            cardManager.LoadDeckTest(playerManager.GetPlayer()[1]);
             // WAIT FOR BOARD TO LOAD STATE
             while (isBoardLoaded == false)
             {

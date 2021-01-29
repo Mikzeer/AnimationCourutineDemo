@@ -37,5 +37,6 @@ public class CardData
         CardImage = Helper.GetSpriteFromByteArray(pCard.frontImageBytes.ToArray());
         cardTargetTypes = PositionerDemo.CardPropertiesDatabase.GetListCardTargetTypeFromListInt(pCard.CardTargetType);
         cardTargetFiltters = PositionerDemo.CardPropertiesDatabase.GetListCardFiltterFromListInt(pCard.CardTargetFiltters);
+        cardEffects = new List<PositionerDemo.CardEffect>();
     }
 }

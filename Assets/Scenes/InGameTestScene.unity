@@ -1480,8 +1480,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardUIPrefab: {fileID: 1486206258194675363, guid: ec5090a7e8c980b46b17023ef03bac30,
     type: 3}
-  cardHolderP1: {fileID: 680439374}
-  cardHolderP2: {fileID: 427925875}
+  cardHolderPlayerLeft: {fileID: 680439374}
+  cardHolderPlayerRight: {fileID: 427925875}
   canvasRootTransform: {fileID: 348828533}
   infoPanel: {fileID: 2045792859}
   playerOneGraveyardLogo: {fileID: 2006483367}

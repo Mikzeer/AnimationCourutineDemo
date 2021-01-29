@@ -11,20 +11,17 @@ public class InfoPanel : MonoBehaviour
 
     void Awake()
     {
-
-        rectTransform = GetComponent<RectTransform>();
-        //if (infoTextMesh == null)
-        //{
-        //    infoTextMesh = GetComponentInChildren<TextMeshPro>();
-        //}
-        //if (infoRect == null)
-        //{
-        //    infoRect = GetComponentInChildren<RectTransform>();
-        //}        
+        rectTransform = GetComponent<RectTransform>();     
     }
 
     public void SetText(string infoText, Vector2 position)
     {
+        SetActive(true);
+        if (rectTransform == null)
+        {
+            return;
+        }
+
         infoTextMesh.SetText(infoText);
         infoTextMesh.ForceMeshUpdate();
 
@@ -32,13 +29,10 @@ public class InfoPanel : MonoBehaviour
         Vector2 paddingSize = new Vector2(8, 8);
         infoRect.sizeDelta = textSize + paddingSize;
         rectTransform.anchoredPosition = position;
-
-
     }
 
     public void SetActive(bool isActive)
     {
         gameObject.SetActive(isActive);
     }
-
 }

@@ -8,32 +8,29 @@ namespace PositionerDemo
 {
     public class CardInGameUINEW : SimpleDragDropUI
     {
-        [SerializeField] private GameObject placeholderPrefab;
+        [SerializeField] private GameObject placeholderPrefab = default;
         private GameObject holderAux;
+        [SerializeField] private RectTransform cardFrontRect = default;
         bool isPointerOverCard = false;
         float timeToReach = 1.2f;
         float actualTimeOver = 0f;
-        private Action<CardInGameUINEW> onCardUse;
-        private Action<string, Vector2> onCardInfo;
-        private Action<bool> onCardEnter;
-        private Action<int> onCardDrop;
-        public int ID;
 
+        private Vector3 cardFrontStartPosition;
         private Vector3 initialScale;
         private float scaleFactor = 1.1f;
+        CardData cardData;
 
-        public void SetRealCardDrop(Action<int> onCardDrop, int ID)
-        {
-            this.onCardDrop = onCardDrop;
-            this.ID = ID;
-        }
+        private Action<CardData> onTryUseCard; // ON TRY USE CARD DESDE EL CARD CONTROLLER
+        private Action<CardData, Vector2> onCardInfoShow; // ESTO LO HACEMOS PARA SETEAR LA INFORMACION Y EL LUGAR DONDE DEBERIA MOSTRARSE DE LA CARD
+        private Action onCardInfoPanelClose; // ESTO LO HACEMOS PARA PRENDER O APAGAR EL INFO PANEL NADA MAS.....
 
-        public void SetPlayerHandTransform(RectTransform playerHandTransform, Action<CardInGameUINEW> OnCardUse, Action<string, Vector2> onCardInfo, Action<bool> onCardEnter)
+        public void SetCardData(CardData cardData, CardController cardController, CardManagerUI cardManagerUI, RectTransform playerHandTransform)
         {
-            this.parentRectTransform = playerHandTransform;
-            onCardUse = OnCardUse;
-            this.onCardInfo = onCardInfo;
-            this.onCardEnter = onCardEnter;
+            this.cardData = cardData;
+            onTryUseCard += cardController.OnTryUseCard;
+            onCardInfoPanelClose += cardManagerUI.OnCardDescriptionPanelClose;
+            onCardInfoShow = cardManagerUI.OnCardDescriptionPanelRequired;
+            parentRectTransform = playerHandTransform;
         }
 
         protected override void InitializeSimpleUI()
@@ -41,6 +38,7 @@ namespace PositionerDemo
             base.InitializeSimpleUI();
             initialScale = uiRectTansform.localScale;
             canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.blocksRaycasts = false;
         }
 
         public void CanvasGroupRaycast(bool block)
@@ -50,84 +48,46 @@ namespace PositionerDemo
 
         protected override void OnSuccesfulPointerEnter()
         {
-
-
             isPointerOverCard = true;
             StartCoroutine(mouseOverToShowInfoPanel(uiRectTansform.position));
-
             // NEW
             startAnchoredPosition = uiRectTansform.anchoredPosition;
             startSiblingIndex = uiRectTansform.GetSiblingIndex();
             //
-
-            //parentRectTransform.GetChild(parentRectTransform.childCount - 1).SetSiblingIndex(startSiblingIndex);
-            ////uiRectTansform.SetParent(parentRectTransform.parent.parent.transform);
-            //uiRectTansform.SetParent(canvas.transform);
-
-            //Vector2 localPoint;
-            //RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, uiRectTansform.anchoredPosition, Camera.main, out localPoint);
-            //Debug.Log("localPoint " + localPoint);
-
+            cardFrontStartPosition = cardFrontRect.anchoredPosition;
+            Vector3 newcardFrontStartPosition = cardFrontStartPosition + new Vector3(0, 60, 0);
+            cardFrontRect.DOAnchorPos(newcardFrontStartPosition, 0.5f);
             uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
-            //uiRectTansform.DOAnchorPos(startAnchoredPosition * new Vector2(0, 3), 0.5f);
-            //Vector2 offset = new Vector2(80, 0);
-            //uiRectTansform.anchoredPosition += offset;
-
-
-            //float cardHalfSizeY = uiRectTansform.rect.size.y / 2;
-            //float panelSizeY = parentRectTransform.rect.size.y;
-            //float canvasResoY = canvasScaler.referenceResolution.y;
-            //float newPosY = canvasResoY - panelSizeY - (cardHalfSizeY);
-
-            //Vector2 mousePosition = Input.mousePosition / canvas.scaleFactor;
-            //Vector3 locPoint = new Vector3(mousePosition.x, cardHalfSizeY, uiRectTansform.localPosition.z);
-            //Vector3 clampedPostion = Helper.KeepRectInsideScreen(uiRectTansform, locPoint, canvasScaler);
-            //uiRectTansform.anchoredPosition = clampedPostion;
         }
 
         IEnumerator mouseOverToShowInfoPanel(Vector3 cardPosition)
         {
-            Debug.Log("inicio coroutine");
             actualTimeOver = 0;
-
             while (actualTimeOver < timeToReach)
             {
-                if (isPointerOverCard == false)
-                {
-                    Debug.Log("pointer not over a card");
-                    yield break;
-                }
+                if (isPointerOverCard == false) yield break;
                 actualTimeOver += Time.deltaTime;
                 yield return null;
             }
-
-            if (isSomethingDraggin)
-            {
-                Debug.Log("something draging");
-                yield break;
-            }
-
-            Debug.Log("llego a la coroutine del show panel info");
-
+            if (isSomethingDraggin) yield break;
             actualTimeOver = 0;
             // aca tenemos que hacer el InfoPanel haga el SetText(hola soy la cartita)
-            onCardEnter?.Invoke(true);
             Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(uiRectTansform.position);
             cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, 0);
-            onCardInfo?.Invoke("CARD NAME: " + name, cardRectInScreenPosition / canvas.scaleFactor);
+            onCardInfoShow?.Invoke(cardData, cardRectInScreenPosition / canvas.scaleFactor);
         }
 
         public override void OnPointerDown(PointerEventData eventData)
         {
-            uiRectTansform.DOScale(initialScale, 0.5f); // SetEase(ease)
+            uiRectTansform.DOScale(initialScale, 0.1f); // SetEase(ease)
+            cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.1f);
         }
 
         protected override void OnSuccesfulBeginDrag(PointerEventData eventData)
         {
-            onCardEnter?.Invoke(false);
+            onCardInfoPanelClose?.Invoke();
             isPointerOverCard = false;
             canvasGroup.blocksRaycasts = false;
-
             // INSTANCIAMOS EL PLACE HOLDER
             holderAux = Instantiate(placeholderPrefab);
             // LE SETEAMOS EL PARENT 
@@ -139,7 +99,6 @@ namespace PositionerDemo
         public override void OnDrag(PointerEventData eventData)
         {
             base.OnDrag(eventData);
-
             if (holderAux != null)
             {
                 int newSiblignIndex = parentRectTransform.childCount;
@@ -152,7 +111,6 @@ namespace PositionerDemo
                     {
                         // el nuevo sibling index pasa a ser el de la primera card encontrada dentro de la hand
                         newSiblignIndex = i;
-
                         if (holderAux.transform.GetSiblingIndex() < newSiblignIndex)
                         {
                             newSiblignIndex--;
@@ -160,10 +118,8 @@ namespace PositionerDemo
                         break;
                     }
                 }
-
                 holderAux.transform.SetSiblingIndex(newSiblignIndex);
             }
-
         }
 
         protected override bool IsSuccesfulDropArea(RaycastResult result)
@@ -180,10 +136,9 @@ namespace PositionerDemo
             if (result.gameObject.CompareTag("DropeableArea"))
             {
                 Debug.Log("Hit " + result.gameObject.name);
-                if (onCardUse != null)
+                if (onTryUseCard != null)
                 {
-                    onCardUse?.Invoke(this);
-                    onCardDrop?.Invoke(ID);
+                    onTryUseCard?.Invoke(cardData);
                     parentRectTransform.GetChild(startSiblingIndex).SetAsLastSibling();
                 }
                 else
@@ -196,11 +151,9 @@ namespace PositionerDemo
 
         protected override void OnFaliedDrop()
         {
-
             Debug.Log("NO CHOCO CONTRA NINGUNA UI");
             uiRectTansform.SetParent(parentRectTransform);
             canvasGroup.blocksRaycasts = true;
-
             if (holderAux != null)
             {
                 uiRectTansform.SetSiblingIndex(holderAux.transform.GetSiblingIndex());
@@ -209,19 +162,16 @@ namespace PositionerDemo
             else
             {
                 uiRectTansform.SetSiblingIndex(startSiblingIndex);
-            }
-            
+            }           
         }
 
         protected override void OnSuccesfulPointerExit()
         {
             isPointerOverCard = false;
-            onCardEnter?.Invoke(false);
-
+            onCardInfoPanelClose?.Invoke();
             Debug.Log("POINTER EXIT");
+            cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.5f);
             uiRectTansform.DOScale(initialScale, 0.5f); // SetEase(ease)
-            //uiRectTansform.DOAnchorPos(startAnchoredPosition, 0.5f);
         }
-
     }
 }
