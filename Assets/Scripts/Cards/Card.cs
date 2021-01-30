@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PositionerDemo
 {
-    public class Card
+    public class Card : ICloneable
     {
         public int IDInGame { get; protected set; } // LA ID DE LA CARTA CREADA EN EL JUEGO
         public Player ownerPlayer { get; protected set; }
@@ -13,16 +14,14 @@ namespace PositionerDemo
         // LA ID QUE VAMOS A USAR PARA REFERENCIARLAS VIA REFLECTION....
         public int ID { get; protected set; }
 
-        public Card(int IDInGame, Player ownerPlayer, CardData CardData)
-        {
-            this.IDInGame = IDInGame;
-            this.ownerPlayer = ownerPlayer;
-            this.CardData = CardData;
-        }
-
         public Card(int ID)
         {
             this.ID = ID;
+        }
+
+        public Card(Card card)
+        {
+            ID = card.ID;
         }
 
         public virtual void InitializeCard(int IDInGame, Player ownerPlayer, CardData CardData)
@@ -31,7 +30,11 @@ namespace PositionerDemo
             this.ownerPlayer = ownerPlayer;
             this.CardData = CardData;
         }
-        
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     public class BuffUnitAttackLevelOne : Card
@@ -39,27 +42,6 @@ namespace PositionerDemo
         private const int AID = 1;
         public BuffUnitAttackLevelOne() : base(AID)
         {
-
-        }
-
-        public BuffUnitAttackLevelOne(int ID, Player ownerPlayer, CardData CardData) : base(ID, ownerPlayer, CardData)
-        {
-            // TARGET UNIT
-            // FILTTERS QUE SEA DE TIPO UNIT Y QUE TENGA UN STAT DETERMINADO
-            CardFiltter targetOccupierType = new TargetUnitOccupierTypeFiltter();
-            CardFiltter statIDFiltter = new TargetAttackPowerIDFiltter();
-
-            CardData.cardTargetFiltters.Add(targetOccupierType);
-            CardData.cardTargetFiltters.Add(statIDFiltter);
-
-            // EFFECTS BUFF ATTACK ACTUALSTAT/MAXSTAT + 1
-            int statID = 2;
-            int amount = 1;
-            CardEffect statModificationEffect = new BuffStatModificationEffect(statID, amount);
-
-            CardData.cardEffects = new List<CardEffect>();
-
-            CardData.cardEffects.Add(statModificationEffect);
         }
 
         public override void InitializeCard(int IDInGame, Player ownerPlayer, CardData CardData)
@@ -89,33 +71,6 @@ namespace PositionerDemo
         private const int AID = 8;
         public NerfUnitAttackLevelOne() : base(AID)
         {
-
-        }
-
-        public NerfUnitAttackLevelOne(int ID, Player ownerPlayer, CardData CardData) : base(ID, ownerPlayer, CardData)
-        {
-            // TARGET UNIT
-            // FILTTERS QUE SEA DE TIPO UNIT Y QUE TENGA UN STAT DETERMINADO
-            CardFiltter targetOccupierType = new TargetUnitOccupierTypeFiltter();
-            CardFiltter statIDFiltter = new TargetAttackPowerIDFiltter();
-
-            // VERIFICAMOS QUE EL ATAQUE ACTUAL NO SEA MENOR A 0
-            int amountLessThan = 0;
-            STATAMOUNTTYPE amountType = STATAMOUNTTYPE.ACTUAL;
-            COMPARATIONTYPE comparationType = COMPARATIONTYPE.GREATER;
-            CardFiltter targetAttackPowStatAgainstSimple = new TargetAttackPowerStatAmountAgainstSimplFiltter(amountType, amountLessThan, comparationType);
-
-            CardData.cardTargetFiltters.Add(targetOccupierType);
-            CardData.cardTargetFiltters.Add(statIDFiltter);
-            CardData.cardTargetFiltters.Add(targetAttackPowStatAgainstSimple);
-
-
-            // EFFECTS BUFF ATTACK ACTUALSTAT/MAXSTAT - 1
-            int statID = 2;
-            int amount = 1;
-            CardEffect statModificationEffect = new NerfStatModificationEffect(statID, amount);
-
-            CardData.cardEffects.Add(statModificationEffect);
         }
 
         public override void InitializeCard(int IDInGame, Player ownerPlayer, CardData CardData)
@@ -154,35 +109,6 @@ namespace PositionerDemo
         private const int AID = 4;
         public HealUnitLevelOne() : base(AID)
         {
-
-        }
-
-        public HealUnitLevelOne(int ID, Player ownerPlayer, CardData CardData) : base(ID, ownerPlayer, CardData)
-        {
-            // TARGET UNIT
-            // FILTTERS QUE SEA DE TIPO UNIT Y QUE TENGA UN STAT DETERMINADO
-            CardFiltter targetOccupierType = new TargetUnitOccupierTypeFiltter();
-            CardFiltter statIDFiltter = new TargetHealthStatIDFiltter();
-
-            // VERIFICAMOS QUE LA VIDA ACTUAL NO SEA MAYOR A LA VIDA MAXIMA PARA PODER CURARLO
-            int statID = 0;
-            STATAMOUNTTYPE amountType = STATAMOUNTTYPE.ACTUAL;
-            STATAMOUNTTYPE amountTypeToCheck = STATAMOUNTTYPE.MAX;
-            StatIResultData statDataToCheckAgainst = new StatIResultData(statID, amountTypeToCheck);
-            COMPARATIONTYPE comparationType = COMPARATIONTYPE.LESS;
-            CardFiltter targetHealtStatAmountFiltter = new TargetHealtStatAmountFiltter(amountType, statDataToCheckAgainst, comparationType);
-
-            CardData.cardTargetFiltters.Add(targetOccupierType);
-            CardData.cardTargetFiltters.Add(statIDFiltter);
-            CardData.cardTargetFiltters.Add(targetHealtStatAmountFiltter);
-
-
-            // EFFECT HP + 1
-            int hpStatID = 0;
-            int amount = 1;
-            CardEffect statModificationEffect = new BuffStatModificationEffect(hpStatID, amount);
-
-            CardData.cardEffects.Add(statModificationEffect);
         }
 
         public override void InitializeCard(int IDInGame, Player ownerPlayer, CardData CardData)

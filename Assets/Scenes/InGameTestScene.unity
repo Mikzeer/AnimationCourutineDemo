@@ -1913,7 +1913,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 5
   m_TargetDisplay: 0
@@ -2790,6 +2790,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: InfoPanelContainer
       objectReference: {fileID: 0}
+    - target: {fileID: 2128191862038220432, guid: f9012a4b57c4aa044aee8faf4f535fcb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2848,12 +2853,12 @@ PrefabInstance:
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 250
+      value: 580
       objectReference: {fileID: 0}
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -119
+      value: 233
       objectReference: {fileID: 0}
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
@@ -2873,7 +2878,7 @@ PrefabInstance:
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
@@ -2883,7 +2888,7 @@ PrefabInstance:
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2128191862038220433, guid: f9012a4b57c4aa044aee8faf4f535fcb,
         type: 3}

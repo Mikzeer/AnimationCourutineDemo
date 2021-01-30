@@ -34,7 +34,13 @@ namespace PositionerDemo
                 for (int x = 0; x < dfColl[i].Amount; x++)
                 {
                     CardData cardData = inGameCardCollectionManager.GetCardDataByCardID(dfColl[i].ID);
-                    Card card = new Card(cardIndex, player, cardData);
+                    Card card = CardPropertiesDatabase.GetCardFromID(cardData.ID);
+                    if (card == null)
+                    {
+                        continue;
+                    }
+                    card.InitializeCard(cardIndex, player, cardData);
+                    //Card card = new Card(cardIndex, player, cardData);
                     cardIndex++;
                     cardsOnDeck.Add(card);
                 }
@@ -149,7 +155,7 @@ namespace PositionerDemo
         public void OnTakeCard(Player player)
         {
             TakeCardAbility takceCardAbility = (TakeCardAbility)player.Abilities[ABILITYTYPE.TAKEACARD];
-            TakeCardAbilityEventInfo tkeCardInfo = new TakeCardAbilityEventInfo(player, PeekCardFromDeck(player), cardIndex);
+            TakeCardAbilityEventInfo tkeCardInfo = new TakeCardAbilityEventInfo(player, PeekCardFromDeck(player), PeekCardFromDeck(player).IDInGame);
             takceCardAbility.SetRequireGameData(tkeCardInfo);
             StartPerform(takceCardAbility);
             if (takceCardAbility.CanIExecute() == false)
@@ -161,7 +167,7 @@ namespace PositionerDemo
             AddCard(tkeCardInfo);
             Perform(takceCardAbility);
             EndPerform(takceCardAbility);
-            cardIndex++;
+            //cardIndex++;
         }
 
         private void AddCard(TakeCardAbilityEventInfo tkeCardInfo)

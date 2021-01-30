@@ -20,6 +20,9 @@ namespace PositionerDemo
         private float scaleFactor = 1.1f;
         CardData cardData;
 
+        float cardHalfSizeX;
+        float cardHalfSizeY;
+
         private Action<CardData> onTryUseCard; // ON TRY USE CARD DESDE EL CARD CONTROLLER
         private Action<CardData, Vector2> onCardInfoShow; // ESTO LO HACEMOS PARA SETEAR LA INFORMACION Y EL LUGAR DONDE DEBERIA MOSTRARSE DE LA CARD
         private Action onCardInfoPanelClose; // ESTO LO HACEMOS PARA PRENDER O APAGAR EL INFO PANEL NADA MAS.....
@@ -31,12 +34,16 @@ namespace PositionerDemo
             onCardInfoPanelClose += cardManagerUI.OnCardDescriptionPanelClose;
             onCardInfoShow = cardManagerUI.OnCardDescriptionPanelRequired;
             parentRectTransform = playerHandTransform;
+
+
         }
 
         protected override void InitializeSimpleUI()
         {
             base.InitializeSimpleUI();
             initialScale = uiRectTansform.localScale;
+            cardHalfSizeX = uiRectTansform.rect.size.x / 2;
+            cardHalfSizeY = uiRectTansform.rect.size.y / 2;
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.blocksRaycasts = false;
         }
@@ -55,7 +62,7 @@ namespace PositionerDemo
             startSiblingIndex = uiRectTansform.GetSiblingIndex();
             //
             cardFrontStartPosition = cardFrontRect.anchoredPosition;
-            Vector3 newcardFrontStartPosition = cardFrontStartPosition + new Vector3(0, 60, 0);
+            Vector3 newcardFrontStartPosition = cardFrontStartPosition + new Vector3(0, 50, 0);
             cardFrontRect.DOAnchorPos(newcardFrontStartPosition, 0.5f);
             uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
         }
@@ -72,9 +79,24 @@ namespace PositionerDemo
             if (isSomethingDraggin) yield break;
             actualTimeOver = 0;
             // aca tenemos que hacer el InfoPanel haga el SetText(hola soy la cartita)
-            Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(uiRectTansform.position);
-            cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, 0);
-            onCardInfoShow?.Invoke(cardData, cardRectInScreenPosition / canvas.scaleFactor);
+            ////Vector2 cardRectInScreenPosition = Camera.main.WorldToScreenPoint(uiRectTansform.position);
+            //Vector2 cardRectInScreenPosition = transform.position;
+            ////cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, 0);
+            //cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor);
+            //onCardInfoShow?.Invoke(cardData, cardRectInScreenPosition / canvas.scaleFactor);
+            int screenWidth = Screen.width;
+            int screenHeight = Screen.height;
+            float halfScreenWidth = screenWidth / 2 / canvas.scaleFactor;
+            float halfScreenHeight = screenHeight / 2 / canvas.scaleFactor;
+            float finalPositionX = halfScreenWidth - (-1 * parentRectTransform.localPosition.x) - (-1 * uiRectTansform.localPosition.x);
+            float finalPositionY = halfScreenHeight - (-1 * parentRectTransform.localPosition.y) - (-1 * uiRectTansform.localPosition.y);
+            Vector2 finalPositionInfoPanel = new Vector2(finalPositionX + cardHalfSizeX, finalPositionY + cardHalfSizeY);
+            onCardInfoShow?.Invoke(cardData, finalPositionInfoPanel);
+            //Debug.Log("finalPositionX " + finalPositionX);
+            //Debug.Log("finalPositionY " + finalPositionY);
+            //Debug.Log("cardHalfSizeX " + cardHalfSizeX);
+            //Debug.Log("cardHalfSizeY " + cardHalfSizeY);
+            //Debug.Log("finalPositionInfoPanel " + finalPositionInfoPanel);
         }
 
         public override void OnPointerDown(PointerEventData eventData)

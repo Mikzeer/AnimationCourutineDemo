@@ -239,7 +239,7 @@ namespace PositionerDemo
             Card card = null;
             if (cardDictionary.ContainsKey(cardAID))
             {
-                card = cardDictionary[cardAID];
+                card = (Card)cardDictionary[cardAID].Clone();
             }
 
             return card;
