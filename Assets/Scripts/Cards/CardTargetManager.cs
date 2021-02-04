@@ -29,10 +29,13 @@ namespace PositionerDemo
                 // RECORREMOS LA LISTA DE TILES
                 for (int z = 0; z < boardTiles.Count; z++)
                 {
+                    // SI LA TILE ESTA OCUPADA
                     if (boardTiles[z].IsOccupied())
                     {
+                        // SI EL TARGET TYPE DEL OCUPANTE ES IGUAL A LOS DE LA CARD
                         if (boardTiles[z].GetOcuppy().CardTargetType == card.CardData.cardTargetTypes[i])
                         {
+                            // SI NO ESTA EN LA LISTA LO AGREGAMOS
                             if (foundTargets.Contains(boardTiles[z].GetOcuppy()) == false)
                             {
                                 foundTargets.Add(boardTiles[z].GetOcuppy());
@@ -41,8 +44,10 @@ namespace PositionerDemo
                     }
                     else
                     {
+                        // SI LA TILE NO ESTA OCUPADA Y EL TIPO DE LA TILE ESTA DENTRO DE LOS TARGETS
                         if (boardTiles[z].CardTargetType == card.CardData.cardTargetTypes[i])
                         {
+                            // SI NO ESTA EN LA LISTA LO AGREGAMOS
                             if (foundTargets.Contains(boardTiles[z]) == false)
                             {
                                 foundTargets.Add(boardTiles[z]);

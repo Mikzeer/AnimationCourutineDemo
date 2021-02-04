@@ -44,7 +44,7 @@ namespace PositionerDemo
                 {
                     if (motions[i].reproductionOrder == actualMotionIndex)
                     {
-                        motions[i].CheckMotionBeforeStart();
+                        motions[i].OnTryReproduceAnimotion();
                         started = true;
                     }
                 }
@@ -67,7 +67,7 @@ namespace PositionerDemo
             {
                 //Debug.Log("PERFORMING");
 
-                if (cancel)
+                if (isCancel)
                 {
                     hasAllEnded = true;
                     yield break;
@@ -79,11 +79,11 @@ namespace PositionerDemo
                     hasThisOrderEnded = true;
                     for (int i = motions.Count - 1; i >= 0; i--)
                     {
-                        if (motions[i].reproductionOrder == currentPerformingIndex && !motions[i].performing)
+                        if (motions[i].reproductionOrder == currentPerformingIndex && !motions[i].isPerforming)
                         {
                             motions.RemoveAt(i);
                         }
-                        else if (motions[i].reproductionOrder == currentPerformingIndex && motions[i].performing)
+                        else if (motions[i].reproductionOrder == currentPerformingIndex && motions[i].isPerforming)
                         {
                             hasThisOrderEnded = false;
                         }
@@ -105,7 +105,7 @@ namespace PositionerDemo
                     yield return null;
                 }
 
-                if (cancel)
+                if (isCancel)
                 {
                     hasAllEnded = true;
                     yield break;
@@ -131,7 +131,7 @@ namespace PositionerDemo
                     {
                         if (motions[i].reproductionOrder == actualMotionIndex)
                         {
-                            motions[i].CheckMotionBeforeStart();
+                            motions[i].OnTryReproduceAnimotion();
                             started = true;
                         }
                     }

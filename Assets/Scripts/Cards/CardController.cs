@@ -13,15 +13,18 @@ namespace PositionerDemo
         CardManagerUI cardManagerUI;
         CardTargetFiltterManager cardTargetFiltterManager;
         CardEffectManager cardEffectManager;
+        GameMachine game;
         public CardController(InGameCardCollectionManager cardCollectionManager, CardManagerUI cardManagerUI, GameMachine game)
         {
             this.inGameCardCollectionManager = cardCollectionManager;
             this.cardManagerUI = cardManagerUI;
             cardTargetFiltterManager = new CardTargetFiltterManager(game.turnController, game.board2DManager);
             cardEffectManager = new CardEffectManager();
-
+            this.game = game;
             CardPropertiesDatabase.GetCardSubClassByReflection();
         }
+
+        #region LOAD AND CREATION
 
         public void LoadDeckFromConfigurationData(Player player, ConfigurationData cnfDat)
         {
@@ -40,6 +43,7 @@ namespace PositionerDemo
                         continue;
                     }
                     card.InitializeCard(cardIndex, player, cardData);
+                    card.SetCardState(CARDSTATES.DECK);
                     //Card card = new Card(cardIndex, player, cardData);
                     cardIndex++;
                     cardsOnDeck.Add(card);
@@ -57,18 +61,21 @@ namespace PositionerDemo
             CardData buffUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID1");
             Card buffUnitCard = CardPropertiesDatabase.GetCardFromID(buffUnitCardData.ID);
             buffUnitCard.InitializeCard(cardIndex, player, buffUnitCardData);
+            buffUnitCard.SetCardState(CARDSTATES.DECK);
             cardsOnDeck.Add(buffUnitCard);
             cardIndex++;
 
             CardData nerUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID8");
             Card nerfUnitCard = CardPropertiesDatabase.GetCardFromID(nerUnitCardData.ID);
             nerfUnitCard.InitializeCard(cardIndex, player, nerUnitCardData);
+            nerfUnitCard.SetCardState(CARDSTATES.DECK);
             cardsOnDeck.Add(nerfUnitCard);
             cardIndex++;
 
             CardData healUnitCardData = inGameCardCollectionManager.GetCardDataByCardID("CardID4");
             Card healUnitCard = CardPropertiesDatabase.GetCardFromID(healUnitCardData.ID);
             healUnitCard.InitializeCard(cardIndex, player, healUnitCardData);
+            healUnitCard.SetCardState(CARDSTATES.DECK);
             cardsOnDeck.Add(healUnitCard);
             cardIndex++;
 
@@ -90,6 +97,10 @@ namespace PositionerDemo
                 deck[k] = temp;
             }
         }
+
+        #endregion
+
+        #region TAKE A CARD
 
         public bool CanITakeACard(Player player)
         {
@@ -164,13 +175,13 @@ namespace PositionerDemo
                 return;
             }
             tkeCardInfo.card = TakeCardFromDeck(player);
-            AddCard(tkeCardInfo);
+            TakeCardFromDeck(tkeCardInfo);
             Perform(takceCardAbility);
             EndPerform(takceCardAbility);
             //cardIndex++;
         }
 
-        private void AddCard(TakeCardAbilityEventInfo tkeCardInfo)
+        private void TakeCardFromDeck(TakeCardAbilityEventInfo tkeCardInfo)
         {
             IAddCardCommand addCardCmd = new IAddCardCommand(tkeCardInfo.cardTaker, tkeCardInfo.card);
             Invoker.AddNewCommand(addCardCmd);
@@ -181,6 +192,10 @@ namespace PositionerDemo
             InvokerMotion.AddNewMotion(takeCardMotion);
             InvokerMotion.StartExecution(cardManagerUI);
         }
+
+        #endregion
+
+        #region GRAVAYARD
 
         public void SendCardToGraveyard(TakeCardAbilityEventInfo tkeCardInfo, RectTransform cardRect)
         {
@@ -193,6 +208,10 @@ namespace PositionerDemo
             InvokerMotion.StartExecution(cardManagerUI);
         }
 
+        #endregion
+
+        #region TARGET SELECTION
+
         public void OnCardWaitForTargetSelection(Transform cardTransform)
         {
             Motion twaitMotion = cardManagerUI.OnCardWaitingTarget(cardTransform);
@@ -200,9 +219,57 @@ namespace PositionerDemo
             InvokerMotion.StartExecution(cardManagerUI);
         }
 
+        public bool CanIEnterCardSelectionState(Player player, Card card)
+        {
+            // 6- SI ESTOY ONLINE TENGO QUE PREGUNTARLE AL SERVER SI ES UN MOVIMIENTO VALIDO
+            //    SINO CHEQUEO TODO NORMALMENTE
+            // QUIEN QUIERE SPAWNEAR, Y EN DONDE QUIERE SPAWNEAR
+            // SI EL PLAYER ES VALIDO Y ES SU TURNO
+            // Y SI EL LUGAR PARA SPAWNEAR ES UN LUGAR VALIDO
+            // ENTONCES EL SERVER TE DICE SI, PODES SPAWNEAR MANDA EL CMD SPAWN A LOS DOS JUGADORES
+
+            // SI EL PLAYER ESTA EN SU TURNO
+            if (player != game.turnController.CurrentPlayerTurn)
+            {
+                if (debugOn) Debug.Log("NO ES EL TURNO DEL PLAYER");
+                return false;
+            }
+
+            List<ICardTarget> cardTargets = new List<ICardTarget>();
+
+            cardTargets = cardTargetFiltterManager.OnTryGetFiltterTargets(card);
+
+            if (cardTargets == null)
+            {
+                if (debugOn) Debug.Log("No Target Founds");
+                return false;
+            }
+
+
+            //if (player.Abilities.ContainsKey(ABILITYTYPE.SPAWN) == false)
+            //{
+            //    if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
+            //    return false;
+            //}
+            //SpawnAbility spw = (SpawnAbility)player.Abilities[ABILITYTYPE.SPAWN];
+            //if (spw == null)
+            //{
+            //    if (debugOn) Debug.Log("ERROR HABILIDAD SPAWN NO ENCONTRADA EN PLAYER");
+            //    return false;
+            //}
+
+            return true;
+        }
+
+        #endregion
+
+        #region CARD USE
+
         public void OnTryUseCard(CardData toUseCard)
         {
             Debug.Log("I TRY TO USE CARD " + toUseCard.CardName);
         }
+
+        #endregion
     }
 }

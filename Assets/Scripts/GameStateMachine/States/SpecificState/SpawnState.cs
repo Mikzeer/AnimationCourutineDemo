@@ -32,6 +32,7 @@ namespace StateMachinePattern
             {
                 if (item.Key == selection)
                 {
+                    // ESTO EN UN FUTURO SOLO DEBERIA SER EL ON TRY SPAWN ENVIANDOLO AL SERVER
                     if (game.spawnManager.CanISpawn(selection, game.turnController.CurrentPlayerTurn))
                     {
                         game.spawnManager.OnSpawn(selection, game.turnController.CurrentPlayerTurn);
@@ -39,6 +40,8 @@ namespace StateMachinePattern
                     break;
                 }
             }
+            // EL ON NEXT STATE TAMBIEN DEBERIA SER UN CMD O UN INTENTO DE CAMBIAR DE STATE QUE ENVIAMOS AL SERVER
+            // O EL SERVER SOLO SE DEBERIA ENCARGAR SIEMPRE DE CAMBIAR LOS STATES
             OnNextState(previousState);
         }
 

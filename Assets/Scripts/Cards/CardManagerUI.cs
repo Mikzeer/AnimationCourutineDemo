@@ -17,7 +17,7 @@ namespace PositionerDemo
         [SerializeField] private RectTransform playerTwoGraveyardLogo = default;
         [SerializeField] private RectTransform playerTwoGraveyard = default;
         [SerializeField] private Transform cardWaitPosition = default;
-
+        [SerializeField] private CanvasScaler canvasScaler = default;
         public Motion AddCard(GameObject createdCardGameObject, int PlayerID)
         {                     
             Vector3 normalScale = createdCardGameObject.transform.localScale;
@@ -167,7 +167,7 @@ namespace PositionerDemo
 
         public void OnCardDescriptionPanelRequired(CardData cardData, Vector2 position)
         {
-            infoPanel.SetText(cardData.Description, position);
+            infoPanel.SetText(cardData.Description, position, canvasScaler);
         }
 
         public void OnCardDescriptionPanelClose()

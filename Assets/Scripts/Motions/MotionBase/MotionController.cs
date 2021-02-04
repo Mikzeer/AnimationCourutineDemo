@@ -5,9 +5,8 @@ namespace PositionerDemo
     public class MotionController
     {
         private float motionSpeedUpVelocity = 5f;
-
         Motion actualMotion;
-
+        private KeyCode skipKeyCode = KeyCode.Space;
         private KeyCode fastForwardKeyCode = KeyCode.W;
         private bool isPresing = false;
         private bool isFastForwarding = false;
@@ -19,7 +18,7 @@ namespace PositionerDemo
             {
                 if (actualMotion != null)
                 {
-                    return actualMotion.performing;
+                    return actualMotion.isPerforming;
                 }
                 else
                 {
@@ -38,19 +37,15 @@ namespace PositionerDemo
 
         }
 
-        public MotionController(Motion actualMotion)
-        {
-            this.actualMotion = actualMotion;
-        }
-
         public void SetUpMotion(Motion actualMotion)
         {
+            //actualMotion.SetSkipeableMode(true);
             if (this.actualMotion == null)
             {
                 this.actualMotion = actualMotion;
                 return;
             }
-            if (this.actualMotion.performing == false)
+            if (this.actualMotion.isPerforming == false)
             {
                 this.actualMotion = actualMotion;
             }
@@ -64,20 +59,17 @@ namespace PositionerDemo
         {
             if (actualMotion==null) return;
 
-            if (actualMotion.CheckCorrectInput())
+            if (!actualMotion.isPerforming)
             {
-                if (!actualMotion.performing)
+                actualMotion.OnTryReproduceAnimotion();
+                if (actualMotion.isPerforming)
                 {
-                    actualMotion.CheckMotionBeforeStart();
-                    if (actualMotion.performing)
-                    {
-                        actualMotion.coroutineMono.StartCoroutine(SpeedUpOnButtonPressCoroutine());
-                    }
+                    actualMotion.coroutineMono.StartCoroutine(SpeedUpOnButtonPressCoroutine());
                 }
-                else
-                {
-                    Debug.Log("Is Performing animation");
-                }
+            }
+            else
+            {
+                Debug.Log("Is Performing animation");
             }
         }
         
@@ -87,7 +79,7 @@ namespace PositionerDemo
             pressedTime = 0;
             isPresing = false;
 
-            while (actualMotion.performing)
+            while (actualMotion.isPerforming)
             {
                 if (actualMotion == null) yield break;
 
@@ -106,7 +98,7 @@ namespace PositionerDemo
                     }
                 }
 
-                if (actualMotion.performing)
+                if (actualMotion.isPerforming)
                 {
                     if (isPresing && isFastForwarding == false)
                     {
@@ -133,5 +125,30 @@ namespace PositionerDemo
             actualMotion.SetNormalSpeedMotion();
         }
 
+        private IEnumerator EndMotionOnButtonPress()
+        {
+            bool done = false;
+            while (!done)
+            {
+                if (actualMotion.isPerforming == false)
+                {
+                    done = true;
+                    yield break;
+                }
+                if (Input.GetKeyDown(skipKeyCode))
+                {
+                    if (actualMotion.isPerforming == true)
+                    {
+                        actualMotion.isCancel = true;
+                        done = true;
+                        actualMotion.OnMotionSkip();
+
+                        yield break;
+                    }
+                }
+                yield return null;
+            }
+            yield return null;
+        }
     }
 }

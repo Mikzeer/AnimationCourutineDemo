@@ -34,8 +34,6 @@ namespace PositionerDemo
             onCardInfoPanelClose += cardManagerUI.OnCardDescriptionPanelClose;
             onCardInfoShow = cardManagerUI.OnCardDescriptionPanelRequired;
             parentRectTransform = playerHandTransform;
-
-
         }
 
         protected override void InitializeSimpleUI()
@@ -91,6 +89,9 @@ namespace PositionerDemo
             float finalPositionX = halfScreenWidth - (-1 * parentRectTransform.localPosition.x) - (-1 * uiRectTansform.localPosition.x);
             float finalPositionY = halfScreenHeight - (-1 * parentRectTransform.localPosition.y) - (-1 * uiRectTansform.localPosition.y);
             Vector2 finalPositionInfoPanel = new Vector2(finalPositionX + cardHalfSizeX, finalPositionY + cardHalfSizeY);
+
+
+
             onCardInfoShow?.Invoke(cardData, finalPositionInfoPanel);
             //Debug.Log("finalPositionX " + finalPositionX);
             //Debug.Log("finalPositionY " + finalPositionY);

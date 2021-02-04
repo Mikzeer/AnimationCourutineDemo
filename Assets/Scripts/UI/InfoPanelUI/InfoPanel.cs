@@ -14,7 +14,7 @@ public class InfoPanel : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();     
     }
 
-    public void SetText(string infoText, Vector2 position)
+    public void SetText(string infoText, Vector2 position, CanvasScaler canvasScaler)
     {
         SetActive(true);
         if (rectTransform == null)
@@ -27,8 +27,12 @@ public class InfoPanel : MonoBehaviour
 
         Vector2 textSize = infoTextMesh.GetRenderedValues(false);
         Vector2 paddingSize = new Vector2(8, 8);
+        //rectTransform.sizeDelta = textSize + paddingSize;
         infoRect.sizeDelta = textSize + paddingSize;
-        rectTransform.anchoredPosition = position;
+        infoTextMesh.ForceMeshUpdate();
+        Vector3 clampedPostion = Helper.KeepRectInsideScreen(infoRect, position, canvasScaler);
+
+        rectTransform.anchoredPosition = clampedPostion;
     }
 
     public void SetActive(bool isActive)

@@ -7,9 +7,7 @@ namespace PositionerDemo
     {
         private const string moveTriggerString = "Move";
         private const string SkipTriggerString = "Idlle";
-
         int hashID = 0;
-
         public MoveMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool specialCheck = false, int hashID = 0) : base(coroutineMono, animator, reproductionOrder, specialCheck)
         {
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(moveTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
@@ -18,15 +16,6 @@ namespace PositionerDemo
             {
                 this.hashID = hashID;
             }
-        }
-
-        public override bool CheckCorrectInput()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                return true;
-            }
-            return false;
         }
 
         protected override IEnumerator CheckPendingRunningMotions()
@@ -51,12 +40,7 @@ namespace PositionerDemo
                         yield return null;
                     }
                 }
-
-
             }
         }
-
     }
-
 }
-

@@ -19,6 +19,7 @@ public class CardData
     public List<PositionerDemo.CARDTARGETTYPE> cardTargetTypes;
     public List<PositionerDemo.CardFiltter> cardTargetFiltters;
     public List<PositionerDemo.CardEffect> cardEffects;
+    public PositionerDemo.CardSelectionCondition cardSelectionCondition;
 
     public CardData(CardDataRT pCard)
     {

@@ -242,13 +242,14 @@ public static class Helper
     public static Vector3 KeepRectInsideScreen(RectTransform rect, Vector3 newPos, CanvasScaler canvasScaler)
     {
         float minX = (rect.rect.size.x / 2);
-        float maxX = (canvasScaler.referenceResolution.x - (rect.rect.size.x / 2));
-        float minY = (rect.rect.size.y / 2);
-        float maxY = (canvasScaler.referenceResolution.y - (rect.rect.size.y * 0.5f));
-        newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
-        newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
+        float maxX = (canvasScaler.referenceResolution.x - minX);
+        float minY = (rect.rect.size.y * 0.5f);
+        float maxY = (canvasScaler.referenceResolution.y - minY);
+        Vector3 posToReturn = new Vector3(Mathf.Clamp(newPos.x, minX, maxX), Mathf.Clamp(newPos.y, minY, maxY));
+        //newPos.x = Mathf.Clamp(newPos.x, minX, maxX);
+        //newPos.y = Mathf.Clamp(newPos.y, minY, maxY);
 
-        return newPos;
+        return posToReturn;
     }
 
     public static bool IsEmptyString(string stringToCheck)

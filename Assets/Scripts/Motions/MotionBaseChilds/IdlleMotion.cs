@@ -12,20 +12,9 @@ namespace PositionerDemo
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(idlleTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
         }
 
-        public override bool CheckCorrectInput()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                return true;
-            }
-            return false;
-        }
-
         protected override IEnumerator CheckPendingRunningMotions()
         {
             return base.CheckPendingRunningMotions();
         }
     }
-
 }
-

@@ -9,17 +9,5 @@ namespace PositionerDemo
         {
             animotionParameter = new TweenAnimotionParameter(new TweenDoPathReproducer(transform, pathPositions), ease, tweenDuration);
         }
-
-        public override bool CheckCorrectInput()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                return true;
-            }
-            return false;
-        }
-
     }
-
 }
-

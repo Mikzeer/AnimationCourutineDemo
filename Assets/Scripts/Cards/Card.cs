@@ -6,22 +6,25 @@ namespace PositionerDemo
 {
     public class Card : ICloneable
     {
-        public int IDInGame { get; protected set; } // LA ID DE LA CARTA CREADA EN EL JUEGO
-        public Player ownerPlayer { get; protected set; }
-        public CardData CardData { get; protected set; } // TIENE UNA ID UNICA ESPECIFICA DE CADA CARD
-        public bool RequireSelectTarget { get; protected set; }
-
         // LA ID QUE VAMOS A USAR PARA REFERENCIARLAS VIA REFLECTION....
         public int ID { get; protected set; }
+        // TIENE UNA ID UNICA ESPECIFICA DE CADA CARD
+        public CardData CardData { get; protected set; } 
+        // LA ID DE LA CARTA CREADA DENTRO DEL JUEGO PARA REFERENCIARLA ENTRE LOS JUGADORES
+        public int IDInGame { get; protected set; } 
+
+        public Player ownerPlayer { get; protected set; }
+
+        // UNA FORMA DE UBICAR LA CARD PARA SABER SI ESTA EN JUEGO O POR SER JUGADA, ETC.
+        public CARDSTATES cardState { get; protected set; }
+
+        // TODOS LOS TARGETS POSIBLES, REQUIERE SELECCIONAR TARGET + CANTIDAD DE TARGETS
+        // PASARLO AL CARDDATA LUEGO
+        public CardSelectionCondition cardSelectionCondition { get; protected set; }
 
         public Card(int ID)
         {
             this.ID = ID;
-        }
-
-        public Card(Card card)
-        {
-            ID = card.ID;
         }
 
         public virtual void InitializeCard(int IDInGame, Player ownerPlayer, CardData CardData)
@@ -35,7 +38,32 @@ namespace PositionerDemo
         {
             return MemberwiseClone();
         }
+
+        public void SetCardState(CARDSTATES cardState)
+        {
+            this.cardState = cardState;
+        }
     }
+
+    public enum TARGETSELECTIONTYPE
+    {
+        ALL,
+        REQUIRESELECTTARGET,
+        NONE
+    }
+    [Serializable]
+    public class CardSelectionCondition
+    {
+        public TARGETSELECTIONTYPE targetSelectionType { get; private set; }
+        public int maxTargets { get; private set; }
+
+        public CardSelectionCondition(TARGETSELECTIONTYPE targetSelectionType, int maxTargets = 1)
+        {
+            this.targetSelectionType = targetSelectionType;
+            this.maxTargets = maxTargets;
+        }
+    }
+
 
     public class BuffUnitAttackLevelOne : Card
     {

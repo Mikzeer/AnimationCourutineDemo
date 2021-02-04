@@ -1,9 +1,11 @@
 ﻿namespace PositionerDemo
 {
-    public class TargetUnitTypeFiltter : TargetUnitOccupierTypeFiltter
+    public class TargetUnitTypeFiltter : TargetOcuppierTypeFiltter
     {
         UNITTYPE unitType;
-        public TargetUnitTypeFiltter(UNITTYPE unitType) : base()
+        private const OCUPPIERTYPE OC_TYPE = OCUPPIERTYPE.UNIT;
+        private const int FILTTER_ID = 45;
+        public TargetUnitTypeFiltter(UNITTYPE unitType) : base(OC_TYPE, FILTTER_ID)
         {
             this.unitType = unitType;
         }

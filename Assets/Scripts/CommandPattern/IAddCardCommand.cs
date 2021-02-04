@@ -17,11 +17,13 @@ namespace CommandPatternActions
         public void Execute()
         {
             player.PlayersHands.Add(card);
+            card.SetCardState(CARDSTATES.HAND);
         }
 
         public void Unexecute()
         {
             player.PlayersHands.Remove(card);
+            card.SetCardState(CARDSTATES.DECK);
         }
     }
 }

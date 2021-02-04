@@ -34,6 +34,7 @@ namespace PositionerDemo
             }
         }
 
+
         public override void RestDuration()
         {
             duration--;

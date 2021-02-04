@@ -239,6 +239,10 @@ namespace PositionerDemo
             Card card = null;
             if (cardDictionary.ContainsKey(cardAID))
             {
+                // USAMOS EL CLONE YA QUE QUEREMOS UNA NUEVA INSTANCIA DE ESA CARD
+                // SI NO LA CLONARAMOS TENDRIAMOS LA MISMA CARD PARA LOS DOS JUGADORES SI ES QUE LOS DOS TIENE LA MISMA CARD
+                // O TENDRIAMOS EN EL MISMO JUGADOR LA MISMA REFERENCIA A UNA CARD SI TIENE DOS CARDS IGUALES
+                // Y CUALQUIER DATA QUE CAMBIEMOS EN UNA SE LE CAMBIARA EN LA OTRA 
                 card = (Card)cardDictionary[cardAID].Clone();
             }
 

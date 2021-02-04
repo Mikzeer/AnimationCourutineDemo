@@ -57,16 +57,5 @@ namespace PositionerDemo
         {
             SetNormalSpeedMotion();           
         }
-
-        public override bool CheckCorrectInput()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                return true;
-            }
-
-            return false;
-        }
     }
 }
-
