@@ -37,7 +37,8 @@ namespace StateMachinePattern
         public override void OnNextState(IState nextState)
         {
             // ACA DEBERIA REVISAR SI EL INVOKER MOTION ESTA EJECUTANDO...
-            if (InvokerMotion.IsExecuting())
+            //if (InvokerMotion.IsExecuting())
+            if (InvokerAnimotion.IsExecuting())
             {
                 game.baseStateMachine.PopState();
                 var wait = new WaitEndAnimationState(game, nextState);

@@ -86,7 +86,7 @@ namespace PositionerDemo
         private void CreateSpawnTile(int posX, int posY, Player player)
         {
             Vector3 realWorldPosition = board2DManager.GetGridObjectRealWorldPositionByArrayPosition(posX, posY);
-            SpawnTile spawnTile = new SpawnTile(realWorldPosition, posX, posY, player.PlayerID);
+            SpawnTile spawnTile = new SpawnTile(realWorldPosition, posX, posY, player.OwnerPlayerID);
             GridArray[posX, posY] = spawnTile;
             board2DManagerUI.CreateSpawnTileHorizontal(posX, posY, spawnTile);
         }
@@ -103,7 +103,7 @@ namespace PositionerDemo
         {
             BaseNexoTile baseNexoTile = null;
             Vector2 position = board2DManager.GetPlayerNexusWorldPosition(player);
-            switch (player.PlayerID)
+            switch (player.OwnerPlayerID)
             {
                 case 0:
                     baseNexoTile = new BaseNexoTile(position, 0, 0, player);

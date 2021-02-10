@@ -1,7 +1,7 @@
 ﻿using CommandPatternActions;
 using PositionerDemo;
 using UIButtonPattern;
-
+using MikzeerGame.Animotion;
 namespace StateMachinePattern
 {
     public class TurnState : ActionState<Tile>
@@ -74,9 +74,15 @@ namespace StateMachinePattern
             if (HaveReachCondition())
             {
                 AdministrationState adminState = new AdministrationState(20, gmMachine, 1);
-                Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(adminState.stateName, 0.5f);
-                InvokerMotion.AddNewMotion(bannerMotion);
-                InvokerMotion.StartExecution(gmMachine);
+                //Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(adminState.stateName, 0.5f);
+                //InvokerMotion.AddNewMotion(bannerMotion);
+                //InvokerMotion.StartExecution(gmMachine);
+
+                Animotion bannerMotion = gmMachine.informationUIManager.SetAndShowBannerAnimotion(adminState.stateName, 0.5f);
+                InvokerAnimotion.AddNewMotion(bannerMotion);
+                InvokerAnimotion.StartExecution(gmMachine);
+
+
                 IState changePhaseState = new ChangePhaseState(gmMachine, adminState);
                 OnNextState(changePhaseState);
                 //OnNextState(adminState);

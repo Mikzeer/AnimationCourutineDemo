@@ -16,7 +16,8 @@ namespace StateMachinePattern
         public override void OnEnter()
         {
             if (logOn) Debug.Log("ENTER CHANGE PHASE STATE");
-            if (InvokerMotion.IsExecuting())
+            //if (InvokerMotion.IsExecuting())
+            if (InvokerAnimotion.IsExecuting())
             {
                 //Debug.Log("Invoker Motion Is Executing");
                 var wait = new WaitEndAnimationState(game, this);

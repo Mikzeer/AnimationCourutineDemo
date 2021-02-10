@@ -23,7 +23,8 @@ namespace StateMachinePattern
 
         public override bool HaveReachCondition()
         {
-            if (InvokerMotion.IsExecuting())
+            //if (InvokerMotion.IsExecuting())
+            if (InvokerAnimotion.IsExecuting())
             {
                 if (logOn) Debug.Log("Waiting For The End Of Animation");
                 return false;

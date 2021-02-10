@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MikzeerGame.Animotion;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,6 +40,12 @@ namespace PositionerDemo
             return board2DManagerUI.CreateNewBoardMotion(this, OnBoardLoadComplete);
         }
 
+        public Animotion CreateBoardAnimotion(Player[] players, Action OnBoardLoadComplete)
+        {
+            board2DCreator.CreateBoard(players);
+            return board2DManagerUI.CreateNewBoardAnimotion(this, OnBoardLoadComplete);
+        }
+
         private Vector3 GetWorldPosition(int x, int y)
         {
             return new Vector3(x, y) * tileSize + originPosition;
@@ -53,7 +60,7 @@ namespace PositionerDemo
 
         public Vector3 GetPlayerNexusWorldPosition(Player player)
         {
-            switch (player.PlayerID)
+            switch (player.OwnerPlayerID)
             {
                 case 0:
                     return board2DManagerUI.GetPlayerNexusWorldPosition(true);

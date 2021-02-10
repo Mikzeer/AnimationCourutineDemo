@@ -20,18 +20,13 @@ namespace MikzeerGame
             public void Execute()
             {
                 if (actualOccupier == null) return;
-
                 Player player = (Player)actualOccupier;
-
                 if (player == null) return;
-
                 if (game.cardManager.CanITakeACard(player))
                 {
                     game.cardManager.OnTakeCard(player);
                 }
-
-                //abilityButtonCreationUI.ClearAbilityButtons();
-                abilityButtonCreationUI.SetUnit(player);
+                abilityButtonCreationUI.ClearAbilityButtons();
             }
         }
     }

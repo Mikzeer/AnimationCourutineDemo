@@ -3,7 +3,7 @@ using CommandPatternActions;
 using StateMachinePattern;
 using System.Collections.Generic;
 using UnityEngine;
-
+using MikzeerGame.Animotion;
 namespace PositionerDemo
 {
     public class MovementManager : AbilityManager
@@ -196,9 +196,14 @@ namespace PositionerDemo
             Invoker.ExecuteCommands();
 
             Vector3 endPosition = movInfo.endPosition.GetRealWorldLocation();
-            Motion normalMoveMotion = moveManagerUI.MoveMotion(movInfo.moveOccupy.goAnimContainer.GetGameObject(), endPosition);
-            InvokerMotion.AddNewMotion(normalMoveMotion);
-            InvokerMotion.StartExecution(game);
+            //Motion normalMoveMotion = moveManagerUI.MoveMotion(movInfo.moveOccupy.goAnimContainer.GetGameObject(), endPosition);
+            //InvokerMotion.AddNewMotion(normalMoveMotion);
+            //InvokerMotion.StartExecution(game);
+
+            Animotion normalMoveMotion = moveManagerUI.MoveAnimotion(movInfo.moveOccupy.goAnimContainer.GetGameObject(), endPosition);
+            InvokerAnimotion.AddNewMotion(normalMoveMotion);
+            InvokerAnimotion.StartExecution(game);
+
         }
 
         private void CombineMove(KimbokoCombine combien, MoveAbilityEventInfo movInfo)
@@ -216,9 +221,14 @@ namespace PositionerDemo
                 goToMove[i] = combien.kimbokos[i].goAnimContainer.GetGameObject();
             }
 
-            Motion combineMoveMotion = moveManagerUI.CombineMoveMotion(startPosition, endPosition, goToMove);
-            InvokerMotion.AddNewMotion(combineMoveMotion);
-            InvokerMotion.StartExecution(game);
+            //Motion combineMoveMotion = moveManagerUI.CombineMoveMotion(startPosition, endPosition, goToMove);
+            //InvokerMotion.AddNewMotion(combineMoveMotion);
+            //InvokerMotion.StartExecution(game);
+
+            Animotion combineMoveMotion = moveManagerUI.CombineMoveAnimotion(startPosition, endPosition, goToMove);
+            InvokerAnimotion.AddNewMotion(combineMoveMotion);
+            InvokerAnimotion.StartExecution(game);
+
         }
 
     }

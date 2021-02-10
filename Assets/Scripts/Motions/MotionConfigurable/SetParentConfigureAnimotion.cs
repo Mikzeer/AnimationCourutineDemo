@@ -16,13 +16,9 @@ namespace PositionerDemo
             // el ultimo child es el que agregue recien, el ante ultimo es el holder vacio
             firstConfigure.SetParent(secondConfigure);
             //firstConfigure.SetSiblingIndex(secondConfigure.childCount - 2);  // ESTABA ESTE
-
-
-
             //secondConfigure.GetChild(secondConfigure.childCount - 1).SetAsLastSibling();
             //secondConfigure.GetChild(secondConfigure.childCount - 1).gameObject.SetActive(false);
             //secondConfigure.GetChild(secondConfigure.childCount - 2).SetAsLastSibling();
         }
     }
 }
-

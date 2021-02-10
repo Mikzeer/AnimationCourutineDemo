@@ -12,7 +12,7 @@ namespace PositionerDemo
         {
             this.CardTargetType = cardTargetTYPE;
             this.tileType = tileTYPE;
-            this.PlayerID = player.PlayerID;
+            this.PlayerID = player.OwnerPlayerID;
             OcupyTile(player);
         }
     }

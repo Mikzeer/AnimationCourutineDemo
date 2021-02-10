@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MikzeerGame.Animotion;
 using UnityEngine;
 
 namespace PositionerDemo
@@ -111,6 +112,72 @@ namespace PositionerDemo
             configurables.Add(onBoardCompleteInvokeEvent);
 
             CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCreateBoard, configurables);
+            return combinMoveMotion;
+        }
+
+        public Animotion CreateNewBoardAnimotion(Board2DManager board2D, Action OnBoardLoadComplete)
+        {
+            GameObject[,] tiles = new GameObject[board2D.columnsWidht, board2D.rowsHeight];
+            int index = 1;
+            GameObject tileParent = new GameObject("TileParent");
+
+            List<Animotion> motionsCreateBoard = new List<Animotion>();
+
+            for (int x = 0; x < board2D.columnsWidht; x++)
+            {
+                for (int y = 0; y < board2D.rowsHeight; y++)
+                {
+                    if (x == 0 || x == 1)
+                    {
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
+                        tiles[x, y].transform.SetParent(tileParent.transform);
+                        continue;
+                    }
+                    if (x == 9 || x == 10)
+                    {
+                        tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
+                        tiles[x, y].transform.SetParent(tileParent.transform);
+                        continue;
+                    }
+
+                    Vector3 thisTileFinalPosition = board2D.GetGridObject(x, y).GetRealWorldLocation();
+
+                    tiles[x, y] = board2D.GridArray[x, y].goAnimContainer.GetTransform().gameObject;
+                    tiles[x, y].transform.position = new Vector3(thisTileFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y, 0);
+                    tiles[x, y].transform.SetParent(tileParent.transform);
+
+                    // TWEEN DE LA CRANE A LA POSICION DE SPAWNEO
+                    Animotion motionTweenMove = new MoveTweenAnimotion(this, index, tiles[x, y].transform,  thisTileFinalPosition, 1);
+                    motionsCreateBoard.Add(motionTweenMove);
+                }
+                index++;
+            }
+
+            // para las spawn tiles
+            Vector2 yOffset = new Vector2(0, 10);
+            Vector3 pOneNexusFinalPosition = board2D.GetPlayerNexusWorldPosition(true);
+            tiles[0, 0].transform.position = new Vector3(pOneNexusFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y + yOffset.y, 0);
+            Animotion motionTweenNexusP1Move = new MoveTweenAnimotion(this, index, tiles[0, 0].transform, pOneNexusFinalPosition, 1);
+            motionsCreateBoard.Add(motionTweenNexusP1Move);
+
+            Vector3 pTwoNexusFinalPosition = board2D.GetPlayerNexusWorldPosition(false);
+            tiles[9, 0].transform.position = new Vector3(pTwoNexusFinalPosition.x, Helper.GetCameraTopBorderYWorldPostion().y + yOffset.y, 0);
+            Animotion motionTweenNexusP2Move = new MoveTweenAnimotion(this, index, tiles[9, 0].transform, pTwoNexusFinalPosition, 1);
+            motionsCreateBoard.Add(motionTweenNexusP2Move);
+
+            index++;
+
+            List<ConfigurableMotion> configurables = new List<ConfigurableMotion>();
+            EventInvokerConfigureContainer eventContainer = new EventInvokerConfigureContainer(OnBoardLoadComplete);
+            ConfigureAnimotion eventConfigAnimotion = new ConfigureAnimotion(eventContainer, index, true);
+            configurables.Add(eventConfigAnimotion);
+
+
+            //EventInvokerGenericContainer evenToInvoke = new EventInvokerGenericContainer(OnBoardLoadComplete);
+            //InvokeEventConfigureAnimotion<EventInvokerGenericContainer, Transform> onBoardCompleteInvokeEvent =
+            //    new InvokeEventConfigureAnimotion<EventInvokerGenericContainer, Transform>(evenToInvoke, index);
+
+            CombineAnimotion combinMoveMotion = new CombineAnimotion(this, 1, motionsCreateBoard, configurables);
             return combinMoveMotion;
         }
 

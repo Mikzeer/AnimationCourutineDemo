@@ -1,7 +1,6 @@
 ﻿using AbilitySelectionUI;
 using PositionerDemo;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace StateMachinePattern
 {
@@ -47,7 +46,7 @@ namespace StateMachinePattern
 
         public override void OnEnter()
         {
-            Debug.Log("ENTER SPAWN STATE");
+            //Debug.Log("ENTER SPAWN STATE");
             gmMachine.tileSelectionManagerUI.onTileSelected += SetSelection;
             foreach (KeyValuePair<Tile, HIGHLIGHTUITYPE> item in spawnUIContainer.tileHighlightTypesDictionary)
             {
@@ -57,7 +56,7 @@ namespace StateMachinePattern
 
         public override void OnExit()
         {
-            Debug.Log("EXIT SPAWN STATE");
+            //Debug.Log("EXIT SPAWN STATE");
             gmMachine.tileSelectionManagerUI.onTileSelected -= SetSelection;
             foreach (KeyValuePair<Tile, HIGHLIGHTUITYPE> item in spawnUIContainer.tileHighlightTypesDictionary)
             {
@@ -67,7 +66,7 @@ namespace StateMachinePattern
 
         public override void OnUpdate()
         {
-            Debug.Log("IN SPAWN STATE");
+            //Debug.Log("IN SPAWN STATE");
             base.OnUpdate();
         }
 

@@ -6,6 +6,4 @@
         bool isForced { get; }
         void Configure();
     }
-
 }
-

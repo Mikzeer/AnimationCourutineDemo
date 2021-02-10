@@ -2,18 +2,24 @@
 using UnityEngine;
 namespace PositionerDemo
 {
-
     public abstract class Motion
     {
-        private IEnumerator actualMotionCoroutine;
-        public MonoBehaviour coroutineMono { get; private set; }
-        public bool isCancel { get; set; } = false;
-        public bool canSkip = true;
-        private KeyCode skipKeyCode = KeyCode.Space;
-        public bool isPerforming { get; private set; }      
-        protected float speed;
+        #region VARIABLES
         // Orden en el que se deberia reproducir
         public int reproductionOrder { get; private set; }
+        private IEnumerator actualMotionCoroutine;
+        public MonoBehaviour coroutineMono { get; private set; }
+
+        public bool isCancel { get; set; } = false;
+        public bool isPerforming { get; private set; }
+
+        public bool canSkip = true;
+        private KeyCode skipKeyCode = KeyCode.Space;
+        protected float speed;
+
+        public ANIMOTIONEXECUTIONSTATE executionState { get; private set; } = ANIMOTIONEXECUTIONSTATE.WAIT;
+
+        #endregion
 
         public Motion(MonoBehaviour coroutineMono, int reproductionOrder)
         {
@@ -38,8 +44,10 @@ namespace PositionerDemo
 
         protected IEnumerator ReproduceMotion()
         {
+            executionState = ANIMOTIONEXECUTIONSTATE.PERFORMING;
             isPerforming = true;
             isCancel = false;
+
             StartMotion();
             // Este lo ponemos ya que sino en el primer frame estan todos en Idlle entonces no reconoce el cambio y termina toda la funcion
             // TECNICAMENTE DEBERIA ESTAR SOLUCIONADO SI HABILITAMOS EL CODIGO DEL ANIMATED MOTION QUE CHEQUEA ENTRAR EN EL ESTADO ANTES
@@ -92,6 +100,7 @@ namespace PositionerDemo
                     if (isPerforming == true)
                     {
                         isCancel = true;
+                        executionState = ANIMOTIONEXECUTIONSTATE.SKIP;
                         done = true;
                         OnMotionSkip();
 
@@ -110,11 +119,13 @@ namespace PositionerDemo
                 CheckMotionAfterEnd();
                 SetNormalSpeedMotion();
                 isPerforming = false;
+                executionState = ANIMOTIONEXECUTIONSTATE.EXECUTED;
             }
             else
             {
                 isCancel = false;
                 isPerforming = false;
+                executionState = ANIMOTIONEXECUTIONSTATE.EXECUTED;
             }
         }
 
@@ -126,7 +137,10 @@ namespace PositionerDemo
         {
             SetNormalSpeedMotion();
             isPerforming = false;
+            executionState = ANIMOTIONEXECUTIONSTATE.SKIP;
         }
+
+        #region SPEED UP DOWN MOTION
 
         public void SpeedUpMotion(float speed)
         {
@@ -146,5 +160,7 @@ namespace PositionerDemo
         protected virtual void SetNormalSpeedInMotion()
         {
         }
+
+        #endregion
     }
 }

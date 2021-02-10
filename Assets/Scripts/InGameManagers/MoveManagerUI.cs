@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using MikzeerGame.Animotion;
 namespace PositionerDemo
 {
     public class MoveManagerUI : MonoBehaviour
@@ -98,6 +98,98 @@ namespace PositionerDemo
             CombineMotion combinMoveMotion = new CombineMotion(this, 1, motionsCombineMove);
             return combinMoveMotion;
         }
+
+        #region ANIMOTION
+
+        public Animotion MoveAnimotion(GameObject goKimbok, Vector3 endPosition)
+        {
+            List<Animotion> motionsMove = new List<Animotion>();
+            Animator animator = goKimbok.GetComponent<Animator>();
+            Animotion motionMove = new MoveAnimatedAnimotion(this, 1, animator);
+            motionsMove.Add(motionMove);
+
+            List<ConfigurableMotion> configurables = new List<ConfigurableMotion>();
+
+            if (GameSoundManager.Instance != null && GameSoundManager.Instance.audioSource != null)
+            {
+                AudioSourceParameter audioParemater = new AudioSourceParameter(false, true);
+                Animotion motionMoveSound = new SoundAnimotion(this, 1, GameSoundManager.Instance.audioSource, GameSoundManager.Instance.audioClips[4], audioParemater);
+                motionsMove.Add(motionMoveSound);
+
+                StopSoundConfigureContainer stopSoundContainer = new StopSoundConfigureContainer(GameSoundManager.Instance.audioSource);
+                ConfigureAnimotion stopSoundConfigure = new ConfigureAnimotion(stopSoundContainer, 2, true);
+                configurables.Add(stopSoundConfigure);
+            }
+
+            List<Animotion> motionsStopMove = new List<Animotion>();
+
+            Animotion motionTweenMove = new MoveTweenAnimotion(this, 1, goKimbok.transform,  endPosition, 1);
+            Animotion motionIdlle = new IdlleAnimatedAnimotion(this, 2, animator);
+            motionsStopMove.Add(motionTweenMove);
+            motionsStopMove.Add(motionIdlle);
+
+            CombineAnimotion combineStopMotion = new CombineAnimotion(this, 1, motionsStopMove, configurables);
+            motionsMove.Add(combineStopMotion);
+
+            CombineAnimotion combinMoveMotion = new CombineAnimotion(this, 1, motionsMove);
+
+            return combinMoveMotion;
+        }
+
+        public Animotion CombineMoveAnimotion(Vector3 actualPosition, Vector3 endPosition, GameObject[] enemies)
+        {
+            UnitMovePositioner movePositioner = new UnitMovePositioner(4f);
+            Dictionary<GameObject, Vector3[]> enmiesAndPathToMove = movePositioner.GetRoutePositions(enemies, movePositioner.GetPositionType(enemies.Length), endPosition, actualPosition);
+            List<Animotion> motionsCombineMove = new List<Animotion>();
+            if (GameSoundManager.Instance != null && GameSoundManager.Instance.audioSource != null)
+            {
+                AudioSourceParameter audioParemater = new AudioSourceParameter(false, true);
+                Animotion motionMoveSound = new SoundAnimotion(this, 1, GameSoundManager.Instance.audioSource, GameSoundManager.Instance.audioClips[4], audioParemater);
+                motionsCombineMove.Add(motionMoveSound);
+
+
+            }
+
+            int index = 0;
+            foreach (KeyValuePair<GameObject, Vector3[]> entry in enmiesAndPathToMove)
+            {
+                Animotion motionMove = new MoveAnimatedAnimotion(this, 1, entry.Key.GetComponent<Animator>());
+                motionsCombineMove.Add(motionMove);
+
+                List<Animotion> extraMotionsCombineStopMove = new List<Animotion>();
+                Animotion motionTweenMove = new MovePathTweenAnimotion(this, 1, entry.Key.transform, entry.Value);
+                Animotion motionIdlle = new IdlleAnimatedAnimotion(this, 2, entry.Key.GetComponent<Animator>());
+                extraMotionsCombineStopMove.Add(motionTweenMove);
+                extraMotionsCombineStopMove.Add(motionIdlle);
+
+                // esto solo lo hago para detener el sonido de los pasos
+                if (enmiesAndPathToMove.Count - 1 == index)
+                {
+                    List<ConfigurableMotion> configurables = new List<ConfigurableMotion>();
+
+                    if (GameSoundManager.Instance != null && GameSoundManager.Instance.audioSource != null)
+                    {
+                        StopSoundConfigureContainer stopSoundContainer = new StopSoundConfigureContainer(GameSoundManager.Instance.audioSource);
+                        ConfigureAnimotion stopSoundConfigure = new ConfigureAnimotion(stopSoundContainer, 2, true);
+                        configurables.Add(stopSoundConfigure);
+                    }
+                    CombineAnimotion extraCombineMoveStopMotion = new CombineAnimotion(this, 1, extraMotionsCombineStopMove, configurables);
+                    motionsCombineMove.Add(extraCombineMoveStopMotion);
+                }
+                else
+                {
+                    CombineAnimotion extraCombineMoveStopMotion = new CombineAnimotion(this, 1, extraMotionsCombineStopMove);
+                    motionsCombineMove.Add(extraCombineMoveStopMotion);
+                }
+
+                index++;
+            }
+
+            CombineAnimotion combinMoveMotion = new CombineAnimotion(this, 1, motionsCombineMove);
+            return combinMoveMotion;
+        }
+
+        #endregion
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CommandPatternActions;
 using System.Collections.Generic;
 using UnityEngine;
+using MikzeerGame.Animotion;
+using StateMachinePattern;
 
 namespace PositionerDemo
 {
@@ -176,7 +178,10 @@ namespace PositionerDemo
             }
             tkeCardInfo.card = TakeCardFromDeck(player);
             TakeCardFromDeck(tkeCardInfo);
-            Perform(takceCardAbility);
+
+            Perform(takceCardAbility); 
+
+
             EndPerform(takceCardAbility);
             //cardIndex++;
         }
@@ -188,9 +193,18 @@ namespace PositionerDemo
             Invoker.ExecuteCommands();
 
             GameObject cardGo = cardManagerUI.CreateNewCardPrefab(tkeCardInfo.card, tkeCardInfo.cardTaker.OwnerPlayerID, this);
-            Motion takeCardMotion = cardManagerUI.AddCard(cardGo, tkeCardInfo.cardTaker.PlayerID);
-            InvokerMotion.AddNewMotion(takeCardMotion);
-            InvokerMotion.StartExecution(cardManagerUI);
+            //Motion takeCardMotion = cardManagerUI.AddCard(cardGo, tkeCardInfo.cardTaker.PlayerID);
+            //InvokerMotion.AddNewMotion(takeCardMotion);
+            //InvokerMotion.StartExecution(cardManagerUI);
+
+            Animotion takeCardMotion = cardManagerUI.AddCardAnimotion(cardGo, tkeCardInfo.cardTaker.OwnerPlayerID);
+            InvokerAnimotion.AddNewMotion(takeCardMotion);
+            InvokerAnimotion.StartExecution(cardManagerUI);
+
+            // ENTRAMOS EN ESTE ESTADO PARA PODER TOMAR LA CARD Y SOLO VER LA ANIMACION
+            TakeCardState spawn = new TakeCardState(game, game.baseStateMachine.currentState);
+            game.baseStateMachine.PopState(true);
+            game.baseStateMachine.PushState(spawn);
         }
 
         #endregion
@@ -203,9 +217,13 @@ namespace PositionerDemo
             Invoker.AddNewCommand(destroyCardCmd);
             Invoker.ExecuteCommands();
 
-            Motion sendToGraveyardMotion = cardManagerUI.OnCardSendToGraveyard(cardRect, tkeCardInfo.cardTaker.PlayerID);
-            InvokerMotion.AddNewMotion(sendToGraveyardMotion);
-            InvokerMotion.StartExecution(cardManagerUI);
+            //Motion sendToGraveyardMotion = cardManagerUI.OnCardSendToGraveyard(cardRect, tkeCardInfo.cardTaker.PlayerID);
+            //InvokerMotion.AddNewMotion(sendToGraveyardMotion);
+            //InvokerMotion.StartExecution(cardManagerUI);
+
+            Animotion sendToGraveyardMotion = cardManagerUI.OnCardSendToGraveyardAnimotion(cardRect, tkeCardInfo.cardTaker.OwnerPlayerID);
+            InvokerAnimotion.AddNewMotion(sendToGraveyardMotion);
+            InvokerAnimotion.StartExecution(cardManagerUI);
         }
 
         #endregion
@@ -214,9 +232,13 @@ namespace PositionerDemo
 
         public void OnCardWaitForTargetSelection(Transform cardTransform)
         {
-            Motion twaitMotion = cardManagerUI.OnCardWaitingTarget(cardTransform);
-            InvokerMotion.AddNewMotion(twaitMotion);
-            InvokerMotion.StartExecution(cardManagerUI);
+            //Motion twaitMotion = cardManagerUI.OnCardWaitingTarget(cardTransform);
+            //InvokerMotion.AddNewMotion(twaitMotion);
+            //InvokerMotion.StartExecution(cardManagerUI);
+
+            Animotion twaitMotion = cardManagerUI.OnCardWaitingTargetAnimotion(cardTransform);
+            InvokerAnimotion.AddNewMotion(twaitMotion);
+            InvokerAnimotion.StartExecution(cardManagerUI);
         }
 
         public bool CanIEnterCardSelectionState(Player player, Card card)

@@ -1,7 +1,7 @@
 ﻿using CommandPatternActions;
 using PositionerDemo;
 using UnityEngine;
-
+using MikzeerGame.Animotion;
 namespace StateMachinePattern
 {
     public abstract class InitialAdministrationStateBase : AdministrationState
@@ -33,9 +33,14 @@ namespace StateMachinePattern
             if (logOn) Debug.Log("IN STATE " + stateName);
             if (HaveReachCondition())
             {
-                PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(nextState.stateName, 0.5f);
-                InvokerMotion.AddNewMotion(bannerMotion);
-                InvokerMotion.StartExecution(gmMachine);
+                //PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner(nextState.stateName, 0.5f);
+                //InvokerMotion.AddNewMotion(bannerMotion);
+                //InvokerMotion.StartExecution(gmMachine);
+
+                Animotion bannerMotion = gmMachine.informationUIManager.SetAndShowBannerAnimotion(nextState.stateName, 0.5f);
+                InvokerAnimotion.AddNewMotion(bannerMotion);
+                InvokerAnimotion.StartExecution(gmMachine);
+
                 IState changePhaseState = new ChangePhaseState(gmMachine, nextState);
                 OnNextState(changePhaseState);
             }

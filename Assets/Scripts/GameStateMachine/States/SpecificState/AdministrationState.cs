@@ -1,7 +1,7 @@
 ﻿using CommandPatternActions;
 using PositionerDemo;
 using UnityEngine;
-
+using MikzeerGame.Animotion;
 namespace StateMachinePattern
 {
     public class AdministrationState : ActionState<Tile>
@@ -63,8 +63,8 @@ namespace StateMachinePattern
             }
             // CHEQUEO ESPECIAL, SI NO TENGO CARDS, NI HAY UN ENEMIGO EN BASE, NI HAY UNA TILE POSIBLE PARA SPAWNEAR
             bool havaCardsInDeck = game.turnController.CurrentPlayerTurn.Deck.Count > 0;
-            bool isAnEnemyInBase = game.board2DManager.IsThereAPosibleAttackableEnemyInBase(game.turnController.CurrentPlayerTurn.PlayerID);
-            bool isThereAPosibleSpawnTile = game.board2DManager.IsThereAPosibleSpawneableTile(game.turnController.CurrentPlayerTurn.PlayerID); ;
+            bool isAnEnemyInBase = game.board2DManager.IsThereAPosibleAttackableEnemyInBase(game.turnController.CurrentPlayerTurn.OwnerPlayerID);
+            bool isThereAPosibleSpawnTile = game.board2DManager.IsThereAPosibleSpawneableTile(game.turnController.CurrentPlayerTurn.OwnerPlayerID);
             if (!havaCardsInDeck && !isAnEnemyInBase && !isThereAPosibleSpawnTile)
             {
                 return true;
@@ -76,9 +76,15 @@ namespace StateMachinePattern
         {
             if (HaveReachCondition())
             {
-                PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner("TURN STATE", 0.5f);
-                InvokerMotion.AddNewMotion(bannerMotion);
-                InvokerMotion.StartExecution(gmMachine);
+                //PositionerDemo.Motion bannerMotion = gmMachine.informationUIManager.SetAndShowBanner("TURN STATE", 0.5f);
+                //InvokerMotion.AddNewMotion(bannerMotion);
+                //InvokerMotion.StartExecution(gmMachine);
+
+                Animotion bannerMotion = gmMachine.informationUIManager.SetAndShowBannerAnimotion("TURN STATE", 0.5f);
+                InvokerAnimotion.AddNewMotion(bannerMotion);
+                InvokerAnimotion.StartExecution(gmMachine);
+
+
                 TurnState turnState = new TurnState(60, gmMachine);
                 IState changePhaseState = new ChangePhaseState(gmMachine, turnState);
                 OnNextState(changePhaseState);

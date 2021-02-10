@@ -13,18 +13,9 @@ namespace PositionerDemo
         {
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(attackTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
 
-            AnimatorControllerParameter[] animatorControllParameters = animator.parameters;
-            AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            //int d = animator.GetInstanceID();
-            //int j = animator.GetLayerIndex("Base Layer");
             string layerName = animator.GetLayerName(0);
-
-            //int pipo = Animator.StringToHash(layerName + ".Idlle");
-
             fullPathHash = Animator.StringToHash(layerName + ".Active");
             waitTime = animator.GetCurrentAnimatorStateInfo(0).length;
-
-
         }
 
         protected override IEnumerator CheckPendingRunningMotions()

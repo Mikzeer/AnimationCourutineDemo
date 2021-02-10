@@ -4,10 +4,8 @@
     {
         protected T firstConfigure;
         protected O secondConfigure;
-
         public int configureOrder { get; private set;}
         public bool isForced { get; private set; }
-
 
         public ConfigureAnimotion(T firstConfigure, O secondConfigure, int configureOrder, bool isForced = false)
         {
@@ -27,8 +25,5 @@
         public virtual void Configure()
         {
         }
-
     }
-
 }
-

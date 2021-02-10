@@ -9,6 +9,4 @@ namespace PositionerDemo
             this.positionToRelocate = positionToRelocate;
         }
     }
-
 }
-

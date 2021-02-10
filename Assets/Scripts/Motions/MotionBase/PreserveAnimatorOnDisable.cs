@@ -49,6 +49,11 @@ namespace PositionerDemo
         void Start()
         {
             anim = GetComponent<Animator>();
+
+            //AnimatorControllerParameter[] animatorControllParameters = animator.parameters;
+            //int animatorInstanceID = animator.GetInstanceID();
+            //int animatorBaselayerID = animator.GetLayerIndex("Base Layer");
+            //int hashNameBaseLayerIdlle = Animator.StringToHash(layerName + ".Idlle");
         }
 
         public void OnAnimDisable()

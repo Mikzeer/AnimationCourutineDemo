@@ -12,6 +12,4 @@ namespace PositionerDemo
             firstConfigure.position = secondConfigure.positionToRelocate;
         }
     }
-
 }
-

@@ -27,6 +27,9 @@ namespace PositionerDemo
         private Action<CardData, Vector2> onCardInfoShow; // ESTO LO HACEMOS PARA SETEAR LA INFORMACION Y EL LUGAR DONDE DEBERIA MOSTRARSE DE LA CARD
         private Action onCardInfoPanelClose; // ESTO LO HACEMOS PARA PRENDER O APAGAR EL INFO PANEL NADA MAS.....
 
+        Tween scaleTween;
+        Tween positionTween;
+
         public void SetCardData(CardData cardData, CardController cardController, CardManagerUI cardManagerUI, RectTransform playerHandTransform)
         {
             this.cardData = cardData;
@@ -56,13 +59,15 @@ namespace PositionerDemo
             isPointerOverCard = true;
             StartCoroutine(mouseOverToShowInfoPanel(uiRectTansform.position));
             // NEW
+            //Debug.Log("ENTER "); 
             startAnchoredPosition = uiRectTansform.anchoredPosition;
             startSiblingIndex = uiRectTansform.GetSiblingIndex();
             //
-            cardFrontStartPosition = cardFrontRect.anchoredPosition;
+            //cardFrontStartPosition = cardFrontRect.anchoredPosition;
+            cardFrontStartPosition = new Vector3(0, 0, 0);
             Vector3 newcardFrontStartPosition = cardFrontStartPosition + new Vector3(0, 50, 0);
-            cardFrontRect.DOAnchorPos(newcardFrontStartPosition, 0.5f);
-            uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
+            positionTween = cardFrontRect.DOAnchorPos(newcardFrontStartPosition, 0.5f);
+            scaleTween = uiRectTansform.DOScale(initialScale * scaleFactor, 0.5f); // SetEase(ease)
         }
 
         IEnumerator mouseOverToShowInfoPanel(Vector3 cardPosition)
@@ -102,8 +107,13 @@ namespace PositionerDemo
 
         public override void OnPointerDown(PointerEventData eventData)
         {
-            uiRectTansform.DOScale(initialScale, 0.1f); // SetEase(ease)
-            cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.1f);
+            //uiRectTansform.DOScale(initialScale, 0.1f); // SetEase(ease)
+            //cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.1f);
+
+            positionTween.Kill();
+            scaleTween.Kill();
+            cardFrontRect.anchoredPosition = cardFrontStartPosition;
+            uiRectTansform.localScale = initialScale;
         }
 
         protected override void OnSuccesfulBeginDrag(PointerEventData eventData)
@@ -158,7 +168,7 @@ namespace PositionerDemo
         {
             if (result.gameObject.CompareTag("DropeableArea"))
             {
-                Debug.Log("Hit " + result.gameObject.name);
+                //Debug.Log("Hit " + result.gameObject.name);
                 if (onTryUseCard != null)
                 {
                     onTryUseCard?.Invoke(cardData);
@@ -166,7 +176,7 @@ namespace PositionerDemo
                 }
                 else
                 {
-                    Debug.Log("CARD NOT CREATED BY CODE");
+                    //Debug.Log("CARD NOT CREATED BY CODE");
                 }
                 return;
             }
@@ -174,9 +184,12 @@ namespace PositionerDemo
 
         protected override void OnFaliedDrop()
         {
-            Debug.Log("NO CHOCO CONTRA NINGUNA UI");
+            //Debug.Log("NO CHOCO CONTRA NINGUNA UI");
+            //Debug.Log("NO CHOCO CONTRA NINGUNA UI cardFrontStartPosition " + cardFrontStartPosition);
+            cardFrontRect.anchoredPosition = cardFrontStartPosition;
+            uiRectTansform.localScale = initialScale;
             uiRectTansform.SetParent(parentRectTransform);
-            canvasGroup.blocksRaycasts = true;
+            //canvasGroup.blocksRaycasts = true;
             if (holderAux != null)
             {
                 uiRectTansform.SetSiblingIndex(holderAux.transform.GetSiblingIndex());
@@ -185,14 +198,19 @@ namespace PositionerDemo
             else
             {
                 uiRectTansform.SetSiblingIndex(startSiblingIndex);
-            }           
+            }
+
+            // SI LO PONGO ACA, NO SE EFECTUA EL ON POINTER EXIT... QUE SERIA LO IDEAL
+            canvasGroup.blocksRaycasts = true;
+            isPointerOverCard = false;
+            onCardInfoPanelClose?.Invoke();
         }
 
         protected override void OnSuccesfulPointerExit()
         {
             isPointerOverCard = false;
             onCardInfoPanelClose?.Invoke();
-            Debug.Log("POINTER EXIT");
+            //Debug.Log("POINTER EXIT");
             cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.5f);
             uiRectTansform.DOScale(initialScale, 0.5f); // SetEase(ease)
         }

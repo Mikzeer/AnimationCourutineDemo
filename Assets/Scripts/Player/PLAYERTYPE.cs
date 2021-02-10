@@ -3,7 +3,7 @@
     public enum PLAYERTYPE
     {
         PLAYER,
+        AI,
         SPECTATOR
     }
-
 }

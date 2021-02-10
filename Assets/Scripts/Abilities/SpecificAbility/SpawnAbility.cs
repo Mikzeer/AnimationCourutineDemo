@@ -55,7 +55,7 @@ namespace PositionerDemo
                 return false;
             }
             // 3- QUE SEA LA BASE DEL PLAYER QUE LA CLICKEO
-            if (spawnTile.PlayerID != player.PlayerID)
+            if (spawnTile.PlayerID != player.OwnerPlayerID)
             {
                 Debug.Log("Spawn Ability: Enemy Spawn Tile Selected");
                 return false;
@@ -65,7 +65,7 @@ namespace PositionerDemo
             {
                 if (spawnTile.GetOcuppy().OccupierType == OCUPPIERTYPE.UNIT)
                 {
-                    if (spawnTile.GetOcuppy().OwnerPlayerID != player.PlayerID)
+                    if (spawnTile.GetOcuppy().OwnerPlayerID != player.OwnerPlayerID)
                     {
                         return false;
                     }

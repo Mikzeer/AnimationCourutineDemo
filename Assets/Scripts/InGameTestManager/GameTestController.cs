@@ -1,4 +1,5 @@
 ﻿using CommandPatternActions;
+using MikzeerGame.Animotion;
 using StateMachinePattern;
 using System.Collections;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace PositionerDemo
 {
     public class GameTestController : GameMachine
     {
-        bool logOn = false;
+        bool logOn = true;
         private void Start()
         {
             StartCoroutine(InitializeGame());
@@ -40,9 +41,15 @@ namespace PositionerDemo
             // CREATE BOARD STATE
             // 3- IR CREANDO EL BOARD
             board2DManager = new Board2DManager(board2DManagerUI, 5, 7);
-            Motion motion = board2DManager.CreateBoard(playerManager.GetPlayer(), OnBoardComplete);
-            InvokerMotion.AddNewMotion(motion);
-            InvokerMotion.StartExecution(this);
+            //Motion motion = board2DManager.CreateBoard(playerManager.GetPlayer(), OnBoardComplete);
+            //InvokerMotion.AddNewMotion(motion);
+            //InvokerMotion.StartExecution(this);
+
+            Animotion motion = board2DManager.CreateBoardAnimotion(playerManager.GetPlayer(), OnBoardComplete);
+            InvokerAnimotion.AddNewMotion(motion);
+            InvokerAnimotion.StartExecution(this);
+
+
 
             // CREATE TURNS STATE => ESTO LO DEBERIA HACER EL SERVER PARA QUE NO LO HAGA CADA JUGADOR Y SE PUEDE HACKEAR
             // 2- ASIGNAR LOS PLAYER AL TURN MANAGER
@@ -104,9 +111,14 @@ namespace PositionerDemo
             TurnState turnState = new TurnState(50, this);
 
             InitialAdministrationStateA initialAdminStateA = new InitialAdministrationStateA(40, this, 4);
-            Motion bannerMotion = informationUIManager.SetAndShowBanner(initialAdminStateA.stateName, 0.5f);
-            InvokerMotion.AddNewMotion(bannerMotion);
-            InvokerMotion.StartExecution(this);            
+            //Motion bannerMotion = informationUIManager.SetAndShowBanner(initialAdminStateA.stateName, 0.5f);
+            //InvokerMotion.AddNewMotion(bannerMotion);
+            //InvokerMotion.StartExecution(this);      
+            //Debug.Log("CREATING BANNER");
+            Animotion bannerMotion = informationUIManager.SetAndShowBannerAnimotion(initialAdminStateA.stateName, 0.5f);
+            InvokerAnimotion.AddNewMotion(bannerMotion);
+            InvokerAnimotion.StartExecution(this);
+
             IState changePhaseState = new ChangePhaseState(this, initialAdminStateA);
             baseStateMachine = new BaseStateMachine(this);
             baseStateMachine.PushState(changePhaseState, true);

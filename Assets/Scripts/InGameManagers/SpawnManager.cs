@@ -3,6 +3,7 @@ using CommandPatternActions;
 using StateMachinePattern;
 using System.Collections.Generic;
 using UnityEngine;
+using MikzeerGame.Animotion;
 
 namespace PositionerDemo
 {
@@ -125,9 +126,15 @@ namespace PositionerDemo
             Invoker.ExecuteCommands();
 
             Vector3 spawnPosition = spwInf.spawnTile.GetRealWorldLocation();
-            Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
-            InvokerMotion.AddNewMotion(normalSpawnMotion);
-            InvokerMotion.StartExecution(spawnManagerUI);
+            //Motion normalSpawnMotion = spawnManagerUI.NormalSpawn(spawnPosition, goKimboko);
+            //InvokerMotion.AddNewMotion(normalSpawnMotion);
+            //InvokerMotion.StartExecution(spawnManagerUI);
+
+
+            Animotion normalSpawnMotion = spawnManagerUI.NormalSpawnAnimotion(spawnPosition, goKimboko);
+            InvokerAnimotion.AddNewMotion(normalSpawnMotion);
+            InvokerAnimotion.StartExecution(spawnManagerUI);
+
 
             Perform(spawnAbility);
             EndPerform(spawnAbility);
@@ -138,7 +145,7 @@ namespace PositionerDemo
         {
             Kimboko unit = (Kimboko)spwInf.spawnTile.GetOcuppy();
             if (unit == null) return;
-            if (unit.OwnerPlayerID != spwInf.spawnerPlayer.PlayerID) return;
+            if (unit.OwnerPlayerID != spwInf.spawnerPlayer.OwnerPlayerID) return;
             bool canCombine = CombineKimbokoRules.CanICombineWithUnitType(unit, spwInf.spawnUnitType);
             bool canCombineAndEvolve = CombineKimbokoRules.CanICombineAndEvolveWithUnitType(unit, spwInf.spawnUnitType);
 
@@ -212,9 +219,14 @@ namespace PositionerDemo
                 combinersGO.Add(actualCombiner.goAnimContainer.GetGameObject());
             }
 
-            Motion combineSpawnMotion = spawnManagerUI.CombineSpawn(spawnPosition, goKimboko, combinersGO, game);
-            InvokerMotion.AddNewMotion(combineSpawnMotion);
-            InvokerMotion.StartExecution(spawnManagerUI);
+            //Motion combineSpawnMotion = spawnManagerUI.CombineSpawn(spawnPosition, goKimboko, combinersGO, game);
+            //InvokerMotion.AddNewMotion(combineSpawnMotion);
+            //InvokerMotion.StartExecution(spawnManagerUI);
+
+
+            Animotion combineSpawnMotion = spawnManagerUI.CombineSpawnAnimotion(spawnPosition, goKimboko, combinersGO, game);
+            InvokerAnimotion.AddNewMotion(combineSpawnMotion);
+            InvokerAnimotion.StartExecution(spawnManagerUI);
 
             // D - Perform(spawnAbility);
             //     Perform(combineAbility);
@@ -244,7 +256,7 @@ namespace PositionerDemo
         {
             Dictionary<Tile, HIGHLIGHTUITYPE> tileHighlightTypesDictionary = new Dictionary<Tile, HIGHLIGHTUITYPE>();
 
-            List<SpawnTile> spawnTiles = game.board2DManager.GetPlayerSpawnTiles(player.PlayerID);
+            List<SpawnTile> spawnTiles = game.board2DManager.GetPlayerSpawnTiles(player.OwnerPlayerID);
 
             if (spawnTiles.Count <= 0) return tileHighlightTypesDictionary;
 
@@ -266,6 +278,7 @@ namespace PositionerDemo
 
         private Kimboko GetNewKimboko(SpawnAbilityEventInfo spawnInfo)
         {
+            Debug.Log("PLAYER ID FROM SPAWN INFO " + spawnInfo.spawnerPlayer);
             Kimboko kimboko = null;
             switch (spawnInfo.spawnUnitType)
             {

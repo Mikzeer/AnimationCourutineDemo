@@ -23,6 +23,9 @@ namespace PositionerDemo
             Player playerTwo = new Player(1);
             playerTwo.SetStatsAndAbilities(OccupierAbilityDatabase.CreatePlayerAbilities(playerTwo), OccupierStatDatabase.CreatePlayerStat());
 
+
+
+
             // DEBERIAMOS TENER UN ABILITYMODIFIER MANAGER O ALGO SIMILIAR PARA ENCARGARSE DE ESTO TAL VEZ
             //SpawnAbility spw = (SpawnAbility)playerOne.Abilities[ABILITYTYPE.SPAWN];
             //ChangeUnitClassAbilityModifier ab = new ChangeUnitClassAbilityModifier(playerOne);

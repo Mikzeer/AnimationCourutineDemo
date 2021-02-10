@@ -11,7 +11,7 @@ namespace PositionerDemo
         public Kimboko(int ID, Player ownerPlayer, UNITTYPE UnitType, MOVEDIRECTIONTYPE MoveDirectionerType)
         {
             this.ID = ID;
-            OwnerPlayerID = ownerPlayer.ID;
+            OwnerPlayerID = ownerPlayer.OwnerPlayerID;
             CardTargetType = CARDTARGETTYPE.UNIT;
             OccupierType = OCUPPIERTYPE.UNIT;
 

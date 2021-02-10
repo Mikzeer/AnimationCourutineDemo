@@ -3,7 +3,7 @@ using CommandPatternActions;
 using StateMachinePattern;
 using System.Collections.Generic;
 using UnityEngine;
-
+using MikzeerGame.Animotion;
 namespace PositionerDemo
 {
     public class CombineManager : AbilityManager
@@ -124,9 +124,13 @@ namespace PositionerDemo
                 combinersGO.Add(cmbInfo.combiner.goAnimContainer.GetGameObject());
             }
 
-            Motion combineMoveMotion = combineManagerUI.NormalCombineMotion(spawnPosition, cmbInfo.kimbokoToCombine.goAnimContainer.GetGameObject(), combinersGO, game);
-            InvokerMotion.AddNewMotion(combineMoveMotion);
-            InvokerMotion.StartExecution(combineManagerUI);
+            //Motion combineMoveMotion = combineManagerUI.NormalCombineMotion(spawnPosition, cmbInfo.kimbokoToCombine.goAnimContainer.GetGameObject(), combinersGO, game);
+            //InvokerMotion.AddNewMotion(combineMoveMotion);
+            //InvokerMotion.StartExecution(combineManagerUI);
+
+            Animotion combineMoveMotion = combineManagerUI.NormalCombineAnimotion(spawnPosition, cmbInfo.kimbokoToCombine.goAnimContainer.GetGameObject(), combinersGO, game);
+            InvokerAnimotion.AddNewMotion(combineMoveMotion);
+            InvokerAnimotion.StartExecution(combineManagerUI);
 
             Perform(combineAbility);
             EndPerform(combineAbility);

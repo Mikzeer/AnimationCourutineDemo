@@ -12,6 +12,4 @@ namespace PositionerDemo
             animator.SetTrigger(activationParameterString);
         }
     }
-
 }
-

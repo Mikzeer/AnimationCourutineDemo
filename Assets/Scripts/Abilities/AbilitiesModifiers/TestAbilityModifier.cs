@@ -64,7 +64,7 @@ namespace PositionerDemo
         {
             // GUARDO LA INFO PARA EL MOMENTO DE LA EJECUCION
             this.info = info;
-            if (info.spawnerPlayer.PlayerID != player.PlayerID)
+            if (info.spawnerPlayer.OwnerPlayerID != player.OwnerPlayerID)
             {
                 Invoker.AddNewCommand(ExecuteCmd(info.spawnerPlayer.Abilities[ABILITYTYPE.SPAWN]));
                 Invoker.ExecuteCommands();

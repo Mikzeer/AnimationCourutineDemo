@@ -47,11 +47,12 @@ namespace PositionerDemo
         {
             kimbokoUnits.Remove(kimbokoUnit);
         }
-
-        public IAbility GetAbility(ABILITYTYPE abilityType)
-        {
-            if (Abilities.ContainsKey(abilityType)) return Abilities[abilityType];
-            return null;
-        }
-    }        
+    }
+    
+    public enum PLAYERPLACE
+    {
+        LEFT,
+        RIGHT,
+        NONE
+    }
 }

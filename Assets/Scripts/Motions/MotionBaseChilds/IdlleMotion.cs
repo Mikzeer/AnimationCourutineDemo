@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 namespace PositionerDemo
 {
     public class IdlleMotion : AnimatedMotion
@@ -10,11 +9,6 @@ namespace PositionerDemo
         public IdlleMotion(MonoBehaviour coroutineMono, Animator animator, int reproductionOrder, bool specialCheck = false) : base(coroutineMono, animator, reproductionOrder, specialCheck)
         {
             animotionParameter = new AnimationAnimotionParameter(new AnimationTriggerReproducer(idlleTriggerString), new AnimationTriggerReproducer(SkipTriggerString));
-        }
-
-        protected override IEnumerator CheckPendingRunningMotions()
-        {
-            return base.CheckPendingRunningMotions();
         }
     }
 }

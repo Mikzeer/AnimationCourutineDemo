@@ -21,8 +21,6 @@ namespace PositionerDemo
         {
             endReproducer.Apply(animator);
         }
-
     }
 
 }
-
