@@ -31,7 +31,6 @@ public class InfoPanel : MonoBehaviour
         infoRect.sizeDelta = textSize + paddingSize;
         infoTextMesh.ForceMeshUpdate();
         Vector3 clampedPostion = Helper.KeepRectInsideScreen(infoRect, position, canvasScaler);
-
         rectTransform.anchoredPosition = clampedPostion;
     }
 
