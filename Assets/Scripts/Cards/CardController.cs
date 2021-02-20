@@ -209,7 +209,7 @@ namespace PositionerDemo
 
         #endregion
 
-        #region GRAVAYARD
+        #region GRAVEYARD
 
         public void SendCardToGraveyard(TakeCardAbilityEventInfo tkeCardInfo, RectTransform cardRect)
         {
@@ -287,9 +287,12 @@ namespace PositionerDemo
 
         #region CARD USE
 
-        public void OnTryUseCard(CardData toUseCard)
+        public void OnTryUseCard(CardData toUseCard, RectTransform cardTransform)
         {
             Debug.Log("I TRY TO USE CARD " + toUseCard.CardName);
+            //Animotion twaitMotion = cardManagerUI.OnCardWaitingTargetAnimotion(cardTransform);
+            //InvokerAnimotion.AddNewMotion(twaitMotion);
+            //InvokerAnimotion.StartExecution(cardManagerUI);
         }
 
         #endregion

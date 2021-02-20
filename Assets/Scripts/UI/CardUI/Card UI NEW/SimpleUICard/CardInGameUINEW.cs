@@ -23,8 +23,8 @@ namespace PositionerDemo
         float cardHalfSizeX;
         float cardHalfSizeY;
 
-        private Action<CardData> onTryUseCard; // ON TRY USE CARD DESDE EL CARD CONTROLLER
-        private Action<CardData, Vector2> onCardInfoShow; // ESTO LO HACEMOS PARA SETEAR LA INFORMACION Y EL LUGAR DONDE DEBERIA MOSTRARSE DE LA CARD
+        private Action<CardData, RectTransform> onTryUseCard; // ON TRY USE CARD DESDE EL CARD CONTROLLER
+        private Action<CardData, RectTransform, Vector2> onCardInformationShow;// ESTO LO HACEMOS PARA SETEAR LA INFORMACION Y EL LUGAR DONDE DEBERIA MOSTRARSE DE LA CARD
         private Action onCardInfoPanelClose; // ESTO LO HACEMOS PARA PRENDER O APAGAR EL INFO PANEL NADA MAS.....
 
         Tween scaleTween;
@@ -35,7 +35,7 @@ namespace PositionerDemo
             this.cardData = cardData;
             onTryUseCard += cardController.OnTryUseCard;
             onCardInfoPanelClose += cardManagerUI.OnCardDescriptionPanelClose;
-            onCardInfoShow = cardManagerUI.OnCardDescriptionPanelRequired;
+            onCardInformationShow = cardManagerUI.OnCardInformationRequired;
             parentRectTransform = playerHandTransform;
         }
 
@@ -87,29 +87,48 @@ namespace PositionerDemo
             ////cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, 0);
             //cardRectInScreenPosition += new Vector2(uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor, uiRectTansform.sizeDelta.x / 2 * canvas.scaleFactor);
             //onCardInfoShow?.Invoke(cardData, cardRectInScreenPosition / canvas.scaleFactor);
-            int screenWidth = Screen.width;
-            int screenHeight = Screen.height;
-            float halfScreenWidth = screenWidth / 2 / canvas.scaleFactor;
-            float halfScreenHeight = screenHeight / 2 / canvas.scaleFactor;
-            float finalPositionX = halfScreenWidth - (-1 * parentRectTransform.localPosition.x) - (-1 * uiRectTansform.localPosition.x);
-            float finalPositionY = halfScreenHeight - (-1 * parentRectTransform.localPosition.y) - (-1 * uiRectTansform.localPosition.y);
-            Vector2 finalPositionInfoPanel = new Vector2(finalPositionX + cardHalfSizeX, finalPositionY + cardHalfSizeY);
+            //int screenWidth = Screen.width;
+            //int screenHeight = Screen.height;
+            //float halfScreenWidth = screenWidth / 2 / canvas.scaleFactor;
+            //float halfScreenHeight = screenHeight / 2 / canvas.scaleFactor;
+            //float finalPositionX = halfScreenWidth - (-1 * parentRectTransform.localPosition.x) - (-1 * uiRectTansform.localPosition.x);
+            //float finalPositionY = halfScreenHeight - (-1 * parentRectTransform.localPosition.y) - (-1 * uiRectTansform.localPosition.y);
+            //Vector2 finalPositionInfoPanel = new Vector2(finalPositionX + cardHalfSizeX, finalPositionY + cardHalfSizeY);
 
+            // parentRectTransform == cardHolder
+            float anchorMinX = parentRectTransform.anchorMin.x;
+            float anchorMaxX = parentRectTransform.anchorMax.x;
+            float anchorMinY = parentRectTransform.anchorMin.y;
+            float anchorMaxY = parentRectTransform.anchorMax.y;
 
+            // OBTENEMOS EL TAMANO ACTUAL DEL RECT DEL CANVAS
+            float CanvasWidth = canvasTransform.rect.width;
+            float CanvasHeight = canvasTransform.rect.height;
 
-            onCardInfoShow?.Invoke(cardData, finalPositionInfoPanel);
-            //Debug.Log("finalPositionX " + finalPositionX);
-            //Debug.Log("finalPositionY " + finalPositionY);
-            //Debug.Log("cardHalfSizeX " + cardHalfSizeX);
-            //Debug.Log("cardHalfSizeY " + cardHalfSizeY);
-            //Debug.Log("finalPositionInfoPanel " + finalPositionInfoPanel);
+            float mostLeftPosition = anchorMinX * CanvasWidth;
+            float mostRightPosition = anchorMaxX * CanvasWidth;
+            float totalWidthRect = mostRightPosition - mostLeftPosition;
+            float finalPositionXOfCardHolder = totalWidthRect / 2 + mostLeftPosition;
+
+            float mostDownPosition = anchorMinY * CanvasHeight;
+            float mostTopPosition = anchorMaxY * CanvasHeight;
+            float totalHeightRect = mostTopPosition - mostDownPosition;
+            float finalPositionYOfCardHolder = totalHeightRect / 2 + mostDownPosition;
+            //Debug.Log("finalPositionOfCardHolder: " + finalPositionXOfCardHolder + "/" + finalPositionYOfCardHolder);
+
+            Vector2 cardPrefabAnchorInLayout = new Vector2(mostLeftPosition, mostTopPosition);
+            //Debug.Log("cardPrefabAnchorInLayout" + cardPrefabAnchorInLayout);
+
+            float finalCardXPosition = cardPrefabAnchorInLayout.x + uiRectTansform.anchoredPosition.x + cardFrontRect.anchoredPosition.x;
+            float finalCardYPosition = cardPrefabAnchorInLayout.y + uiRectTansform.anchoredPosition.y + cardFrontRect.anchoredPosition.y;
+            Vector2 finalCardPosition = new Vector2(finalCardXPosition, finalCardYPosition);
+            //Debug.Log("finalCardPosition" + finalCardPosition);
+
+            onCardInformationShow?.Invoke(cardData, cardFrontRect.GetChild(0).GetComponent<RectTransform>(), finalCardPosition);
         }
 
         public override void OnPointerDown(PointerEventData eventData)
         {
-            //uiRectTansform.DOScale(initialScale, 0.1f); // SetEase(ease)
-            //cardFrontRect.DOAnchorPos(cardFrontStartPosition, 0.1f);
-
             positionTween.Kill();
             scaleTween.Kill();
             cardFrontRect.anchoredPosition = cardFrontStartPosition;
@@ -171,7 +190,7 @@ namespace PositionerDemo
                 //Debug.Log("Hit " + result.gameObject.name);
                 if (onTryUseCard != null)
                 {
-                    onTryUseCard?.Invoke(cardData);
+                    onTryUseCard?.Invoke(cardData, uiRectTansform);
                     parentRectTransform.GetChild(startSiblingIndex).SetAsLastSibling();
                 }
                 else

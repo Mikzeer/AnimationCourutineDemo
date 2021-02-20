@@ -11,13 +11,12 @@ namespace PositionerDemo
         [SerializeField] private RectTransform cardHolderPlayerLeft = default;
         [SerializeField] private RectTransform cardHolderPlayerRight = default;
         [SerializeField] private RectTransform canvasRootTransform = default;
-        [SerializeField] private InfoPanel infoPanel = default; // INFORMACION SOBRE HABILIDADES ESPECIALES DE LAS CARDS 
+        [SerializeField] private InformationPanel informationPanel = default;// INFORMACION SOBRE HABILIDADES ESPECIALES DE LAS CARDS 
         [SerializeField] private RectTransform playerOneGraveyardLogo = default;
         [SerializeField] private RectTransform playerOneGraveyard = default;
         [SerializeField] private RectTransform playerTwoGraveyardLogo = default;
         [SerializeField] private RectTransform playerTwoGraveyard = default;
         [SerializeField] private Transform cardWaitPosition = default;
-        [SerializeField] private CanvasScaler canvasScaler = default;
 
         #region MOTION
 
@@ -139,7 +138,6 @@ namespace PositionerDemo
         }
 
         #endregion
-
 
         #region ANIMOTION
 
@@ -289,14 +287,14 @@ namespace PositionerDemo
             return createdCardGameObject;
         }
 
-        public void OnCardDescriptionPanelRequired(CardData cardData, Vector2 position)
+        public void OnCardInformationRequired(CardData cardData, RectTransform cardRectTransform, Vector2 finalCardPosition)
         {
-            infoPanel.SetText(cardData.Description, position, canvasScaler);
+            informationPanel.SetInformationText(cardData.Description, cardRectTransform, finalCardPosition);
         }
 
         public void OnCardDescriptionPanelClose()
         {
-            infoPanel.SetActive(false);
+            informationPanel.SetActive(false);
         }
     }     
 }

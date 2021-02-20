@@ -4,15 +4,9 @@ using TMPro;
 
 public class InfoPanel : MonoBehaviour
 {
-    [SerializeField]private TextMeshProUGUI infoTextMesh = default;
-    [SerializeField]private RectTransform infoRect = default;
-
-    RectTransform rectTransform;
-
-    void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();     
-    }
+    [SerializeField] private TextMeshProUGUI infoTextMesh = default;
+    [SerializeField] private RectTransform infoRect = default;
+    [SerializeField] private RectTransform rectTransform = default;
 
     public void SetText(string infoText, Vector2 position, CanvasScaler canvasScaler)
     {

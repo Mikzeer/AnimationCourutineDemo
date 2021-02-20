@@ -13,6 +13,7 @@ namespace PositionerDemo
         protected RectTransform parentRectTransform; // el parent donde ese UI se va a anclar
         protected Canvas canvas; // Este canvas sirva para llevar al frente de todo siempre lo que drageamos
         protected CanvasScaler canvasScaler;
+        protected RectTransform canvasTransform;
         #endregion
 
         #region UNITY METHODS
@@ -35,6 +36,7 @@ namespace PositionerDemo
                     if (canvas != null)
                     {
                         canvasScaler = canvas.GetComponent<CanvasScaler>();
+                        canvasTransform = canvas.GetComponent<RectTransform>();
                         break;
                     }
                     trsCanvas = trsCanvas.parent;

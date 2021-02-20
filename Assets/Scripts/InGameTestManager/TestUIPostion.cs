@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,18 +8,22 @@ public class TestUIPostion : MonoBehaviour
 {
     public RectTransform uiToTestRectTransform;
     public Transform uiToTestTransform;
-    public RectTransform canvasTransform;
     public RectTransform panelLayoutTransform;
 
+    public RectTransform canvasTransform;
     protected Canvas canvas; // Este canvas sirva para llevar al frente de todo siempre lo que drageamos
-    protected CanvasScaler canvasScaler;
-
+    protected CanvasScaler canvasScaler;    
     public Vector2 newAnchoredPosition;
     public Vector3 newLocalPosition;
     public bool isLocal;
     public string txtToSet;
     public InfoPanel infoPanel;
     public RectTransform uiMouseOverTest;
+
+    [SerializeField] private TextMeshProUGUI infoTextMesh = default;
+
+    public InformationPanel informationPanel;
+
     private void Start()
     {
         // Dos maneras de buscar el Canvas, la segunda es mejor cuando se tiene diferentes Canvas
@@ -54,8 +59,10 @@ public class TestUIPostion : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             //TestPosition();
-            ChangePosition();
+            //ChangePosition();
             //SetText();
+
+            informationPanel.SetInformationText(txtToSet, uiMouseOverTest);
         }
     }
 
@@ -138,21 +145,20 @@ public class TestUIPostion : MonoBehaviour
 
     public void ChangePosition()
     {
-        // ESTA VERSION SIRVE PARA CUANDO ESTANA LOS ANCHORS JUNTOS
+        // ESTA VERSION SIRVE PARA CUANDO ESTAN LOS ANCHORS JUNTOS
 
-
-        // 1 - CONSEGUIMOS LA POSICION EN FORMATO VIEWPORT(0 TO 1) DEL MOUSE.
-        Vector3 viewPortMousePosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
-
-        // 2 - INSTANCIAMOS EL OBJETO Y SETEAMOS TODAS SUS PROPIEDADES PARA DARLE EL TAMANO CORRECTO FINAL
+        // 1 - INSTANCIAMOS EL OBJETO Y SETEAMOS TODAS SUS PROPIEDADES PARA DARLE EL TAMANO CORRECTO FINAL
         // EL OBJETIVO DE ESTO ES QUE EL OBJETO TENGA EL TAMANO REAL QUE SE VA A MOSTRAR PARA OBTENER SUS LIMITES
+        infoTextMesh.SetText(txtToSet);
+        // FORZAMOS EL UPDATEO YA QUE SI NO EL CALCULO RECIEN DEBERIA HACERSE EN EL "SIGUIENTE FRAME" CUANDO TENGA EL TAMAÑO REAL
+        infoTextMesh.ForceMeshUpdate();
 
+        Vector2 textSize = infoTextMesh.GetRenderedValues(false);
+        Vector2 paddingSize = new Vector2(8, 8);
 
-        // 3 - SACAMOS LA DISTANCIA ENTRE SUS ANCHORS
-        // CON ESTO SABEMOS LA DISTANCIA QUE DEBE HABER ENTRE SUS ANCHORS DESDE DONDE SE PONGA EL MINIMO DE CADA UNO
-        float difX = uiToTestRectTransform.anchorMax.x - uiToTestRectTransform.anchorMin.x;
-        float difY = uiToTestRectTransform.anchorMax.y - uiToTestRectTransform.anchorMin.y;
+        uiToTestRectTransform.sizeDelta = textSize + paddingSize;
+        infoTextMesh.ForceMeshUpdate();
+
 
 
         // 4 - NECESITAMOS LA POSICION DEL OBJETO QUE ESTAMOS SOBRE.... uiMouseOverTest
@@ -164,7 +170,7 @@ public class TestUIPostion : MonoBehaviour
         float anchorManYUIMouseOver = uiMouseOverTest.anchorMax.y;
         // convertir esos anchor viewport to screen point
         Vector3 origin = Camera.main.ViewportToScreenPoint(new Vector3(anchorMinXUIMouseOver, anchorMinYUIMouseOver, 0));
-        Vector3 extent = Camera.main.ViewportToScreenPoint(new Vector3(anchorManXUIMouseOver, anchorManYUIMouseOver, 0));
+        //Vector3 extent = Camera.main.ViewportToScreenPoint(new Vector3(anchorManXUIMouseOver, anchorManYUIMouseOver, 0));
 
         // DE ESTA PUTA MANERA HORRIBLE, OBTENEMOS LA POSICION EN SCREEN POINT DE LOS ANCHORS DE LA UI MOUSE OVER CORRECTAMENTE
         origin = origin / canvas.scaleFactor;
@@ -182,7 +188,7 @@ public class TestUIPostion : MonoBehaviour
         // POR ENDE, SI ESTAMOS DEL LADO IZQUIERDO DE LA PANTALLA NUESTRO CARTEL SE VA A POSICIONAR A LA DERECHA DEL OBJETO QUE ESTAMOS SOBRE
         // SI ESTAMOS DEL LADO DERECHO DE LA PANTALLA, NUESTRO CARTEL SE VA A POSICIONAR A LA IZQUIERDA DEL OBJETO QUE ESTAMOS SOBRE
         float posXRepositionFromUIObject = diferenceBetweenAnchorAndUIPositionX + (mouseOverTotalWidth / 2);
-        float posYRepositionFromUIObject = diferenceBetweenAnchorAndUIPositionY + (mouseOverTotalHeight / 2);
+        //float posYRepositionFromUIObject = diferenceBetweenAnchorAndUIPositionY + (mouseOverTotalHeight / 2);
 
 
         // SEGUN EL LADO DE LA PANTALLA QUE ESTEMOS LO INSTANCIAMOS A LA IZQUIERDA O LA DERECHA
@@ -195,22 +201,50 @@ public class TestUIPostion : MonoBehaviour
         // centrado al objeto que estamos sobre en la altura
         float finalPosY = diferenceBetweenAnchorAndUIPositionY;
 
+        // OBTENEMOS EL TAMANO ACTUAL DEL RECT DEL CANVAS
+        float CanvasWidth = canvasTransform.rect.width;
+        float CanvasHeight = canvasTransform.rect.height;
 
-
+        
         // 6 - OBTENGO EL TAMANO MIN/MAX DE POSICIONAMIENTO EN LA PANTALLA
         // ESTO SE OBTIENE SEGUN EL TAMANO DEL OBJETO QUE QUEREMOS POSICIONAR Y LA RESOLUCION DEL SCALER
         float minX = (uiToTestRectTransform.rect.size.x / 2);
-        float maxX = (canvasScaler.referenceResolution.x - minX);
+        /*float maxX = (canvasScaler.referenceResolution.x - minX);*/ // ESTO SIEMPRE VA A TRABAJAR CON UNA RESOLUCION DE REFERENCIA... LO QUE NECESITAMOS ES LA ACTUAL RESOLUTION
+        float maxX = (CanvasWidth - minX);
+
         float minY = (uiToTestRectTransform.rect.size.y * 0.5f);
-        float maxY = (canvasScaler.referenceResolution.y - minY);
+        //float maxY = (canvasScaler.referenceResolution.y - minY);
+        float maxY = (CanvasHeight - minY);
         // DE ESTA MANERA GARANTIZAMOS QUE EL OBJETO NO SE VAYA DEL MAXIMO DE LA PANTALLA
-        //Vector3 posToReturn = new Vector3(Mathf.Clamp(newAnchoredPosition.x, minX, maxX), Mathf.Clamp(newAnchoredPosition.y, minY, maxY));
         Vector3 posToReturn = new Vector3(Mathf.Clamp(finalPosX, minX, maxX), Mathf.Clamp(finalPosY, minY, maxY));
         uiToTestRectTransform.anchoredPosition = posToReturn;
     }
 
-    public void SetText(Vector2 anchoredPos)
+    public void ChangePositionWithCustomAnchors()
     {
-        infoPanel.SetText(txtToSet, anchoredPos, canvasScaler);
+        // CONSEGUIMOS LA POSICION EN FORMATO VIEWPORT(0 TO 1) DEL MOUSE.
+        Vector3 viewPortMousePosition = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+
+
+        // 3 - SACAMOS LA DISTANCIA ENTRE SUS ANCHORS
+        // CON ESTO SABEMOS LA DISTANCIA QUE DEBE HABER ENTRE SUS ANCHORS DESDE DONDE SE PONGA EL MINIMO DE CADA UNO
+        float difX = uiToTestRectTransform.anchorMax.x - uiToTestRectTransform.anchorMin.x;
+        float difY = uiToTestRectTransform.anchorMax.y - uiToTestRectTransform.anchorMin.y;
+
+        // 4 - NECESITAMOS LA POSICION DEL OBJETO QUE ESTAMOS SOBRE.... uiMouseOverTest
+        Vector2 anchoredPos = uiMouseOverTest.anchoredPosition;
+
+        float anchorMinXUIMouseOver = uiMouseOverTest.anchorMin.x;
+        float anchorManXUIMouseOver = uiMouseOverTest.anchorMax.x;
+        float anchorMinYUIMouseOver = uiMouseOverTest.anchorMin.y;
+        float anchorManYUIMouseOver = uiMouseOverTest.anchorMax.y;
+        // convertir esos anchor viewport to screen point
+        Vector3 origin = Camera.main.ViewportToScreenPoint(new Vector3(anchorMinXUIMouseOver, anchorMinYUIMouseOver, 0));
+        Vector3 extent = Camera.main.ViewportToScreenPoint(new Vector3(anchorManXUIMouseOver, anchorManYUIMouseOver, 0));
+    }
+
+    public void SetText()
+    {
+        //infoPanel.SetText(txtToSet, anchoredPos, canvasScaler);
     }
 }
